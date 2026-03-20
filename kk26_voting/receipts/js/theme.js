@@ -4,7 +4,7 @@
 
 // 1. Immediate initialization (to be called in <head> or start of <body>)
 function initTheme() {
-    const savedTheme = localStorage.getItem('theme') || 'dark';
+    const savedTheme = localStorage.getItem('theme') || 'light';
     if (savedTheme === 'light') {
         document.documentElement.classList.add('light-mode');
         document.body.classList.add('light-mode');

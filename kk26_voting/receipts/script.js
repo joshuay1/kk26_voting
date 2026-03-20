@@ -4,7 +4,7 @@ function loadReceipts() {
     const filterBar = document.getElementById('filter-bar');
     const grid = document.getElementById('receipts-grid');
 
-    // This file is reused by the print view, so only boot on the receipts page.
+    // Only boot on the receipts page.
     if (!introDiv || !techInfo || !filterBar || !grid) return;
 
     try {
@@ -59,8 +59,6 @@ function loadReceipts() {
             grid.appendChild(card);
         });
 
-        setupTooltips();
-
     } catch (err) {
         console.error('Error loading receipts:', err);
         if (introDiv) {
@@ -69,7 +67,10 @@ function loadReceipts() {
     }
 }
 
-function renderReceipt(r) {
+// BACKUP: Original renderReceipt() function
+// To revert to original design, replace renderReceipt() below with this version
+/*
+function renderReceipt_ORIGINAL(r) {
     const div = document.createElement('div');
     div.className = 'receipt';
     div.dataset.group = r.group;
@@ -108,7 +109,7 @@ function renderReceipt(r) {
             <div class="divider dashed"></div>
 
             <div class="voter-info">
-                <div class="voter-id" style="cursor: pointer; text-decoration: underline; text-decoration-style: dotted; text-underline-offset: 3px;" onclick="window.location.href='personal_report.html?voter=${encodeURIComponent(r.voter_id)}'" title="Zum persönlichen Bericht">${r.voter_id}</div>
+                <div class="voter-id">${r.voter_id}</div>
                 <div class="voter-meta">Budget: ${r.wallet_per_voter.toLocaleString('en-CH', { maximumFractionDigits: 0 })} CHF</div>
             </div>
 
@@ -170,6 +171,127 @@ function renderReceipt(r) {
 
     return div;
 }
+*/
+
+// NEW: Thermal receipt style (inspired by real Coop receipts)
+function renderReceipt(r) {
+    const div = document.createElement('div');
+    div.className = 'receipt';
+    div.dataset.group = r.group;
+
+    const fundedRows = r.items
+        .filter(it => it.funded)
+        .map(it => `
+            <tr class="item-row funded" style="line-height: 1.1;">
+                <td class="item-title col-title" data-project="${it.project_id}" style="cursor: pointer; padding: 0.08rem 0; font-size: 0.7rem;">${it.title}</td>
+                <td class="item-vote col-vote" style="padding: 0.08rem 0; font-size: 0.7rem;">${getVoteLabel(it.vote)}</td>
+                <td class="item-amount col-amount" style="padding: 0.08rem 0; font-size: 0.7rem;">${it.amount.toLocaleString('en-CH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+            </tr>
+        `).join('');
+
+    const unfundedRows = r.items
+        .filter(it => !it.funded)
+        .map(it => `
+            <tr class="item-row unfunded" style="line-height: 1.1;">
+                <td class="item-title col-title" data-project="${it.project_id}" style="cursor: pointer; padding: 0.08rem 0; font-size: 0.7rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${truncate(it.title, 32)}</td>
+                <td class="item-vote col-vote" style="padding: 0.08rem 0; font-size: 0.7rem;">${getVoteLabel(it.vote)}</td>
+                <td class="item-amount col-amount" style="padding: 0.08rem 0; font-size: 0.7rem;">–</td>
+            </tr>
+        `).join('');
+
+    // Generate timestamp (using a fixed date for consistency)
+    const timestamp = '21.03.2026            10:06';
+
+    div.innerHTML = `
+        <div class="receipt-edge top"></div>
+        <div class="receipt-body" style="max-width: 320px; margin: 0 auto;">
+            <div class="receipt-header" style="text-align: center;">
+                <div class="logo" style="font-size: 1.6rem; font-weight: 900;">kk26</div>
+                <div class="subtitle" style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase;">KULTUR KOMITEE WINTERTHUR</div>
+                <div class="receipt-date" style="font-size: 0.7rem;">Gruppe ${r.group} · ${r.voter_id}</div>
+            </div>
+
+            <div class="divider dashed"></div>
+
+            <div style="font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin: 0.3rem 0 0.2rem;">Finanzierte Projekte</div>
+
+            <table class="items-table" style="font-size: 0.7rem;">
+                <thead>
+                    <tr style="line-height: 1.2;">
+                        <th class="col-title" style="font-size: 0.7rem; padding: 0.1rem 0; color: #000;">Artikel</th>
+                        <th class="col-vote" style="font-size: 0.7rem; padding: 0.1rem 0; color: #000;">Stim</th>
+                        <th class="col-amount" style="font-size: 0.7rem; padding: 0.1rem 0; color: #000;">Betrag</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${fundedRows}
+                </tbody>
+            </table>
+
+            <div class="divider dashed"></div>
+
+            <div class="totals" style="font-size: 0.75rem;">
+                <div class="total-row">
+                    <span>Anzahl Projekte</span>
+                    <span class="total-value">${r.funded_count}</span>
+                </div>
+                <div class="total-row grand" style="font-size: 0.95rem; font-weight: 900; margin-top: 0.2rem;">
+                    <span>TOTAL CHF</span>
+                    <span class="total-value">${r.total_spent.toLocaleString('en-CH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div style="margin: 0.4rem 0; font-size: 0.7rem; text-align: center;">
+                <div style="font-weight: 600;">Method of Equal Shares</div>
+            </div>
+
+            <div style="font-size: 0.65rem; margin: 0.3rem 0;">
+                ${timestamp}
+            </div>
+
+            <div style="font-size: 0.6rem; margin: 0.4rem 0; text-align: center; line-height: 1.4;">
+                Bisher wurden insgesamt 22 Projekte mit einem<br>Gesamtbudget von CHF 163'640 finanziert.
+            </div>
+
+            <div class="divider dashed"></div>
+
+            <div style="font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin: 0.3rem 0 0.2rem;">Nicht finanzierte Projekte</div>
+
+            <table class="items-table" style="font-size: 0.7rem;">
+                <thead>
+                    <tr style="line-height: 1.2;">
+                        <th class="col-title" style="font-size: 0.7rem; padding: 0.1rem 0; color: #000;">Artikel</th>
+                        <th class="col-vote" style="font-size: 0.7rem; padding: 0.1rem 0; color: #000;">Stim</th>
+                        <th class="col-amount" style="font-size: 0.7rem; padding: 0.1rem 0; color: #000;">Betrag</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${unfundedRows}
+                </tbody>
+            </table>
+
+            <div class="divider dashed"></div>
+
+            <div class="receipt-footer" style="text-align: center;">
+                <div class="footer-line" style="font-size: 0.65rem;">KULTUR KOMITEE WINTERTHUR</div>
+                <div class="footer-line" style="font-size: 0.6rem;">Stiftung für Kunst, Kultur und Geschichte</div>
+                <div class="footer-line" style="font-size: 0.65rem; margin-top: 0.4rem;">Vielen Dank für Ihre Teilnahme!</div>
+
+                <div style="margin-top: 0.6rem; font-family: 'Libre Barcode 128', monospace; font-size: 1.4rem; letter-spacing: -0.05em; line-height: 1; color: #000; overflow: hidden;">
+                    ||||||||||||||||||||||
+                </div>
+                <div style="font-size: 0.55rem; margin-top: 0.15rem; letter-spacing: 0.02em; color: #000; word-break: break-all;">
+                    SKKG-KK26-${r.group}-${r.voter_id.replace(/\s+/g, '')}
+                </div>
+            </div>
+        </div>
+        <div class="receipt-edge bottom"></div>
+    `;
+
+    return div;
+}
 
 function truncate(str, n) {
     if (!str) return '';
@@ -197,81 +319,6 @@ function filterReceipts(group) {
             card.classList.add('hidden');
         }
     });
-}
-
-function setupTooltips() {
-    const tooltip = document.getElementById('quick-tooltip');
-    if (!tooltip) return;
-
-    document.querySelectorAll('.item-title').forEach(el => {
-        el.addEventListener('mouseenter', (e) => {
-            const projectId = el.dataset.project;
-            if (!projectId || !window.receiptsData) return;
-            
-            const projectData = window.receiptsData.project_receipts.find(p => p.project_id === projectId);
-            if (!projectData) return;
-
-            const statusLabel = projectData.is_funded ? 
-                '<span style="background: #a8dadc; color: #1d3557; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.85rem; font-weight: 800;">GEFÖRDERT</span>' : 
-                '<span style="background: rgba(128,128,128,0.15); color: #aaa; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.85rem; font-weight: 800;">ABGELEHNT</span>';
-            
-            let explanation = projectData.unified_explanation_de || projectData.qualitative_rationale_de || '';
-
-            tooltip.innerHTML = `
-                <div class="tooltip-title" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; border-bottom: none; padding-bottom: 0;">
-                    <span style="font-size: 1.1rem; line-height: 1.2;">${projectData.title}</span>
-                    ${statusLabel}
-                </div>
-                <div style="margin: 1rem 0; padding-bottom: 1rem; border-bottom: 1px dashed rgba(128,128,128,0.3);">
-                    <div class="tooltip-stat" style="margin-bottom: 0.5rem; font-size: 0.95rem;"><span>Projektkosten</span> <strong>${projectData.total_cost.toLocaleString('en-CH')} CHF</strong></div>
-                    <div class="tooltip-stat" style="margin-bottom: 0; font-size: 0.95rem;"><span>Unterstützer:innen</span> <strong>${projectData.supporter_count} Personen</strong></div>
-                </div>
-                ${explanation ? `
-                <div>
-                    <div style="font-size: 0.8rem; opacity: 0.6; text-transform: uppercase; font-weight: 700; margin-bottom: 0.5rem; letter-spacing: 0.05em;">Begründung Algo</div>
-                    <div style="font-size: 0.95rem; opacity: 0.9; line-height: 1.5; font-style: italic;">"${explanation}"</div>
-                </div>
-                ` : ''}
-            `;
-            
-            tooltip.classList.add('show');
-            positionTooltip(e, tooltip);
-            
-            e.stopPropagation();
-        });
-
-        el.addEventListener('mousemove', (e) => {
-            if(tooltip.classList.contains('show')) positionTooltip(e, tooltip);
-        });
-
-        el.addEventListener('mouseleave', () => {
-            if (!('ontouchstart' in window)) {
-                tooltip.classList.remove('show');
-            }
-        });
-
-        el.addEventListener('click', (e) => {
-            if ('ontouchstart' in window) {
-                e.preventDefault();
-            }
-        });
-    });
-
-    document.addEventListener('click', (e) => {
-        if (!e.target.closest('.item-title') && !e.target.closest('.tooltip')) {
-            tooltip.classList.remove('show');
-        }
-    });
-}
-
-function positionTooltip(e, tooltip) {
-    let x = e.clientX + 15;
-    let y = e.clientY + 15;
-    const rect = tooltip.getBoundingClientRect();
-    if (x + rect.width > window.innerWidth) x = e.clientX - rect.width - 15;
-    if (y + rect.height > window.innerHeight) y = e.clientY - rect.height - 15;
-    tooltip.style.left = x + 'px';
-    tooltip.style.top = y + window.scrollY + 'px';
 }
 
 // Initial load

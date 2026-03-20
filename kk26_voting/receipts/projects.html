@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="css/common.css">
     <script src="js/theme.js"></script>
     <script>initTheme();</script>
-    <script src="js/data.js"></script>
+    <script src="js/data.js?v=20260320-summary-v3"></script>
     <style>
         /* Page-specific styles */
 
@@ -233,11 +233,6 @@
             margin-top: var(--spacing-xs);
         }
 
-        .receipt-body.unfunded {
-            filter: grayscale(0.2);
-            opacity: 0.9;
-        }
-
         .status-badge {
             position: absolute;
             top: var(--spacing-xs);
@@ -316,26 +311,104 @@
         }
 
         @media print {
+            @page {
+                margin: 0.7cm;
+            }
+
             .page-header,
             .filter-bar,
             .intro-section,
+            .intro-dropdown,
+            #tech-info,
+            .column-header,
             .nav-toggle,
-            .theme-toggle {
-                display: none;
+            .theme-toggle,
+            footer {
+                display: none !important;
+            }
+
+            body {
+                margin: 0;
+                padding: 0;
+                background: white;
             }
 
             .receipts-grid {
-                display: block;
+                display: block !important;
+                padding: 0.15cm 0.2cm 0.2cm !important;
+            }
+
+            .group-column {
+                display: grid !important;
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                gap: 0.9rem !important;
+                align-items: start !important;
+                page-break-before: always;
+                break-before: page;
+                margin: 0 !important;
+            }
+
+            .receipts-grid.all-groups-view .group-column {
+                display: grid !important;
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                gap: 0.9rem !important;
+                align-items: start !important;
+                page-break-before: always;
+                break-before: page;
+                margin: 0 !important;
+            }
+
+            .group-column:first-child,
+            .receipts-grid.all-groups-view .group-column:first-child {
+                page-break-before: avoid !important;
+                break-before: auto !important;
             }
 
             .receipt {
                 page-break-inside: avoid;
-                margin-bottom: var(--spacing-lg);
+                margin: 0;
+                break-inside: avoid;
             }
 
             .receipt-body {
-                box-shadow: none;
-                border: 1px solid #ddd;
+                box-shadow: none !important;
+                border: none !important;
+                background: white !important;
+            }
+
+            .receipt-edge {
+                display: none !important;
+            }
+
+            /* Make sections more compact */
+            .rejection-box {
+                padding: 0.4rem 0.6rem !important;
+                margin-bottom: 0.4rem !important;
+            }
+
+            .reasoning-box {
+                padding: 0.5rem 0.65rem !important;
+                margin-bottom: 0.4rem !important;
+            }
+
+            .project-bottom-bar {
+                padding: 0.4rem 0.8rem !important;
+            }
+
+            .project-bottom-metric span {
+                font-size: 0.6rem !important;
+            }
+
+            .project-bottom-metric div {
+                font-size: 0.9rem !important;
+            }
+
+            .project-bottom-metric-primary span {
+                font-size: 0.62rem !important;
+            }
+
+            .project-bottom-metric-primary div {
+                font-size: 1.1rem !important;
             }
         }
 
@@ -349,10 +422,63 @@
                 gap: var(--spacing-sm);
             }
         }
+
+        @media (max-width: 700px) {
+            .receipts-grid.all-groups-view {
+                grid-template-columns: 1fr !important;
+                gap: 1.25rem !important;
+            }
+
+            .group-column {
+                grid-template-columns: 1fr !important;
+                gap: 1.25rem !important;
+            }
+
+            .receipt-header-modern {
+                flex-direction: column !important;
+                gap: 0.55rem !important;
+            }
+
+            .receipt-brand-line {
+                padding-top: 0.7rem !important;
+            }
+
+            .receipt-top-meta {
+                width: 100%;
+                justify-content: flex-start !important;
+            }
+
+            .project-title {
+                font-size: 1.2rem !important;
+                line-height: 1.2 !important;
+            }
+
+            .supporter-budget-note {
+                display: none;
+            }
+
+            .project-bottom-bar {
+                flex-wrap: wrap !important;
+                justify-content: space-between !important;
+                gap: 0.6rem !important;
+                padding: 0.65rem 0.9rem !important;
+                margin-left: -0.9rem !important;
+                margin-right: -0.9rem !important;
+            }
+
+            .project-bottom-metric {
+                min-width: calc(50% - 0.4rem);
+            }
+
+            .receipt-content {
+                padding-left: 0.9rem !important;
+                padding-right: 0.9rem !important;
+            }
+        }
     </style>
 </head>
 
-<body class="dark-mode">
+<body>
     <button class="theme-toggle" onclick="toggleTheme()" title="Design umschalten">
         <span class="icon-moon">🌙</span>
         <span class="icon-sun" style="display: none;">☀️</span>
@@ -362,7 +488,6 @@
         <a href="index.html" class="nav-link">Persönlich</a>
         <a href="projects.html" class="nav-link active">Projekte</a>
         <a href="outcomes.html" class="nav-link">Outcome-Tabelle</a>
-        <a href="personal_report.html" class="nav-link">Druckansicht</a>
     </div>
     <div class="page-header">
         <div class="brand-logo">KK26_Quttig</div>
@@ -494,7 +619,7 @@
     </style>
 
     <div class="receipts-grid all-groups-view" id="receipts-grid"
-        style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; width: 100%;">
+        style="display: grid; gap: 1.5rem; width: 100%;">
         <div class="group-column" id="col-ROT">
             <div class="column-header" style="color: #e63946; border-color: rgba(230, 57, 70, 0.2)">ROT</div>
         </div>
