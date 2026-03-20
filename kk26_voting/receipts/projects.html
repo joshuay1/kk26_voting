@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KK26 Projekt-Quittungen</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/common.css">
+    <script src="js/theme.js"></script>
+    <script>initTheme();</script>
+    <script src="js/data.js"></script>
+    <style>
+        /* Page-specific styles */
+
+
+
+
+        .filter-bar {
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .filter-bar.group-filters {
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .filter-bar.status-filters {
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .receipts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr));
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            align-items: start;
+        }
+
+        .receipts-grid.all-groups-view {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .group-column {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(min(100%, 370px), 1fr));
+            gap: 2rem;
+            min-width: 0;
+            transition: all 0.3s ease;
+        }
+
+        .receipts-grid.all-groups-view .group-column {
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media (max-width: 1200px) {
+            .receipts-grid.all-groups-view {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+
+            .group-column {
+                grid-template-columns: 1fr;
+            }
+
+            .column-header {
+                font-size: 1.1rem;
+                margin-bottom: 0.5rem;
+                padding: 0.5rem;
+            }
+        }
+
+        .column-header {
+            font-family: var(--font-mono);
+            font-size: var(--fs-md);
+            font-weight: 800;
+            text-align: center;
+            padding: var(--spacing-sm);
+            border-bottom: 2px solid var(--header-border);
+            margin-bottom: var(--spacing-sm);
+            letter-spacing: 0.2em;
+            grid-column: 1 / -1;
+        }
+
+        .group-column.hidden {
+            display: none;
+        }
+
+        .unfunded-explanation {
+            background: rgba(0, 0, 0, 0.03);
+            border: 1px dashed #ccc;
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 4px;
+        }
+
+        .reason-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: #555;
+            margin-bottom: 0.5rem;
+            text-decoration: underline;
+        }
+
+        .reason-text {
+            font-size: 0.75rem;
+            line-height: 1.4;
+            color: #666;
+            font-style: italic;
+        }
+
+
+        .logo-line {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.7rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: 0.15em;
+            color: #111;
+        }
+
+        .subtitle {
+            font-size: var(--fs-xs);
+            font-weight: 500;
+            color: #555;
+            letter-spacing: 0.06em;
+        }
+
+        .subtitle.light {
+            color: #888;
+            font-size: var(--fs-xs);
+        }
+
+        .receipt-date {
+            font-size: var(--fs-xs);
+            color: #999;
+            margin-top: 0.2rem;
+        }
+
+        .project-info {
+            text-align: left;
+            margin-bottom: 0.4rem;
+            padding-left: 0.1rem;
+        }
+
+        .project-title {
+            font-size: var(--fs-lg);
+            font-weight: 800;
+            line-height: 1.15;
+            color: #111;
+            margin-bottom: 0.1rem;
+        }
+
+        .project-meta {
+            font-size: var(--fs-xs);
+            font-weight: 500;
+            color: #666;
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: var(--fs-sm);
+        }
+
+        .items-table th {
+            font-size: var(--fs-xs);
+            font-weight: 700;
+            color: #999;
+            text-align: left;
+            padding: 0.2rem 0;
+            letter-spacing: 0.08em;
+            border-bottom: 1px solid #d5d0c5;
+        }
+
+        .th-vote,
+        .th-amount {
+            text-align: right !important;
+        }
+
+        .item-row td {
+            padding: 0.3rem 0;
+            vertical-align: top;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: var(--fs-sm);
+            padding: 0.2rem 0;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .total-row.grand {
+            font-size: var(--fs-md);
+            font-weight: 800;
+            color: #111;
+            padding: 0.25rem 0;
+        }
+
+        .receipt-footer {
+            text-align: center;
+            padding-top: 0.3rem;
+        }
+
+        .footer-line {
+            font-size: var(--fs-xs);
+            font-weight: 500;
+            color: #999;
+            letter-spacing: 0.03em;
+            margin-bottom: 0.1rem;
+        }
+
+        .barcode {
+            font-size: var(--fs-lg);
+            letter-spacing: 0.08em;
+            color: #c5c0b5;
+            margin-top: var(--spacing-xs);
+        }
+
+        .receipt-body.unfunded {
+            filter: grayscale(0.2);
+            opacity: 0.9;
+        }
+
+        .status-badge {
+            position: absolute;
+            top: var(--spacing-xs);
+            right: var(--spacing-xs);
+            padding: 0.35rem 0.8rem;
+            border-radius: 4px;
+            font-size: var(--fs-xs);
+            font-weight: 800;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            z-index: 10;
+        }
+
+        .status-badge.funded {
+            background: #27ae60;
+            color: #fff;
+        }
+
+        .status-badge.unfunded {
+            background: #999;
+            color: #fff;
+        }
+
+        .status-stamp {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-15deg);
+            font-size: 4.5rem;
+            font-weight: 900;
+            opacity: 0.06;
+            pointer-events: none;
+            z-index: 5;
+            white-space: nowrap;
+            text-transform: uppercase;
+            border: 8px solid;
+            padding: 0.5rem 1.5rem;
+            border-radius: 12px;
+        }
+
+        .status-stamp.funded {
+            color: #27ae60;
+            border: none;
+            font-size: 8rem;
+            opacity: 0.1;
+        }
+
+        .status-stamp.unfunded {
+            color: #888;
+            border: none;
+            font-size: 8rem;
+            opacity: 0.1;
+        }
+
+        .unfunded-explanation {
+            background: rgba(0, 0, 0, 0.03);
+            border: 1px solid #ccc;
+            padding: var(--spacing-sm);
+            border-radius: 4px;
+            margin: var(--spacing-sm) 0;
+            text-align: center;
+        }
+
+        .reason-title {
+            font-size: var(--fs-sm);
+            font-weight: 800;
+            color: #444;
+            letter-spacing: 0.05em;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .reason-text {
+            font-size: var(--fs-xs);
+            color: #666;
+            line-height: 1.4;
+        }
+
+        @media print {
+            .page-header,
+            .filter-bar,
+            .intro-section,
+            .nav-toggle,
+            .theme-toggle {
+                display: none;
+            }
+
+            .receipts-grid {
+                display: block;
+            }
+
+            .receipt {
+                page-break-inside: avoid;
+                margin-bottom: var(--spacing-lg);
+            }
+
+            .receipt-body {
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+        }
+
+        @media (max-width: 1100px) {
+            .receipts-grid {
+                grid-template-columns: 1fr;
+                gap: var(--spacing-sm);
+            }
+
+            .group-column {
+                gap: var(--spacing-sm);
+            }
+        }
+    </style>
+</head>
+
+<body class="dark-mode">
+    <button class="theme-toggle" onclick="toggleTheme()" title="Design umschalten">
+        <span class="icon-moon">🌙</span>
+        <span class="icon-sun" style="display: none;">☀️</span>
+    </button>
+
+    <div class="nav-toggle">
+        <a href="index.html" class="nav-link">Persönlich</a>
+        <a href="projects.html" class="nav-link active">Projekte</a>
+        <a href="outcomes.html" class="nav-link">Outcome-Tabelle</a>
+        <a href="personal_report.html" class="nav-link">Druckansicht</a>
+    </div>
+    <div class="page-header">
+        <div class="brand-logo">KK26_Quttig</div>
+        <h1>Projekt-Quittungen</h1>
+    </div>
+
+    <div class="intro-section" id="intro-text">
+        <p>Laden der Daten...</p>
+    </div>
+
+    <details class="intro-dropdown" id="tech-info">
+        <summary>Lesehilfe: Die Projekt-Quittungen verstehen</summary>
+        <div class="dropdown-content">
+            <div class="tech-grid single-column">
+                <div class="tech-item highlight-step">
+                    <h4>Rang (Position in der Prüfung)</h4>
+                    <p>Der <strong>Rang</strong> zeigt die Reihenfolge, in der der MES-Algorithmus die Projekte geprüft hat. Niedrigerer Rang = früher betrachtet. Geförderte Projekte stehen immer vor nicht geförderten.</p>
+                </div>
+                <div class="tech-item highlight-step">
+                    <h4>Punkte</h4>
+                    <p>Die <strong>Punkte</strong> zeigen die Summe aller Stimmen (Ja = 2 Punkte, Eher Ja = 1 Punkt). Je höher die Punktzahl, desto beliebter war das Projekt in der Gruppe.</p>
+                </div>
+                <div class="tech-item highlight-step">
+                    <h4>Pro Person (durchschnittliche Kosten)</h4>
+                    <p>Diese Zahl zeigt, wie viel das Projekt pro Unterstützende/r kosten würde, wenn die <strong>Kosten</strong> gleichmässig aufgeteilt würden. Je niedriger, desto breiter verteilt sich die Last.</p>
+                </div>
+                <div class="tech-item highlight-step">
+                    <h4>Kosten (Gesamtbudget des Projekts)</h4>
+                    <p>Die <strong>Kosten</strong> zeigen das beantragte Gesamtbudget in CHF. Bei geförderten Projekten wurde dieser Betrag bewilligt und von den Unterstützenden gemeinsam finanziert.</p>
+                </div>
+                <div class="tech-item highlight-step">
+                    <h4>Unterstützer:innen & Beiträge</h4>
+                    <p>Die Tabelle listet alle Personen auf, die mit <strong>Ja</strong> oder <strong>Eher Ja</strong> gestimmt haben. Bei geförderten Projekten sehen Sie den individuellen <strong>Beitrag</strong> jeder Person – berechnet proportional zur Stimme und zum verfügbaren Budget.</p>
+                </div>
+                <div class="tech-item highlight-step">
+                    <h4>Fehlbetrag (bei nicht geförderten Projekten)</h4>
+                    <p>Wenn ein Projekt <strong>NICHT FINANZIERT</strong> wurde, zeigt der <strong>Fehlbetrag</strong>, wie viel zusätzliches Budget die Unterstützenden gebraucht hätten. Das erklärt, warum das Projekt abgelehnt wurde.</p>
+                </div>
+                <div class="tech-item highlight-step">
+                    <h4>Mehr erfahren</h4>
+                    <p>Ausführliche Informationen zum Method of Equal Shares Verfahren finden Sie auf <a href="https://equalshares.net/de/explanation/" target="_blank" rel="noopener noreferrer" style="color: var(--accent-blue); text-decoration: underline; font-weight: 700;">equalshares.net/de/explanation</a></p>
+                </div>
+            </div>
+        </div>
+    </details>
+
+    <div class="filter-bar group-filters">
+        <button class="filter-btn active" data-filter-group="ALL" onclick="setGroupFilter('ALL')">ALLE GRUPPEN</button>
+        <button class="filter-btn" data-filter-group="ROT" onclick="setGroupFilter('ROT')">ROT</button>
+        <button class="filter-btn" data-filter-group="SCHWARZ" onclick="setGroupFilter('SCHWARZ')">SCHWARZ</button>
+        <button class="filter-btn" data-filter-group="BLAU" onclick="setGroupFilter('BLAU')">BLAU</button>
+    </div>
+
+    <div class="filter-bar status-filters">
+        <button class="filter-btn active" data-filter-status="ALL" onclick="setStatusFilter('ALL')">ALLE ERGEBNISSE</button>
+        <button class="filter-btn color-funded" data-filter-status="FUNDED" onclick="setStatusFilter('FUNDED')">FINANZIERT</button>
+        <button class="filter-btn color-unfunded" data-filter-status="UNFUNDED" onclick="setStatusFilter('UNFUNDED')">NICHT AUSGEWÄHLT</button>
+    </div>
+
+
+    <style>
+        /* Tooltip Styles */
+        .tooltip {
+            position: absolute;
+            background: #fff;
+            color: #111;
+            padding: var(--spacing-sm);
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            border: 1px solid #eee;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none;
+            width: 250px;
+            font-family: var(--font-main);
+        }
+
+        .tooltip.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        body.dark-mode .tooltip {
+            background: #222;
+            color: #fff;
+            border-color: #333;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .tooltip-title {
+            font-family: var(--font-mono);
+            font-weight: 800;
+            font-size: var(--fs-sm);
+            margin-bottom: var(--spacing-sm);
+            padding-bottom: var(--spacing-xs);
+            border-bottom: 1px dashed #eee;
+            line-height: 1.3;
+        }
+
+        body.dark-mode .tooltip-title {
+            border-color: #444;
+            color: #fff;
+        }
+
+        .tooltip-stat {
+            display: flex;
+            justify-content: space-between;
+            font-size: var(--fs-xs);
+            margin-bottom: 0.4rem;
+            color: #666;
+        }
+
+        body.dark-mode .tooltip-stat {
+            color: #aaa;
+        }
+
+        .tooltip-stat strong {
+            color: #111;
+            font-weight: 700;
+        }
+
+        body.dark-mode .tooltip-stat strong {
+            color: #fff;
+        }
+    </style>
+
+    <div class="receipts-grid all-groups-view" id="receipts-grid"
+        style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; width: 100%;">
+        <div class="group-column" id="col-ROT">
+            <div class="column-header" style="color: #e63946; border-color: rgba(230, 57, 70, 0.2)">ROT</div>
+        </div>
+        <div class="group-column" id="col-SCHWARZ">
+            <div class="column-header" style="color: var(--text-primary); border-color: rgba(0, 0, 0, 0.15)">SCHWARZ
+            </div>
+        </div>
+        <div class="group-column" id="col-BLAU">
+            <div class="column-header" style="color: #457b9d; border-color: rgba(69, 123, 157, 0.2)">BLAU</div>
+        </div>
+    </div>
+
+    <div id="quick-tooltip" class="tooltip"></div>
+    <footer
+        style="text-align: center; margin: 4rem auto 2rem; padding: 2rem; border-top: 1px solid var(--filter-border); max-width: 800px; color: var(--text-dim); font-size: 0.85rem; line-height: 1.6;">
+        <p>Die Wähler-Quittig Plattform wurde vom Forschungspartner des Kultur Komitees entwickelt:<br><strong>Joshua C.
+                Yang</strong> (ETH Zürich, <a href="mailto:joyang@ethz.ch"
+                style="color: var(--text-muted); text-decoration: underline;">joyang@ethz.ch</a>)</p>
+    </footer>
+    <script src="projects.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,1989 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KK26 Persönlicher Bericht</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/common.css">
+    <script src="js/theme.js"></script>
+    <script src="js/data.js"></script>
+    <style>
+        /* Print-optimized layout */
+        .print-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: var(--spacing-lg);
+        }
+
+        .print-section {
+            margin-bottom: var(--spacing-xxl);
+        }
+
+        .section-title {
+            font-family: var(--font-mono);
+            font-size: var(--fs-xl);
+            font-weight: 800;
+            margin-bottom: var(--spacing-lg);
+            color: var(--text-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            text-align: center;
+            border-bottom: 3px solid var(--accent-blue);
+            padding-bottom: var(--spacing-sm);
+        }
+
+        .section-title-line,
+        .survey-title-line {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.55rem;
+            flex-wrap: wrap;
+        }
+
+        .format-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 1.55rem;
+            height: 1.55rem;
+            padding: 0 0.35rem;
+            border-radius: 999px;
+            background: var(--accent-blue);
+            color: white;
+            font-size: 0.82em;
+            font-weight: 900;
+            line-height: 1;
+            letter-spacing: 0.02em;
+        }
+
+        .section-context {
+            display: inline-block;
+            margin-left: 0.55rem;
+            font-size: 0.72em;
+            font-weight: 700;
+            color: var(--text-muted);
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            vertical-align: middle;
+        }
+
+        /* Personal Receipt Section */
+        .personal-receipt-section {
+            max-width: 500px;
+            margin: 0 auto var(--spacing-xxl);
+        }
+
+        /* Shared receipt styles from the main receipts page */
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 900;
+            letter-spacing: 0.12em;
+            color: #111;
+            margin-bottom: 0.1rem;
+        }
+
+        .logo-line {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.7rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .subtitle {
+            font-size: var(--fs-xs);
+            font-weight: 600;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .receipt-date {
+            font-size: var(--fs-xs);
+            color: #999;
+            margin-top: 0.3rem;
+            opacity: 0.8;
+        }
+
+        .voter-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin: 0.3rem 0;
+        }
+
+        .voter-id {
+            font-size: var(--fs-lg);
+            font-weight: 900;
+            letter-spacing: 0.02em;
+            color: #111;
+        }
+
+        .voter-meta {
+            font-size: var(--fs-sm);
+            font-weight: 600;
+            color: #666;
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: var(--fs-sm);
+            table-layout: fixed;
+        }
+
+        .items-table th {
+            font-size: var(--fs-xs);
+            font-weight: 800;
+            color: #888;
+            text-align: left;
+            padding: var(--spacing-xs) 0;
+            letter-spacing: 0.08em;
+            border-bottom: 1px solid #eee;
+            text-transform: uppercase;
+        }
+
+        .col-title {
+            width: 60%;
+            text-align: left;
+        }
+
+        .col-vote {
+            width: 15%;
+            text-align: center !important;
+        }
+
+        .col-amount {
+            width: 25%;
+            text-align: right !important;
+        }
+
+        .item-row td {
+            padding: 0.4rem 0;
+            vertical-align: middle;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+        }
+
+        .item-vote {
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .item-amount {
+            text-align: right;
+            font-family: var(--font-mono);
+            font-weight: 600;
+        }
+
+        .item-row.unfunded .item-title {
+            font-size: var(--fs-xs);
+            color: #888;
+        }
+
+        .item-row.unfunded .item-vote {
+            color: #aaa;
+            font-weight: 500;
+            font-size: var(--fs-xs);
+        }
+
+        .item-row.unfunded .item-amount {
+            color: #ccc;
+            font-size: var(--fs-xs);
+        }
+
+        .totals {
+            margin: var(--spacing-xs) 0;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.25rem 0;
+            font-size: var(--fs-sm);
+            color: #666;
+            font-weight: 500;
+        }
+
+        .total-row.grand {
+            font-size: var(--fs-md);
+            font-weight: 900;
+            color: #111;
+            border-top: none;
+            padding-top: 0.4rem;
+        }
+
+        .total-row.grand .total-value {
+            color: var(--accent-blue);
+        }
+
+        .unfunded-section summary {
+            font-size: var(--fs-xs);
+            color: #888;
+            cursor: pointer;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0.5rem 0;
+            outline: none;
+        }
+
+        .unfunded-section summary:hover {
+            color: #555;
+        }
+
+        .receipt-footer {
+            text-align: center;
+            margin-top: 1.2rem;
+            padding-top: 1rem;
+            border-top: 1.5px dashed rgba(0, 0, 0, 0.1);
+        }
+
+        .footer-line {
+            font-size: var(--fs-xs);
+            font-weight: 600;
+            color: #999;
+            letter-spacing: 0.02em;
+            margin-bottom: 0.25rem;
+        }
+
+        .receipt {
+            page-break-inside: avoid;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .personal-receipt-section .logo {
+            font-size: 1.8rem;
+            font-weight: 900;
+            letter-spacing: 0.12em;
+            color: #111;
+            margin-bottom: 0.1rem;
+        }
+
+        .personal-receipt-section .subtitle {
+            font-size: var(--fs-xs);
+            font-weight: 600;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .personal-receipt-section .receipt-date {
+            font-size: var(--fs-xs);
+            color: #999;
+            margin-top: 0.3rem;
+            opacity: 0.8;
+        }
+
+        .personal-receipt-section .voter-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin: 0.3rem 0;
+        }
+
+        .personal-receipt-section .voter-id {
+            font-size: var(--fs-lg);
+            font-weight: 900;
+            letter-spacing: 0.02em;
+            color: #111;
+        }
+
+        .personal-receipt-section .voter-meta {
+            font-size: var(--fs-sm);
+            font-weight: 600;
+            color: #666;
+        }
+
+        .personal-receipt-section .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: var(--fs-sm);
+            table-layout: fixed;
+        }
+
+        .personal-receipt-section .items-table th {
+            font-size: var(--fs-xs);
+            font-weight: 800;
+            color: #888;
+            text-align: left;
+            padding: var(--spacing-xs) 0;
+            letter-spacing: 0.08em;
+            border-bottom: 1px solid #eee;
+            text-transform: uppercase;
+        }
+
+        .personal-receipt-section .col-title {
+            width: 60%;
+            text-align: left;
+        }
+
+        .personal-receipt-section .col-vote {
+            width: 15%;
+            text-align: center !important;
+        }
+
+        .personal-receipt-section .col-amount {
+            width: 25%;
+            text-align: right !important;
+        }
+
+        .personal-receipt-section .item-row td {
+            padding: 0.4rem 0;
+            vertical-align: middle;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+        }
+
+        .personal-receipt-section .item-vote {
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .personal-receipt-section .item-amount {
+            text-align: right;
+            font-family: var(--font-mono);
+            font-weight: 600;
+        }
+
+        .personal-receipt-section .item-row.unfunded .item-title {
+            font-size: var(--fs-xs);
+            color: #888;
+        }
+
+        .personal-receipt-section .item-row.unfunded .item-vote {
+            color: #aaa;
+            font-weight: 500;
+            font-size: var(--fs-xs);
+        }
+
+        .personal-receipt-section .item-row.unfunded .item-amount {
+            color: #ccc;
+            font-size: var(--fs-xs);
+        }
+
+        .personal-receipt-section .totals {
+            margin: var(--spacing-xs) 0;
+        }
+
+        .personal-receipt-section .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.25rem 0;
+            font-size: var(--fs-sm);
+            color: #666;
+            font-weight: 500;
+        }
+
+        .personal-receipt-section .total-row.grand {
+            font-size: var(--fs-md);
+            font-weight: 900;
+            color: #111;
+            border-top: none;
+            padding-top: 0.4rem;
+        }
+
+        .personal-receipt-section .total-row.grand .total-value {
+            color: var(--accent-blue);
+        }
+
+        .personal-receipt-section .unfunded-section summary {
+            font-size: var(--fs-xs);
+            color: #888;
+            cursor: pointer;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0.5rem 0;
+            outline: none;
+        }
+
+        .personal-receipt-section .unfunded-section summary:hover {
+            color: #555;
+        }
+
+        .personal-receipt-section .receipt-footer {
+            text-align: center;
+            margin-top: 1.2rem;
+            padding-top: 1rem;
+            border-top: 1.5px dashed rgba(0, 0, 0, 0.1);
+        }
+
+        .personal-receipt-section .footer-line {
+            font-size: var(--fs-xs);
+            font-weight: 600;
+            color: #999;
+            letter-spacing: 0.02em;
+            margin-bottom: 0.25rem;
+        }
+
+        /* Project Cards Grid */
+        .project-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr));
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto var(--spacing-xxl);
+            align-items: start;
+        }
+
+        /* Outcome Table Section */
+        .outcome-section {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Shared outcome table styles */
+        .outcome-section table {
+            border-collapse: collapse;
+            width: 100%;
+            max-width: 1050px;
+            margin: 0 auto;
+            font-family: var(--font-mono);
+            font-size: var(--fs-sm);
+            table-layout: auto;
+        }
+
+        .outcome-section th {
+            background: var(--filter-bg);
+            padding: var(--spacing-xs) 0.4rem;
+            text-align: left;
+            color: var(--text-dim);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 2px solid var(--filter-border);
+        }
+
+        .outcome-section td {
+            padding: 0.4rem var(--spacing-xs);
+            border-bottom: 1px solid var(--filter-border);
+            color: var(--text-secondary);
+            vertical-align: middle;
+            line-height: 1.25;
+            white-space: nowrap;
+        }
+
+        .outcome-section tr:last-child td {
+            border-bottom: none;
+        }
+
+        .outcome-section .table-container {
+            background: var(--filter-bg);
+            border: 1px solid var(--filter-border);
+            border-radius: 8px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            margin-bottom: var(--spacing-lg);
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .outcome-section .col-rank {
+            width: 1%;
+            text-align: center;
+        }
+
+        .outcome-section .col-project {
+            width: 90%;
+            white-space: normal;
+        }
+
+        .outcome-section .col-cost {
+            width: 1%;
+            text-align: right;
+            padding-right: 0.7rem;
+        }
+
+        .outcome-section .col-points {
+            width: 1%;
+            text-align: center;
+        }
+
+        .outcome-section .col-efficiency {
+            width: 1%;
+            text-align: center;
+        }
+
+        .outcome-section .col-status {
+            width: 1%;
+            text-align: center;
+        }
+
+        .outcome-section .col-budget-flow {
+            width: 320px;
+        }
+
+        .outcome-section .col-id {
+            color: var(--text-dim);
+            font-size: var(--fs-xs);
+            margin-right: 0.3rem;
+        }
+
+        .outcome-section .col-title {
+            font-weight: 700;
+            font-size: var(--fs-sm);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: inline-block;
+            max-width: 400px;
+            color: var(--text-primary);
+            line-height: 1.4;
+            vertical-align: middle;
+        }
+
+        .outcome-section .row-funded td {
+            background: rgba(42, 157, 143, 0.04) !important;
+            border-bottom: 1px solid rgba(42, 157, 143, 0.2);
+        }
+
+        .outcome-section .row-funded .col-rank {
+            border-left: 3px solid #2a9d8f;
+            color: #2a9d8f;
+            font-weight: 800;
+        }
+
+        .print-supporters {
+            margin-bottom: 0.3rem;
+        }
+
+        .print-supporters-label {
+            font-size: 0.62rem;
+            color: #777;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 800;
+            margin-bottom: 0.15rem;
+        }
+
+        .print-supporters-list {
+            font-size: 0.58rem;
+            line-height: 1.25;
+            font-weight: 700;
+            color: #1d3557;
+            border-top: 1px solid #e6e6e6;
+            padding-top: 0.18rem;
+        }
+
+        .tech-item.highlight-step {
+            border-left: 3px solid #2a9d8f;
+            background: rgba(42, 157, 143, 0.05); /* Adjusted tint to match new color */
+        }
+        .tech-item.highlight-step h4 {
+            color: #2a9d8f;
+        }
+
+        .print-supporter-vote {
+            color: #6c7f93;
+            font-weight: 700;
+        }
+
+        .voter-selector {
+            max-width: 1100px;
+            margin: 0 auto var(--spacing-md);
+            padding: 0 var(--spacing-sm);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.45rem;
+        }
+
+        .voter-chip {
+            appearance: none;
+            border: 1px solid var(--filter-border);
+            background: var(--filter-bg);
+            color: var(--text-muted);
+            border-radius: 999px;
+            padding: 0.38rem 0.8rem;
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+            cursor: pointer;
+            transition: all 0.18s ease;
+        }
+
+        .voter-chip:hover {
+            background: var(--filter-hover);
+            color: var(--text-primary);
+            transform: translateY(-1px);
+        }
+
+        .voter-chip.active {
+            color: #fff;
+            border-color: transparent;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+        }
+
+        .voter-chip.group-ROT.active {
+            background: var(--color-rot);
+        }
+
+        .voter-chip.group-BLAU.active {
+            background: var(--color-blau);
+        }
+
+        .voter-chip.group-SCHWARZ.active {
+            background: var(--color-schwarz);
+        }
+
+        .print-doc-logo {
+            display: none;
+        }
+
+        .survey-section {
+            max-width: 980px;
+            margin: 0 auto;
+        }
+
+        .survey-intro {
+            color: var(--text-primary);
+            font-size: 0.94rem;
+            line-height: 1.42;
+            text-align: center;
+            margin: 0 auto 0.75rem;
+            max-width: 760px;
+        }
+
+        .survey-scale-note {
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            color: var(--text-dim);
+            text-align: center;
+            letter-spacing: 0.02em;
+            margin-bottom: 0.8rem;
+        }
+
+        .survey-format-block {
+            margin-bottom: 0.7rem;
+            padding: 0.75rem 0.9rem;
+            border: 1px solid var(--filter-border);
+            border-radius: 10px;
+            background: var(--filter-bg);
+        }
+
+        .survey-format-title {
+            font-family: var(--font-mono);
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 0.4rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .survey-title-line {
+            justify-content: flex-start;
+        }
+
+        .survey-option-label {
+            display: inline-flex;
+            align-items: baseline;
+            gap: 0.5rem;
+            min-width: 0;
+            flex: 1 1 auto;
+        }
+
+        .survey-option-code {
+            display: inline-block;
+            min-width: 4.75rem;
+            font-family: var(--font-mono);
+            font-size: 0.8em;
+            font-weight: 800;
+            color: var(--accent-blue);
+            letter-spacing: 0.03em;
+            white-space: nowrap;
+            flex: 0 0 auto;
+        }
+
+        .survey-option-text {
+            min-width: 0;
+            flex: 1 1 auto;
+        }
+
+        .survey-scale-block {
+            display: grid;
+            gap: 0;
+        }
+
+        .survey-circle {
+            width: 13px;
+            height: 13px;
+            border: 1.5px solid #8ea0b5;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .survey-question-card {
+            margin-top: 0.75rem;
+            padding: 0.75rem 0.9rem;
+            border: 1px solid var(--filter-border);
+            border-radius: 10px;
+            background: var(--filter-bg);
+        }
+
+        .survey-question-title {
+            font-family: var(--font-mono);
+            font-size: 0.92rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 0.35rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .survey-question-text {
+            font-size: 0.88rem;
+            line-height: 1.32;
+            color: var(--text-primary);
+            margin-bottom: 0.45rem;
+        }
+
+        .survey-options {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.28rem 0.8rem;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .survey-option {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.42rem;
+            font-size: 0.86rem;
+            line-height: 1.32;
+            color: var(--text-primary);
+        }
+
+        .survey-box {
+            width: 12px;
+            height: 12px;
+            border: 1.5px solid #8ea0b5;
+            border-radius: 2px;
+            display: inline-block;
+            flex: 0 0 auto;
+            margin-top: 0.12rem;
+        }
+
+        .survey-lines {
+            display: grid;
+            gap: 0.38rem;
+            margin-top: 0.4rem;
+        }
+
+        .survey-line {
+            border-bottom: 1px solid #bcc8d4;
+            height: 0.8rem;
+        }
+
+        .survey-overall-card {
+            margin-top: 0;
+        }
+
+        .survey-inline-scale {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) repeat(7, 13px);
+            gap: 0.35rem;
+            align-items: center;
+        }
+
+        .survey-inline-scale-header {
+            margin-bottom: 0.15rem;
+            padding-bottom: 0.25rem;
+            border-bottom: 1px solid var(--filter-border);
+        }
+
+        .survey-inline-scale-header .survey-inline-label {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .survey-inline-label {
+            font-size: 0.92rem;
+            line-height: 1.34;
+            color: var(--text-primary);
+        }
+
+        .survey-inline-tick {
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            font-weight: 800;
+            color: var(--text-dim);
+            text-align: center;
+        }
+
+        .survey-inline-scale-row {
+            padding: 0.28rem 0;
+            border-bottom: 1px solid var(--filter-border);
+        }
+
+        .survey-inline-scale-row:last-child {
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 1400px) {
+            .project-cards-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 900px) {
+            .project-cards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media screen and (max-width: 850px) {
+            /* Transform outcome table to cards on mobile screen (ignores print) */
+            .outcome-section .table-container table,
+            .outcome-section .table-container tbody,
+            .outcome-section .table-container tr,
+            .outcome-section .table-container td {
+                display: block;
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+            .outcome-section .table-container thead {
+                display: none;
+            }
+
+            .outcome-section .table-container tr {
+                display: flex;
+                flex-wrap: wrap;
+                padding: 0.8rem 0.6rem;
+                border: 1px solid var(--filter-border);
+                background: var(--bg-color);
+                border-radius: 8px;
+                margin-bottom: 0.6rem;
+                align-items: center;
+                gap: 0; /* Remove gap to stop tiling effect */
+            }
+
+            .outcome-section .table-container td {
+                border-bottom: none !important;
+                padding: 0 0.15rem !important;
+                text-align: left !important;
+                white-space: normal !important;
+                background: transparent !important; /* Stop individual TD background tiling */
+            }
+
+            /* Fix Row Funding styling for mobile card */
+            .outcome-section .table-container .row-funded {
+                border: 1px solid rgba(42, 157, 143, 0.3) !important;
+                border-left: 5px solid #2a9d8f !important;
+                background: rgba(42, 157, 143, 0.04) !important;
+            }
+
+            /* --- ROW 1: Rank, Title, Budget --- */
+            .outcome-section .col-rank {
+                width: 10% !important;
+                font-size: 1.15rem !important;
+                font-weight: 900 !important;
+            }
+
+            .outcome-section .col-project {
+                width: 58% !important;
+                flex-grow: 1;
+                font-size: 0.95rem;
+            }
+
+            .outcome-section .col-cost {
+                width: 30% !important;
+                text-align: right !important;
+                font-size: 1rem !important;
+            }
+
+            /* --- ROW 2: Information --- */
+            .outcome-section .col-points,
+            .outcome-section .col-efficiency,
+            .outcome-section .col-status,
+            .outcome-section .col-coverage {
+                margin-top: 0.6rem;
+                padding-top: 0.5rem !important;
+                border-top: 1px solid rgba(0,0,0,0.06);
+            }
+
+            html[data-theme="dark"] .outcome-section .table-container .col-points,
+            html[data-theme="dark"] .outcome-section .table-container .col-efficiency,
+            html[data-theme="dark"] .outcome-section .table-container .col-status,
+            html[data-theme="dark"] .outcome-section .table-container .col-coverage {
+                border-top: 1px solid rgba(255,255,255,0.08); /* Dark mode gentle divider */
+            }
+
+            .outcome-section .col-points {
+                width: 30% !important;
+            }
+
+            /* Make points inline so they don't consume so much vertical space */
+            .outcome-section .col-points > div:first-child {
+                display: inline-block;
+                margin-right: 0.35rem;
+                font-size: 1rem !important;
+            }
+            .outcome-section .col-points > div:last-child {
+                display: inline-block;
+                font-size: 0.72rem !important;
+            }
+
+            .outcome-section .col-efficiency {
+                width: 25% !important;
+                text-align: center !important;
+            }
+
+            .outcome-section .col-status {
+                width: 15% !important;
+                text-align: center !important;
+            }
+
+            .outcome-section .col-coverage {
+                width: 30% !important;
+                text-align: right !important;
+            }
+
+            /* Ensure coverage progress bar is tight */
+            .outcome-section .col-coverage > div {
+                text-align: right !important;
+            }
+            .outcome-section .col-coverage > div:nth-child(2) {
+                margin-top: 0.25rem !important;
+            }
+
+            /* --- ROW 3: Budget flow --- */
+            .outcome-section .col-budget-flow {
+                width: 100% !important;
+                margin-top: 0.65rem !important;
+            }
+
+            /* Clean UI Labels */
+            .outcome-section .col-efficiency::before,
+            .outcome-section .col-status::before,
+            .outcome-section .col-points::before,
+            .outcome-section .col-coverage::before {
+                display: block;
+                font-size: 0.52rem;
+                color: #888;
+                font-weight: 800;
+                margin-bottom: 0.18rem;
+                font-family: var(--font-mono);
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+            }
+
+            .outcome-section .col-efficiency::before { content: "CHF/PNT"; }
+            .outcome-section .col-status::before { content: "MES"; }
+            .outcome-section .col-points::before { content: "PUNKTE"; }
+            .outcome-section .col-coverage::before { content: "ABDECKUNG"; text-align: right; }
+
+            .outcome-section .row-funded .col-rank {
+                border-left: none; /* remove legacy side border from individual cell */
+            }
+        }
+
+        /* Print-specific styles */
+        @media print {
+            body {
+                background: white;
+                color: #000;
+                font-size: 9pt;
+            }
+
+            .nav-toggle,
+            .theme-toggle,
+            .page-header,
+            .voter-selector,
+            .print-actions,
+            footer {
+                display: none;
+            }
+
+            .print-container {
+                width: 100%;
+                max-width: none;
+                padding: 14mm 8mm 8mm;
+                position: relative;
+            }
+
+            .print-doc-logo {
+                display: block;
+                position: absolute;
+                top: 6mm;
+                left: 8mm;
+                font-family: var(--font-mono);
+                font-size: 10pt;
+                font-weight: 800;
+                letter-spacing: 0.08em;
+                color: #1d3557;
+                z-index: 10;
+            }
+
+            /* Page 1: Personal receipt + Project cards */
+            .personal-receipt-section {
+                margin-bottom: 8mm;
+            }
+
+            .print-section.personal-receipt-section {
+                page-break-after: always;
+            }
+
+            .print-section:has(.project-cards-grid) {
+                page-break-before: always;
+                page-break-after: avoid;
+            }
+
+            /* Force outcome table to new page */
+            .outcome-section {
+                page-break-before: always;
+                margin-top: 0;
+                max-width: none;
+                width: 100%;
+            }
+
+            .survey-section {
+                page-break-before: always;
+                break-before: page;
+                max-width: none;
+                width: 100%;
+            }
+
+            /* Compact project cards for printing */
+            .project-cards-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 0.35rem;
+                margin-bottom: 0;
+                max-width: none;
+            }
+
+            /* Reduce section title sizes for print */
+            .section-title {
+                font-size: 11pt;
+                margin-bottom: 2.5mm;
+                padding-bottom: 1mm;
+                border-bottom: 1.5px solid #457b9d;
+                line-height: 1.1;
+            }
+
+            .section-title-line,
+            .survey-title-line {
+                gap: 2.2mm;
+            }
+
+            .format-badge {
+                min-width: 5.6mm;
+                height: 5.6mm;
+                padding: 0 1.2mm;
+                font-size: 7pt;
+            }
+
+            .section-context {
+                margin-left: 1.5mm;
+                font-size: 7pt;
+            }
+
+            .survey-intro {
+                font-size: 7.8pt;
+                margin-bottom: 1.8mm;
+                line-height: 1.3;
+            }
+
+            .survey-scale-note {
+                font-size: 6.8pt;
+                margin-bottom: 1.8mm;
+            }
+
+            .survey-format-block,
+            .survey-question-card {
+                padding: 1.8mm 2.2mm;
+                border-radius: 8px;
+            }
+
+            .survey-format-block {
+                margin-bottom: 1.6mm;
+            }
+
+            .survey-format-title,
+            .survey-question-title {
+                font-size: 7.8pt;
+                margin-bottom: 0.9mm;
+            }
+
+            .survey-question-text,
+            .survey-option,
+            .survey-inline-label {
+                font-size: 7.4pt;
+                line-height: 1.26;
+            }
+
+            .survey-circle {
+                width: 9px;
+                height: 9px;
+            }
+
+            .survey-options {
+                gap: 0.9mm 3mm;
+            }
+
+            .survey-option-label {
+                gap: 1.5mm;
+            }
+
+            .survey-option-code {
+                min-width: 13mm;
+            }
+
+            .survey-box {
+                width: 9px;
+                height: 9px;
+            }
+
+            .survey-lines {
+                gap: 0.9mm;
+                margin-top: 1mm;
+            }
+
+            .survey-line {
+                height: 3.4mm;
+            }
+
+            .survey-inline-scale {
+                grid-template-columns: minmax(0, 1fr) repeat(7, 9px);
+                gap: 1mm;
+            }
+
+            .survey-inline-scale-header {
+                margin-bottom: 0.5mm;
+                padding-bottom: 0.7mm;
+            }
+
+            .survey-inline-scale-header .survey-inline-label,
+            .survey-inline-tick {
+                font-size: 6.2pt;
+            }
+
+            .survey-inline-scale-row {
+                padding: 0.8mm 0;
+            }
+
+            /* Make receipts more compact */
+            .receipt {
+                page-break-inside: avoid;
+                box-shadow: none !important;
+                border: 1px solid #ddd !important;
+                display: block !important;
+                width: 100% !important;
+                max-width: 400px !important;
+                margin: 0 auto !important;
+            }
+
+            .receipt .receipt-edge {
+                display: none !important;
+            }
+
+            .receipt .receipt-body {
+                padding: 0.6rem !important;
+                box-shadow: none !important;
+                background: white !important;
+            }
+
+            .receipt .logo {
+                font-size: 1.1rem !important;
+                margin-bottom: 0.2rem !important;
+            }
+
+            .receipt .subtitle {
+                font-size: 0.65rem !important;
+            }
+
+            .receipt .voter-id {
+                font-size: 1rem !important;
+            }
+
+            .receipt .voter-meta {
+                font-size: 0.7rem !important;
+            }
+
+            .receipt .items-table {
+                font-size: 0.7rem !important;
+                margin: 0.3rem 0 !important;
+            }
+
+            .receipt .items-table th {
+                font-size: 0.6rem !important;
+                padding: 0.15rem 0 !important;
+            }
+
+            .receipt .item-row td {
+                padding: 0.2rem 0 !important;
+            }
+
+            .receipt .totals {
+                margin: 0.3rem 0 !important;
+            }
+
+            .receipt .total-row {
+                padding: 0.15rem 0 !important;
+                font-size: 0.7rem !important;
+            }
+
+            .receipt .total-row.grand {
+                font-size: 0.85rem !important;
+                padding-top: 0.25rem !important;
+            }
+
+            .receipt .receipt-footer {
+                margin-top: 0.5rem !important;
+                padding-top: 0.5rem !important;
+            }
+
+            .receipt .footer-line {
+                font-size: 0.6rem !important;
+                margin-bottom: 0.15rem !important;
+            }
+
+            /* Compact project cards */
+            .project-cards-grid > .receipt {
+                margin-bottom: 0 !important;
+            }
+
+            .project-cards-grid .receipt-modern {
+                box-shadow: none !important;
+                border-width: 1px !important;
+                border-top-width: 3px !important;
+                border-radius: 8px !important;
+                overflow: hidden !important;
+                opacity: 1 !important;
+                filter: none !important;
+            }
+
+            .project-cards-grid .status-modern-banner {
+                font-size: 0.45rem !important;
+                letter-spacing: 0.08em !important;
+                padding: 0.12rem 0.35rem !important;
+                border-bottom-right-radius: 5px !important;
+            }
+
+            .project-cards-grid .receipt-content {
+                padding: 1rem 0.55rem 0.35rem !important;
+            }
+
+            .project-cards-grid .receipt-header-modern {
+                margin-bottom: 0.2rem !important;
+            }
+
+            .project-cards-grid .logo-small,
+            .project-cards-grid .subtitle-small {
+                display: none !important;
+            }
+
+            .project-cards-grid .project-info-modern {
+                margin-bottom: 0.25rem !important;
+            }
+
+            .project-cards-grid .project-title {
+                font-size: 0.72rem !important;
+                line-height: 1.15 !important;
+                margin-bottom: 0.15rem !important;
+            }
+
+            .project-cards-grid .project-meta-pills {
+                gap: 0.2rem !important;
+            }
+
+            .project-cards-grid .group-pill,
+            .project-cards-grid .rank-pill {
+                font-size: 0.52rem !important;
+                padding: 0.08rem 0.28rem !important;
+                border-radius: 3px !important;
+            }
+
+            .project-cards-grid .receipt-header-modern > div:last-child span {
+                font-size: 0.55rem !important;
+            }
+
+            .project-cards-grid .project-bottom-bar {
+                margin: 0 -0.55rem 0 -0.55rem !important;
+                padding: 0.3rem 0.55rem !important;
+                gap: 0.2rem !important;
+            }
+
+            .project-cards-grid .reasoning-box,
+            .project-cards-grid .rejection-box {
+                padding: 0.32rem 0.4rem !important;
+                margin-bottom: 0.3rem !important;
+                border-radius: 6px !important;
+            }
+
+            .project-cards-grid .reasoning-box > div,
+            .project-cards-grid .rejection-box > div {
+                font-size: 0.56rem !important;
+                line-height: 1.2 !important;
+            }
+
+            .project-cards-grid .receipt-content div:has(> table.items-table) {
+                margin-bottom: 0.3rem !important;
+            }
+
+            .project-cards-grid .print-supporters {
+                margin-bottom: 0.24rem !important;
+            }
+
+            .project-cards-grid .print-supporters-label {
+                font-size: 0.5rem !important;
+                margin-bottom: 0.1rem !important;
+            }
+
+            .project-cards-grid .print-supporters-list {
+                font-size: 0.5rem !important;
+                line-height: 1.15 !important;
+                padding-top: 0.12rem !important;
+            }
+
+            .project-cards-grid .project-bottom-bar > div:nth-child(2) {
+                display: none !important;
+            }
+
+            .project-cards-grid .project-bottom-bar > div span:first-child {
+                font-size: 0.48rem !important;
+                margin-bottom: 0.05rem !important;
+            }
+
+            .project-cards-grid .project-bottom-bar > div div {
+                font-size: 0.68rem !important;
+            }
+
+            .project-cards-grid .project-bottom-bar > div div span {
+                font-size: 0.48rem !important;
+            }
+
+            /* Compact outcome table */
+            .outcome-section .table-container {
+                box-shadow: none !important;
+                margin-bottom: 0 !important;
+                max-width: none !important;
+                width: 100% !important;
+                overflow: visible !important;
+                zoom: 0.94;
+            }
+
+            .outcome-section table {
+                table-layout: fixed !important;
+                max-width: none !important;
+                width: 100% !important;
+            }
+
+            .outcome-section .th-rank,
+            .outcome-section .col-rank {
+                width: 5% !important;
+            }
+
+            .outcome-section .th-project,
+            .outcome-section .col-project {
+                width: 33% !important;
+            }
+
+            .outcome-section .th-budget,
+            .outcome-section .col-cost {
+                width: 9% !important;
+            }
+
+            .outcome-section .th-points,
+            .outcome-section .col-points {
+                width: 12% !important;
+            }
+
+            .outcome-section .th-efficiency,
+            .outcome-section .col-efficiency {
+                width: 9% !important;
+            }
+
+            .outcome-section .th-status,
+            .outcome-section .col-status {
+                width: 4% !important;
+            }
+
+            .outcome-section .th-coverage,
+            .outcome-section .col-coverage {
+                width: 10% !important;
+            }
+
+            .outcome-section .th-budget-flow,
+            .outcome-section .col-budget-flow {
+                width: 18% !important;
+            }
+
+            .outcome-section .table-container table {
+                font-size: 0.66rem !important;
+                line-height: 1.1 !important;
+            }
+
+            .outcome-section .table-container th {
+                padding: 0.14rem 0.2rem !important;
+                font-size: 0.56rem !important;
+                letter-spacing: 0.02em !important;
+            }
+
+            .outcome-section .table-container td {
+                padding: 0.16rem 0.22rem !important;
+            }
+
+            .outcome-section .col-rank {
+                font-size: 0.9rem !important;
+            }
+
+            .outcome-section .col-id {
+                font-size: 0.54rem !important;
+                margin-right: 0.22rem !important;
+            }
+
+            .outcome-section .col-project {
+                white-space: normal !important;
+            }
+
+            .outcome-section .col-project > div {
+                display: block !important;
+            }
+
+            .outcome-section .col-title {
+                display: inline !important;
+                max-width: none !important;
+                font-size: 0.62rem !important;
+                line-height: 1.15 !important;
+                white-space: normal !important;
+                overflow: visible !important;
+                text-overflow: clip !important;
+            }
+
+            .outcome-section .col-cost,
+            .outcome-section .col-efficiency,
+            .outcome-section .col-status {
+                font-size: 0.6rem !important;
+            }
+
+            .outcome-section .col-points > div:first-child {
+                font-size: 0.78rem !important;
+            }
+
+            .outcome-section .col-points > div:last-child {
+                font-size: 0.5rem !important;
+                line-height: 1 !important;
+            }
+
+            .outcome-section .col-coverage > div:first-child {
+                font-size: 0.58rem !important;
+            }
+
+            .outcome-section .col-coverage > div:last-child {
+                height: 3px !important;
+                margin-top: 2px !important;
+            }
+
+            .outcome-section .budget-flow-stack {
+                gap: 0.12rem !important;
+            }
+
+            .outcome-section .budget-flow-bar {
+                height: 10px !important;
+                border: 1px solid #c8c8c8 !important;
+                border-radius: 3px !important;
+                overflow: hidden !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .outcome-section .budget-flow-labels {
+                font-size: 0.5rem !important;
+                line-height: 1 !important;
+                color: #666 !important;
+            }
+
+            .outcome-section .status-pill {
+                font-size: 0.72rem !important;
+                padding: 0 !important;
+                background: transparent !important;
+                border-radius: 0 !important;
+                letter-spacing: 0 !important;
+            }
+        }
+
+        .print-actions {
+            text-align: center;
+            margin: var(--spacing-lg) 0;
+        }
+
+        .print-btn {
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            padding: var(--spacing-sm) var(--spacing-lg);
+            border-radius: 8px;
+            font-family: var(--font-mono);
+            font-size: var(--fs-sm);
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: all 0.2s ease;
+        }
+
+        .print-btn:hover {
+            background: #355a7a;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(69, 123, 157, 0.3);
+        }
+    </style>
+    <script>
+        // Apply theme before body renders
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            if (savedTheme === 'light') {
+                document.documentElement.className = 'light-mode';
+            }
+        })();
+    </script>
+</head>
+
+<body>
+    <div class="print-doc-logo">KK26_Quttig</div>
+
+    <button class="theme-toggle" onclick="toggleTheme()" title="Design umschalten">
+        <span class="icon-moon">🌙</span>
+        <span class="icon-sun" style="display: none;">☀️</span>
+    </button>
+
+    <nav class="nav-toggle">
+        <a href="index.html" class="nav-link">Persönlich</a>
+        <a href="projects.html" class="nav-link">Projekte</a>
+        <a href="outcomes.html" class="nav-link">Outcome-Tabelle</a>
+        <a href="personal_report.html" class="nav-link active">Druckansicht</a>
+    </nav>
+
+    <div class="page-header">
+        <div class="brand-logo">KK26_Quttig</div>
+        <h1>Druckansicht</h1>
+        <p id="voter-name-display"></p>
+    </div>
+
+    <div class="voter-selector" id="voter-selector"></div>
+
+    <div class="print-actions">
+        <button class="print-btn" onclick="window.print()">🖨️ Drucken / Als PDF speichern</button>
+    </div>
+
+        <div class="print-container">
+        <!-- Personal Receipt Section -->
+        <div class="print-section personal-receipt-section">
+            <h2 class="section-title">
+                <span class="section-title-line">
+                    <span class="format-badge">A</span>
+                    <span>Persönliche Quittung</span>
+                </span>
+            </h2>
+            <div id="personal-receipt-container"></div>
+        </div>
+
+        <!-- Project Cards Section -->
+        <div class="print-section">
+            <h2 class="section-title">
+                <span class="section-title-line">
+                    <span class="format-badge">B</span>
+                    <span>Projektkarten</span>
+                </span>
+                <span class="section-context">Ihre unterstützten Projekte</span>
+            </h2>
+            <div class="project-cards-grid" id="project-cards-container"></div>
+        </div>
+
+        <!-- Outcome Table Section -->
+        <div class="print-section outcome-section">
+            <h2 class="section-title" id="outcome-title">
+                <span class="section-title-line">
+                    <span class="format-badge">C</span>
+                    <span>Outcome-Tabelle</span>
+                </span>
+                <span class="section-context" id="outcome-context">Gruppe</span>
+            </h2>
+            <div id="outcome-table-container"></div>
+        </div>
+
+        <!-- Survey Section -->
+        <div class="print-section survey-section">
+            <h2 class="section-title">Kurze Befragung</h2>
+            <p class="survey-intro">Bitte bewerten Sie die drei Ergebnisformate A, B und C. So verstehen wir besser, welche Darstellungen für Teilnehmende besonders nützlich sind.</p>
+            <p class="survey-scale-note">Skala: 1 = stimme gar nicht zu, 7 = stimme voll zu</p>
+
+            <div class="survey-format-block">
+                <h3 class="survey-format-title">
+                    <span class="survey-title-line">
+                        <span class="format-badge">A</span>
+                        <span>Persönliche Quittung</span>
+                    </span>
+                </h3>
+                <div class="survey-scale-block">
+                    <div class="survey-inline-scale survey-inline-scale-header">
+                        <div class="survey-inline-label">Aussage</div>
+                        <span class="survey-inline-tick">1</span>
+                        <span class="survey-inline-tick">2</span>
+                        <span class="survey-inline-tick">3</span>
+                        <span class="survey-inline-tick">4</span>
+                        <span class="survey-inline-tick">5</span>
+                        <span class="survey-inline-tick">6</span>
+                        <span class="survey-inline-tick">7</span>
+                    </div>
+                    <div class="survey-inline-scale survey-inline-scale-row">
+                        <div class="survey-inline-label">Dieses Format half mir zu verstehen, warum manche Projekte finanziert wurden und andere nicht.</div>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                    </div>
+                    <div class="survey-inline-scale survey-inline-scale-row">
+                        <div class="survey-inline-label">Dieses Format half mir zu verstehen, wie sich meine eigene Stimme auf das Ergebnis auswirkte.</div>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                    </div>
+                    <div class="survey-inline-scale survey-inline-scale-row">
+                        <div class="survey-inline-label">Dieses Format machte den Prozess für mich transparent.</div>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="survey-format-block">
+                <h3 class="survey-format-title">
+                    <span class="survey-title-line">
+                        <span class="format-badge">B</span>
+                        <span>Projektkarten</span>
+                    </span>
+                </h3>
+                <div class="survey-scale-block">
+                    <div class="survey-inline-scale survey-inline-scale-header">
+                        <div class="survey-inline-label">Aussage</div>
+                        <span class="survey-inline-tick">1</span>
+                        <span class="survey-inline-tick">2</span>
+                        <span class="survey-inline-tick">3</span>
+                        <span class="survey-inline-tick">4</span>
+                        <span class="survey-inline-tick">5</span>
+                        <span class="survey-inline-tick">6</span>
+                        <span class="survey-inline-tick">7</span>
+                    </div>
+                    <div class="survey-inline-scale survey-inline-scale-row">
+                        <div class="survey-inline-label">Dieses Format half mir zu verstehen, warum manche Projekte finanziert wurden und andere nicht.</div>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                    </div>
+                    <div class="survey-inline-scale survey-inline-scale-row">
+                        <div class="survey-inline-label">Dieses Format half mir zu verstehen, wie sich meine eigene Stimme auf das Ergebnis auswirkte.</div>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                    </div>
+                    <div class="survey-inline-scale survey-inline-scale-row">
+                        <div class="survey-inline-label">Dieses Format machte den Prozess für mich transparent.</div>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="survey-format-block">
+                <h3 class="survey-format-title">
+                    <span class="survey-title-line">
+                        <span class="format-badge">C</span>
+                        <span>Outcome-Tabelle</span>
+                    </span>
+                </h3>
+                <div class="survey-scale-block">
+                    <div class="survey-inline-scale survey-inline-scale-header">
+                        <div class="survey-inline-label">Aussage</div>
+                        <span class="survey-inline-tick">1</span>
+                        <span class="survey-inline-tick">2</span>
+                        <span class="survey-inline-tick">3</span>
+                        <span class="survey-inline-tick">4</span>
+                        <span class="survey-inline-tick">5</span>
+                        <span class="survey-inline-tick">6</span>
+                        <span class="survey-inline-tick">7</span>
+                    </div>
+                    <div class="survey-inline-scale survey-inline-scale-row">
+                        <div class="survey-inline-label">Dieses Format half mir zu verstehen, warum manche Projekte finanziert wurden und andere nicht.</div>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                    </div>
+                    <div class="survey-inline-scale survey-inline-scale-row">
+                        <div class="survey-inline-label">Dieses Format half mir zu verstehen, wie sich meine eigene Stimme auf das Ergebnis auswirkte.</div>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                    </div>
+                    <div class="survey-inline-scale survey-inline-scale-row">
+                        <div class="survey-inline-label">Dieses Format machte den Prozess für mich transparent.</div>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                        <span class="survey-circle"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="survey-question-card survey-overall-card">
+                <h3 class="survey-question-title">Gesamtwirkung</h3>
+                <div class="survey-inline-scale survey-inline-scale-header">
+                    <div class="survey-inline-label">Aussage</div>
+                    <span class="survey-inline-tick">1</span>
+                    <span class="survey-inline-tick">2</span>
+                    <span class="survey-inline-tick">3</span>
+                    <span class="survey-inline-tick">4</span>
+                    <span class="survey-inline-tick">5</span>
+                    <span class="survey-inline-tick">6</span>
+                    <span class="survey-inline-tick">7</span>
+                </div>
+                <div class="survey-inline-scale survey-inline-scale-row">
+                    <div class="survey-inline-label">Die Kombination dieser drei Formate hat mein Vertrauen in das Abstimmungsergebnis gestärkt.</div>
+                    <span class="survey-circle"></span>
+                    <span class="survey-circle"></span>
+                    <span class="survey-circle"></span>
+                    <span class="survey-circle"></span>
+                    <span class="survey-circle"></span>
+                    <span class="survey-circle"></span>
+                    <span class="survey-circle"></span>
+                </div>
+            </div>
+
+            <div class="survey-question-card">
+                <h3 class="survey-question-title">Formatkombination</h3>
+                <p class="survey-question-text">Welche Kombination von Ergebnisformaten wäre für Sie am nützlichsten?</p>
+                <ul class="survey-options">
+                    <li class="survey-option"><span class="survey-box"></span><span class="survey-option-label"><span class="survey-option-code">A</span><span class="survey-option-text">Persönliche Quittung</span></span></li>
+                    <li class="survey-option"><span class="survey-box"></span><span class="survey-option-label"><span class="survey-option-code">B</span><span class="survey-option-text">Projektkarten</span></span></li>
+                    <li class="survey-option"><span class="survey-box"></span><span class="survey-option-label"><span class="survey-option-code">C</span><span class="survey-option-text">Outcome-Tabelle</span></span></li>
+                    <li class="survey-option"><span class="survey-box"></span><span class="survey-option-label"><span class="survey-option-code">A + B</span><span class="survey-option-text">Persönliche Quittung + Projektkarten</span></span></li>
+                    <li class="survey-option"><span class="survey-box"></span><span class="survey-option-label"><span class="survey-option-code">A + C</span><span class="survey-option-text">Persönliche Quittung + Outcome-Tabelle</span></span></li>
+                    <li class="survey-option"><span class="survey-box"></span><span class="survey-option-label"><span class="survey-option-code">B + C</span><span class="survey-option-text">Projektkarten + Outcome-Tabelle</span></span></li>
+                    <li class="survey-option"><span class="survey-box"></span><span class="survey-option-label"><span class="survey-option-code">A + B + C</span><span class="survey-option-text">Alle drei</span></span></li>
+                </ul>
+            </div>
+
+            <div class="survey-question-card">
+                <h3 class="survey-question-title">Offene Frage</h3>
+                <p class="survey-question-text">Bitte begründen Sie Ihre Wahl kurz. Welche Information oder Formatkombination war für Sie am nützlichsten und warum?</p>
+                <div class="survey-lines">
+                    <div class="survey-line"></div>
+                    <div class="survey-line"></div>
+                    <div class="survey-line"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer
+        style="text-align: center; margin: 4rem auto 2rem; padding: 2rem; border-top: 1px solid var(--filter-border); max-width: 800px; color: var(--text-dim); font-size: 0.85rem; line-height: 1.6;">
+        <p>Die Wähler-Quittung Plattform wurde vom Forschungspartner des Kultur Komitees entwickelt:<br><strong>Joshua C.
+                Yang</strong> (ETH Zürich, <a href="mailto:joyang@ethz.ch"
+                style="color: var(--text-muted); text-decoration: underline;">joyang@ethz.ch</a>)</p>
+    </footer>
+
+    <!-- Load the original scripts to reuse their functions -->
+    <script src="script.js"></script>
+    <script src="projects.js"></script>
+    <script src="outcomes.js"></script>
+
+    <script>
+        // Get voter from URL parameter
+        let currentVoterId = new URLSearchParams(window.location.search).get('voter');
+
+        // Load data when ready
+        document.addEventListener('DOMContentLoaded', function() {
+            const data = window.KK26_PROJECTS;
+            if (!data || !data.voter_receipts || !data.voter_receipts.length) return;
+
+            const validVoterIds = new Set(data.voter_receipts.map(v => v.voter_id));
+            if (!currentVoterId || !validVoterIds.has(currentVoterId)) {
+                currentVoterId = data.voter_receipts[0].voter_id;
+            }
+
+            renderVoterSelector(data, currentVoterId);
+            loadPersonalReport(currentVoterId, data);
+        });
+
+        function loadPersonalReport(voterId, data) {
+            const voterReceipt = data.voter_receipts.find(v => v.voter_id === voterId);
+            if (!voterReceipt) {
+                document.querySelector('.print-container').innerHTML =
+                    '<p style="text-align: center; color: var(--text-dim);">Wähler nicht gefunden.</p>';
+                return;
+            }
+
+            currentVoterId = voterId;
+            updateSelectedVoter(voterReceipt.voter_id);
+            updateUrlForVoter(voterReceipt.voter_id);
+
+            // Update voter name in header
+            document.getElementById('voter-name-display').textContent = voterReceipt.voter_id + ' | Gruppe: ' + voterReceipt.group;
+            document.getElementById('outcome-context').textContent = 'Gruppe ' + voterReceipt.group;
+
+            // 1. Render Personal Receipt using renderReceipt() from script.js
+            const personalReceiptContainer = document.getElementById('personal-receipt-container');
+            personalReceiptContainer.innerHTML = '';
+            const personalReceipt = renderReceipt(voterReceipt);
+            personalReceiptContainer.appendChild(personalReceipt);
+
+            // 2. Render ALL Project Cards for projects this voter funded
+            const projectCardsContainer = document.getElementById('project-cards-container');
+            projectCardsContainer.innerHTML = '';
+
+            // Find all projects this voter contributed to
+            const voterProjectIds = voterReceipt.items
+                .filter(item => item.funded)
+                .map(item => item.project_id);
+
+            // Get full project data for these projects
+            const voterProjects = data.project_receipts.filter(p =>
+                p.group === voterReceipt.group &&
+                voterProjectIds.includes(p.project_id)
+            );
+
+            // Sort by rank (same as original)
+            voterProjects.sort((a, b) => (a.rank || 999) - (b.rank || 999));
+
+            // Render each project using renderProjectReceipt() from projects.js
+            voterProjects.forEach(project => {
+                const projectCard = renderProjectReceipt(project, {}, project.rank);
+                compactProjectCardForPrint(projectCard);
+                projectCardsContainer.appendChild(projectCard);
+            });
+
+            // 3. Render Outcome Table
+            window.renderOutcomeTableForGroup(voterReceipt.group);
+        }
+
+        function renderVoterSelector(data, selectedVoterId) {
+            const selector = document.getElementById('voter-selector');
+            if (!selector) return;
+
+            const sortedVoters = [...data.voter_receipts].sort((a, b) =>
+                a.group.localeCompare(b.group, 'de') || a.voter_id.localeCompare(b.voter_id, 'de')
+            );
+
+            selector.innerHTML = sortedVoters.map(voter => `
+                <button
+                    type="button"
+                    class="voter-chip group-${voter.group}${voter.voter_id === selectedVoterId ? ' active' : ''}"
+                    data-voter-id="${voter.voter_id}"
+                    onclick="selectVoter('${voter.voter_id}')"
+                >
+                    ${voter.voter_id}
+                </button>
+            `).join('');
+        }
+
+        function updateSelectedVoter(selectedVoterId) {
+            document.querySelectorAll('.voter-chip').forEach(chip => {
+                chip.classList.toggle('active', chip.dataset.voterId === selectedVoterId);
+            });
+        }
+
+        function updateUrlForVoter(voterId) {
+            const url = new URL(window.location.href);
+            url.searchParams.set('voter', voterId);
+            window.history.replaceState({}, '', url);
+        }
+
+        function selectVoter(voterId) {
+            const data = window.KK26_PROJECTS;
+            if (!data) return;
+            loadPersonalReport(voterId, data);
+        }
+
+        window.selectVoter = selectVoter;
+
+        function compactProjectCardForPrint(card) {
+            const table = card.querySelector('table.items-table');
+            if (!table) return;
+
+            const supporters = [...table.querySelectorAll('tbody tr')]
+                .map(row => {
+                    const name = row.querySelector('.item-title span:first-child')?.textContent.trim();
+                    const vote = row.querySelector('.item-vote')?.textContent.trim();
+                    if (!name) return null;
+
+                    const voteLabel = vote === '✓✓' ? '[✓✓]' : vote === '✓' ? '[✓]' : '';
+                    return {
+                        name,
+                        voteLabel
+                    };
+                })
+                .filter(Boolean);
+            if (!supporters.length) return;
+
+            const borderedWrapper = table.closest('div');
+            const supportersBlock = borderedWrapper ? borderedWrapper.parentElement : null;
+            if (!supportersBlock) return;
+
+            supportersBlock.innerHTML = `
+                <div class="print-supporters">
+                    <div class="print-supporters-label">Unterstützer:innen (${supporters.length})</div>
+                    <div class="print-supporters-list">
+                        ${supporters.map(({ name, voteLabel }) => `${name}${voteLabel ? ` <span class="print-supporter-vote">${voteLabel}</span>` : ''}`).join(', ')}
+                    </div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+
+</html>

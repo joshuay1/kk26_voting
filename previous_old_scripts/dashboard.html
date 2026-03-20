@@ -1,0 +1,2335 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KK26 Aggregation Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --white: #ffffff;
+            --black: #000000;
+            --text: #222222;
+            --gray-light: #f4f4f4;
+            --gray-border: #ddd;
+            --green: #00c473;
+            --orange: #ffa300;
+            --font: 'Basis Grotesque', 'Helvetica Neue', Arial, sans-serif;
+
+            /* Consistent palette used everywhere (CSS + JS COMBO_COLORS must match) */
+            --gms-color: #2471a3;
+            --gmes-color: #16a085;
+            --lms-color: #c0392b;
+            --lmes-color: #d35400;
+
+            /* group row pastels */
+            --g1-bg: #fff0f0;
+            /* rose */
+            --g2-bg: #f0f7ff;
+            /* sky */
+            --g3-bg: #f0fff7;
+            /* mint */
+            --g4-bg: #fffff0;
+            /* lemon */
+            --g5-bg: #f7f0ff;
+            /* lavender */
+            --g1-hover: #fde0e0;
+            --g2-hover: #ddeeff;
+            --g3-hover: #d9fff0;
+            --g4-hover: #ffffcc;
+            --g5-hover: #ebe0ff;
+        }
+
+        html,
+        body {
+            background: var(--white);
+            color: var(--text);
+            font-family: var(--font);
+            font-size: 16px;
+            line-height: 1.55;
+        }
+
+        /* ── Header ─────────────────────────────────────────────────── */
+        header {
+            border-bottom: 2px solid var(--black);
+            padding: 14px 36px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .logo-sub {
+            font-size: 0.82rem;
+            color: #888;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            margin-left: 14px;
+        }
+
+        /* ── Tabs ─────────────────────────────────────────────────────── */
+        .tab-bar {
+            display: flex;
+            gap: 0;
+            padding: 0 28px;
+            border-bottom: 2px solid #eee;
+            background: #fff;
+        }
+
+        .tab-btn {
+            padding: 14px 26px;
+            font-family: var(--font);
+            font-size: 0.88rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            cursor: pointer;
+            color: #aaa;
+            transition: color 0.15s, border-color 0.15s;
+        }
+
+        .tab-btn:hover {
+            color: #333;
+        }
+
+        .tab-btn.active {
+            color: #111;
+            border-bottom-color: #111;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* ── Voter distribution charts ────────────────────────────────── */
+        .repr-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 24px 28px;
+        }
+
+        .repr-card {
+            background: #fff;
+            border: 1px solid #eee;
+            border-radius: 4px;
+            padding: 16px 20px;
+        }
+
+        .repr-card-title {
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 8px;
+        }
+
+        .repr-chart {
+            height: 220px;
+        }
+
+        /* ── Toolbar ─────────────────────────────────────────────────── */
+        .toolbar {
+            border-bottom: 1px solid var(--gray-border);
+            padding: 12px 36px;
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            background: var(--gray-light);
+            flex-wrap: wrap;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .control-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: #888;
+        }
+
+        /* Group filter buttons */
+        .group-btn {
+            padding: 9px 18px;
+            border: 1px solid var(--gray-border);
+            background: var(--white);
+            font-family: var(--font);
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            color: #888;
+            transition: all 0.15s;
+            margin-right: -1px;
+            position: relative;
+        }
+
+        .group-btn:hover {
+            background: #f0f0f0;
+        }
+
+        .group-btn.active {
+            background: var(--black);
+            color: var(--white);
+            border-color: var(--black);
+            z-index: 1;
+        }
+
+        /* Diff toggle */
+        .diff-toggle {
+            padding: 10px 24px;
+            border: 2px solid var(--black);
+            background: var(--black);
+            color: var(--white);
+            font-family: var(--font);
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            transition: background 0.15s, color 0.15s;
+        }
+
+        .diff-toggle.off {
+            background: var(--white);
+            color: var(--black);
+        }
+
+        .diff-toggle::before {
+            content: '● ';
+            font-size: 0.75em;
+        }
+
+        .diff-toggle.off::before {
+            color: #ccc;
+        }
+
+        .diff-toggle:not(.off)::before {
+            color: var(--orange);
+        }
+
+        /* Column toggles */
+        .column-toggle {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-left: 16px;
+            flex-wrap: wrap;
+        }
+
+        .column-btn {
+            padding: 8px 12px;
+            border: 1.5px solid #dcdfe5;
+            background: #ffffff;
+            border-radius: 18px;
+            font-size: 0.82rem;
+            font-weight: 750;
+            cursor: pointer;
+            color: #555;
+            transition: all 0.15s ease;
+        }
+
+        .column-btn:hover {
+            border-color: #bbb;
+            color: #222;
+        }
+
+        .column-btn.active {
+            color: #fff;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+        }
+
+        .column-btn[data-col="gms"].active {
+            background: var(--gms-color);
+            border-color: var(--gms-color);
+        }
+
+        .column-btn[data-col="gmes"].active {
+            background: var(--gmes-color);
+            border-color: var(--gmes-color);
+        }
+
+        .column-btn[data-col="lms"].active {
+            background: var(--lms-color);
+            border-color: var(--lms-color);
+        }
+
+        .column-btn[data-col="lmes"].active {
+            background: var(--lmes-color);
+            border-color: var(--lmes-color);
+        }
+
+        /* All projects / Reset */
+        .ml-auto {
+            margin-left: auto;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        /* ── Overlaps Force-Directed Chart ───────────────────────────────── */
+        .overlaps-toolbar {
+            border-bottom: 1px solid var(--gray-border);
+            padding: 12px 36px;
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            background: var(--gray-light);
+            flex-wrap: wrap;
+        }
+
+        .overlaps-chart-panel {
+            border: 1px solid var(--gray-border);
+            padding: 20px 24px;
+            display: flex;
+            gap: 20px;
+        }
+
+        #overlaps-chart {
+            flex-grow: 1;
+            height: 600px;
+        }
+
+        .overlaps-stats {
+            width: 300px;
+            flex-shrink: 0;
+            border-left: 1px solid var(--gray-border);
+            padding-left: 20px;
+        }
+
+        /* ── Stats bar ───────────────────────────────────────────────── */
+        .stats-bar {
+            display: flex;
+            gap: 36px;
+            padding: 16px 36px;
+            border-bottom: 1px solid var(--gray-border);
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #888;
+            margin-bottom: 2px;
+        }
+
+        .stat-val {
+            font-size: 1.55rem;
+            font-weight: 700;
+        }
+
+        .stat-val.contested {
+            color: var(--orange);
+        }
+
+        /* ── Main ────────────────────────────────────────────────────── */
+        .main {
+            padding: 28px 36px;
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
+
+        /* ── Chart ───────────────────────────────────────────────────── */
+        .chart-panel {
+            border: 1px solid var(--gray-border);
+            padding: 20px 24px;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+
+        .section-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #555;
+        }
+
+        #group-chart {
+            height: 280px;
+            width: 100%;
+        }
+
+        /* ── Table ───────────────────────────────────────────────────── */
+        .table-panel {
+            border: 1px solid var(--gray-border);
+        }
+
+        .table-header {
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--gray-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--gray-light);
+        }
+
+        .row-count {
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        /* Legend strip */
+        .col-legend {
+            display: flex;
+            gap: 0;
+            padding: 8px 20px;
+            border-bottom: 1px solid var(--gray-border);
+            background: #fafafa;
+        }
+
+        .col-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            color: #555;
+            padding: 0 20px 0 0;
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: var(--font);
+            min-width: 900px;
+        }
+
+        .col-hidden {
+            display: none !important;
+        }
+
+        /* Super-header rows */
+        thead tr.super-header th {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            padding: 10px 12px;
+            text-align: center;
+            border-bottom: 1px solid var(--gray-border);
+        }
+
+        thead tr.super-header th.col-gms {
+            background: color-mix(in srgb, var(--gms-color) 8%, white);
+            border-left: 3px solid var(--gms-color);
+            color: var(--gms-color);
+        }
+
+        thead tr.super-header th.col-gmes {
+            background: color-mix(in srgb, var(--gmes-color) 8%, white);
+            border-left: 3px solid var(--gmes-color);
+            color: var(--gmes-color);
+        }
+
+        thead tr.super-header th.col-lms {
+            background: color-mix(in srgb, var(--lms-color) 8%, white);
+            border-left: 3px solid var(--lms-color);
+            color: var(--lms-color);
+        }
+
+        thead tr.super-header th.col-lmes {
+            background: color-mix(in srgb, var(--lmes-color) 8%, white);
+            border-left: 3px solid var(--lmes-color);
+            color: var(--lmes-color);
+        }
+
+        thead tr.col-header th {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            padding: 9px 12px;
+            border-bottom: 2px solid var(--black);
+            background: var(--white);
+            color: #666;
+            white-space: nowrap;
+        }
+
+        thead tr.col-header th.col-gms {
+            border-left: 3px solid var(--gms-color);
+        }
+
+        thead tr.col-header th.col-gmes {
+            border-left: 3px solid var(--gmes-color);
+        }
+
+        thead tr.col-header th.col-lms {
+            border-left: 3px solid var(--lms-color);
+        }
+
+        thead tr.col-header th.col-lmes {
+            border-left: 3px solid var(--lmes-color);
+        }
+
+        tbody tr td {
+            padding: 11px 12px;
+            border-bottom: 1px solid var(--gray-border);
+            font-size: 0.97rem;
+            vertical-align: middle;
+        }
+
+        /* Column-section borders */
+        td.col-gms {
+            border-left: 3px solid color-mix(in srgb, var(--gms-color) 20%, white);
+        }
+
+        td.col-gmes {
+            border-left: 3px solid color-mix(in srgb, var(--gmes-color) 20%, white);
+        }
+
+        td.col-lms {
+            border-left: 3px solid color-mix(in srgb, var(--lms-color) 20%, white);
+        }
+
+        td.col-lmes {
+            border-left: 3px solid color-mix(in srgb, var(--lmes-color) 20%, white);
+        }
+
+        /* Group row base colors — overridden by diff/agree */
+        tr.g1>td {
+            background: var(--g1-bg);
+        }
+
+        tr.g2>td {
+            background: var(--g2-bg);
+        }
+
+        tr.g3>td {
+            background: var(--g3-bg);
+        }
+
+        tr.g4>td {
+            background: var(--g4-bg);
+        }
+
+        tr.g5>td {
+            background: var(--g5-bg);
+        }
+
+        tr.g1:hover>td {
+            background: var(--g1-hover);
+        }
+
+        tr.g2:hover>td {
+            background: var(--g2-hover);
+        }
+
+        tr.g3:hover>td {
+            background: var(--g3-hover);
+        }
+
+        tr.g4:hover>td {
+            background: var(--g4-hover);
+        }
+
+        tr.g5:hover>td {
+            background: var(--g5-hover);
+        }
+
+
+
+        /* Funding badges */
+        .badge {
+            display: inline-block;
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            padding: 3px 8px;
+        }
+
+        .badge-yes {
+            background: var(--green);
+            color: #fff;
+        }
+
+        .badge-no {
+            background: #e8e8e8;
+            color: #aaa;
+        }
+
+        .badge-diff {
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            margin-left: 5px;
+        }
+
+        /* Score bar */
+        .sbar {
+            position: relative;
+            height: 20px;
+            background: #ebebeb;
+            min-width: 70px;
+        }
+
+        .sbar-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+        }
+
+
+        .sbar-text {
+            position: absolute;
+            top: 0;
+            left: 5px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* Stacked rating bar */
+        .rbar {
+            display: flex;
+            height: 20px;
+            min-width: 120px;
+            overflow: hidden;
+            border-radius: 2px;
+        }
+
+        .rbar-seg {
+            height: 100%;
+            transition: width 0.2s;
+        }
+
+        .rbar-ja {
+            background: #00c473;
+        }
+
+        .rbar-eherja {
+            background: #80ddba;
+        }
+
+        .rbar-ehernein {
+            background: #ffa999;
+        }
+
+        .rbar-nein {
+            background: #e05c4a;
+        }
+
+        .rbar-blank {
+            background: #e8e8e8;
+        }
+
+        /* Group tags — pill in a deeper shade of the row color */
+        .grp-tag {
+            display: inline-block;
+            padding: 2px 9px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+        }
+
+        .grp-1 {
+            background: #f5b7b1;
+            color: #6e2819;
+        }
+
+        .grp-2 {
+            background: #a9cce3;
+            color: #1a3d55;
+        }
+
+        .grp-3 {
+            background: #a9dfbf;
+            color: #1a5433;
+        }
+
+        .grp-4 {
+            background: #f9e79f;
+            color: #5d4b00;
+        }
+
+        .grp-5 {
+            background: #c39bd3;
+            color: #3d1a5c;
+        }
+
+        /* Sortable header */
+        th.sortable {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        th.sortable:hover {
+            background: #f0f0f0 !important;
+        }
+
+        th.sort-asc::after {
+            content: ' ▲';
+            font-size: 0.65em;
+            opacity: 0.7;
+        }
+
+        th.sort-desc::after {
+            content: ' ▼';
+            font-size: 0.65em;
+            opacity: 0.7;
+        }
+
+        /* Overlaps toggles */
+        .overlap-btn {
+            background: #f0f0f0;
+            border: 1px solid #ddd;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 600;
+        }
+
+        .overlap-btn.active {
+            color: #fff;
+            border-color: currentColor;
+        }
+
+        .overlap-btn[data-combo="gms"].active {
+            background: var(--gms-color);
+        }
+
+        .overlap-btn[data-combo="gmes"].active {
+            background: var(--gmes-color);
+        }
+
+        .overlap-btn[data-combo="lms"].active {
+            background: var(--lms-color);
+        }
+
+        .overlap-btn[data-combo="lmes"].active {
+            background: var(--lmes-color);
+        }
+
+        content: ' ▼';
+        font-size: 0.65em;
+        opacity: 0.7;
+        }
+
+        /* Hidden column utility */
+        .hidden-col {
+            display: none;
+        }
+
+        /* ── Receipt tab styles ────────────────────────────── */
+        .receipt-combo-btn {
+            background: #f2f3f5;
+            border: 1.4px solid #dcdfe5;
+            padding: 9px 18px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 750;
+            cursor: pointer;
+            transition: all 0.18s;
+            color: #1f2736;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+        }
+
+        .receipt-combo-btn.active {
+            color: #fff;
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+        }
+
+        .receipt-combo-btn[data-combo="gms"].active {
+            background: var(--gms-color);
+            border-color: var(--gms-color);
+        }
+
+        .receipt-combo-btn[data-combo="gmes"].active {
+            background: var(--gmes-color);
+            border-color: var(--gmes-color);
+        }
+
+        .receipt-combo-btn[data-combo="lms"].active {
+            background: var(--lms-color);
+            border-color: var(--lms-color);
+        }
+
+        .receipt-combo-btn[data-combo="lmes"].active {
+            background: var(--lmes-color);
+            border-color: var(--lmes-color);
+        }
+
+        .voter-pill {
+            padding: 7px 14px;
+            border-radius: 22px;
+            border: 1.4px solid #dcdfe5;
+            background: #f2f3f5;
+            font-size: 0.85rem;
+            font-weight: 750;
+            cursor: pointer;
+            transition: all 0.15s;
+            letter-spacing: .03em;
+            color: #1f2736;
+        }
+
+        .voter-pill.active {
+            background: #222;
+            color: #fff;
+            border-color: #222;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.14);
+        }
+
+        #receipt-content {
+            background: #fafbfc;
+            border: 1px solid #e4e6eb;
+            border-radius: 14px;
+            padding: 16px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.06);
+        }
+
+        .receipt-summary-bar {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+            background: linear-gradient(120deg, #f6f9ff 0%, #f9fbff 100%);
+            border: 1px solid #e2e9ff;
+            border-radius: 12px;
+            padding: 16px 24px;
+            margin-bottom: 24px;
+            font-size: 0.96rem;
+        }
+
+        .receipt-summary-bar .sum-label {
+            color: #7a86a5;
+            font-size: 0.82rem;
+            font-weight: 750;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+        }
+
+        .receipt-summary-bar .sum-value {
+            font-size: 1.6rem;
+            font-weight: 850;
+        }
+
+        .receipt-summary-bar .sum-bar-wrap {
+            flex: 1;
+            background: #e9edff;
+            border-radius: 999px;
+            height: 10px;
+            min-width: 160px;
+        }
+
+        .receipt-summary-bar .sum-bar-fill {
+            height: 10px;
+            border-radius: 999px;
+            transition: width 0.35s ease-out;
+        }
+
+        .receipt-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 1.08rem;
+            margin-bottom: 32px;
+            background: #fff;
+            border: 1.5px solid #e3e8ff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 22px rgba(22, 46, 104, 0.08);
+        }
+
+        .receipt-table th {
+            text-align: left;
+            padding: 14px 14px;
+            border-bottom: 2px solid #e3e8ff;
+            font-size: 1.05rem;
+            font-weight: 850;
+            color: #4c5570;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            background: linear-gradient(180deg, #f8faff 0%, #f2f5ff 100%);
+        }
+
+        .receipt-table td {
+            padding: 14px 16px;
+            border-bottom: 1.5px solid #edf1ff;
+            vertical-align: middle;
+            font-size: 1.08rem;
+            line-height: 1.45;
+        }
+
+        .receipt-table tr:hover td {
+            background: #f6f9ff;
+        }
+
+        .receipt-table .credit-bar-wrap {
+            background: #e1e7ff;
+            border-radius: 999px;
+            height: 10px;
+            width: 110px;
+            display: inline-block;
+            vertical-align: middle;
+            margin-left: 10px;
+        }
+
+        .receipt-table .credit-bar-fill {
+            height: 10px;
+            border-radius: 999px;
+        }
+
+        .not-funded-section {
+            opacity: 0.55;
+            margin-top: 10px;
+        }
+
+        .not-funded-section .receipt-table th {
+            color: #a7b0cf;
+        }
+
+        .receipt-table td.grade-ja {
+            background: #e6f6ec;
+            color: #0f5a30;
+            font-weight: 800;
+        }
+
+        .receipt-table td.grade-eherja {
+            background: #edf8f0;
+            color: #2f6b3d;
+            font-weight: 750;
+        }
+
+        .receipt-table td.grade-ehernein {
+            background: #fff3e6;
+            color: #a45b16;
+            font-weight: 750;
+        }
+
+        .receipt-table td.grade-nein {
+            background: #ffeceb;
+            color: #a72d22;
+            font-weight: 800;
+        }
+
+        .receipt-table .grade-text {
+            font-size: 1rem;
+            font-weight: 820;
+        }
+
+        /* Funding cutoff separator */
+        .cutoff-row td {
+            padding: 0;
+            border: none;
+            background: transparent !important;
+        }
+
+        .cutoff-inner {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 12px;
+        }
+
+        .cutoff-line {
+            flex: 1;
+            height: 1px;
+            background: currentColor;
+            opacity: 0.3;
+        }
+
+        .cutoff-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div>
+            <span class="logo">KK26</span>
+            <span class="logo-sub">Aggregation Results Dashboard</span>
+        </div>
+        <div id="header-stats" style="font-size:0.88rem; color:#888;"></div>
+    </header>
+
+
+    <!-- Stats bar -->
+    <div class="stats-bar" id="stats-bar" style="display:none;"></div>
+
+    <!-- Tab bar -->
+    <div class="tab-bar">
+        <button class="tab-btn active" data-tab="harshness">Harshness</button>
+        <button class="tab-btn" data-tab="rankings">Rankings</button>
+        <button class="tab-btn" data-tab="overlaps">Overlaps</button>
+        <button class="tab-btn" data-tab="analysis">Analysis</button>
+        <button class="tab-btn" data-tab="receipts">Receipts</button>
+    </div>
+
+    <!-- Tab: Analysis -->
+    <div class="tab-content" id="tab-analysis">
+        <div class="main">
+            <!-- Group Representation -->
+            <div class="chart-panel">
+                <div class="panel-header">
+                    <span class="section-title">Group Representation — All 4 Combinations</span>
+                    <span style="font-size:0.8rem;color:#aaa;">Funded projects per group vs. proportional ideal</span>
+                </div>
+                <div style="font-size:0.9rem; color:#555; margin-bottom:16px; line-height:1.5; max-width: 1000px;">
+                    Shows the number of funded projects from each regional group. The background boxes show the
+                    <strong>"fair share"</strong> based on group size. MES ensures a much fairer regional split than a
+                    simple Mean Score.
+                </div>
+                <div id="group-chart"></div>
+            </div>
+        </div>
+        <!-- Voter Representation -->
+        <div class="main" style="padding-top:0;">
+            <div style="display:flex; gap:20px;">
+                <div class="chart-panel" style="flex:1;">
+                    <div class="panel-header">
+                        <span class="section-title">Voter Representation by Winning Outcome</span>
+                        <span style="font-size:0.8rem; color:#aaa;">Number of funded projects each voter approved
+                            (Ja or EherJa) &mdash; n=24 voters</span>
+                    </div>
+                    <div style="font-size:0.9rem; color:#555; margin-bottom:16px; line-height:1.5;">
+                        Shows how many winning projects each voter actively liked ("Ja" or "Eher Ja"). A fairer outcome
+                        means more people get roughly the same number of projects. A flatter curve means voters are
+                        winning a very wide range of projects, leaving some people with almost nothing and others with a
+                        lot.
+                    </div>
+                    <div id="repr-overlay" style="height:350px;"></div>
+                </div>
+                <div class="chart-panel" style="width:340px;">
+                    <div class="panel-header">
+                        <span class="section-title">Gini Coefficient (Inequality)</span>
+                    </div>
+                    <div style="font-size:0.9rem; color:#555; margin-bottom:16px; line-height:1.5;">
+                        Rates the inequality of the chart to the left. A score of 0.0 is perfect equality; higher
+                        numbers are worse. Local MES delivers the fairest outcome for all voters.
+                    </div>
+                    <div id="gini-chart" style="height:350px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab: Receipts -->
+    <div class="tab-content" id="tab-receipts">
+        <div class="main">
+            <div class="chart-panel">
+                <div class="panel-header">
+                    <span class="section-title">Voting Receipts</span>
+                    <span style="font-size:0.8rem;color:#aaa;">How each voter's rating influenced the funded
+                        outcome</span>
+                </div>
+                <div style="font-size:0.9rem;color:#555;margin-bottom:18px;line-height:1.5;max-width:900px;">
+                    For <strong>MES</strong> combinations, shows the exact budget your equal share spent on each funded
+                    project.
+                    For <strong>Score</strong> combinations, shows your proportional influence — how much of each funded
+                    project's winning score came from you.
+                </div>
+
+                <!-- Combo selector -->
+                <div style="margin-bottom:24px;">
+                    <div
+                        style="font-size:0.78rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">
+                        Combination</div>
+                    <div style="display:flex;gap:8px;">
+                        <button class="receipt-combo-btn active" data-combo="gms">Global Score</button>
+                        <button class="receipt-combo-btn" data-combo="gmes">Global MES</button>
+                        <button class="receipt-combo-btn" data-combo="lms">Local Score</button>
+                        <button class="receipt-combo-btn" data-combo="lmes">Local MES</button>
+                    </div>
+                </div>
+
+                <!-- Receipt content -->
+                <div id="receipt-content"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab: Rankings -->
+    <div class="tab-content" id="tab-rankings">
+        <!-- Table -->
+        <div class="table-panel">
+            <div class="table-header">
+                <span class="section-title">Project Rankings — 4-Way Comparison</span>
+                <div id="group-ctrl" style="display:flex; gap:4px; margin-left: 16px;">
+                    <button class="group-btn active" data-group="all">All</button>
+                    <button class="group-btn" data-group="1">G1</button>
+                    <button class="group-btn" data-group="2">G2</button>
+                    <button class="group-btn" data-group="3">G3</button>
+                    <button class="group-btn" data-group="4">G4</button>
+                    <button class="group-btn" data-group="5">G5</button>
+                    <button class="diff-toggle off" id="diff-btn">Diff Only</button>
+                </div>
+                <div id="column-toggle" class="column-toggle">
+                    <span class="control-label" style="margin:0;">Columns</span>
+                    <button class="column-btn" data-col="gms">Global Score</button>
+                    <button class="column-btn" data-col="gmes">Global MES</button>
+                    <button class="column-btn active" data-col="lms">Local Score</button>
+                    <button class="column-btn active" data-col="lmes">Local MES</button>
+                </div>
+                <span class="row-count" id="row-count" style="margin-left:auto;"></span>
+            </div>
+            <div class="col-legend" id="col-legend">
+                <div class="col-legend-item legend-gms">
+                    <div class="legend-dot" style="background:var(--gms-color)"></div>
+                    Global Score
+                </div>
+                <div class="col-legend-item legend-gmes">
+                    <div class="legend-dot" style="background:var(--gmes-color)"></div>
+                    Global MES
+                </div>
+                <div class="col-legend-item legend-lms">
+                    <div class="legend-dot" style="background:var(--lms-color)"></div>
+                    Local Score
+                </div>
+                <div class="col-legend-item legend-lmes">
+                    <div class="legend-dot" style="background:var(--lmes-color)"></div>
+                    Local MES
+                </div>
+            </div>
+            <div class="table-wrap">
+                <table id="results-table">
+                    <colgroup id="results-colgroup"></colgroup>
+                    <thead id="results-thead"></thead>
+                    <tbody id="table-body">
+                        <tr>
+                            <td colspan="13" style="text-align:center;padding:40px;color:#aaa;">Loading…</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- Tab: Overlaps -->
+    <div class="tab-content" id="tab-overlaps">
+        <div class="main" style="padding-top:20px;">
+            <div style="display:flex; gap:20px;">
+                <!-- Left: Chart & Controls -->
+                <div style="flex:1; display:flex; flex-direction:column;">
+                    <div style="padding: 10px 20px;">
+                        <div style="display:flex; gap:12px; align-items:center;">
+                            <span class="section-title" style="margin-right:12px;">Combinations Context:</span>
+                            <button class="overlap-btn active" data-combo="gms">Global Score</button>
+                            <button class="overlap-btn" data-combo="gmes">Global MES</button>
+                            <button class="overlap-btn" data-combo="lms">Local Score</button>
+                            <button class="overlap-btn" data-combo="lmes">Local MES</button>
+                            <span style="font-size:0.8rem; color:#888; margin-left:auto;">Toggle methods to watch
+                                clusters reorganize. (Scroll to zoom, drag to pan.)</span>
+                        </div>
+                    </div>
+                    <div id="overlaps-chart" style="flex:1; height:90vh; min-height:750px;"></div>
+                </div>
+                <!-- Right: Stats -->
+                <div class="chart-panel" style="width:340px; padding:20px; overflow-y:auto; max-height:90vh;">
+                    <div class="panel-header">
+                        <span class="section-title">Intersection Stats</span>
+                    </div>
+                    <div id="overlaps-stats-container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab: Harshness -->
+    <div class="tab-content active" id="tab-harshness">
+        <div class="main" style="padding-top:20px;">
+            <div style="display:flex; gap:20px;">
+                <div class="chart-panel" style="flex:1; padding:20px;">
+                    <div class="panel-header">
+                        <span class="section-title">Distribution of Scores per Group</span>
+                    </div>
+                    <div style="font-size:0.9rem; color:#555; margin-bottom:16px; line-height:1.5;">
+                        Shows how strictly each group graded their projects. The diamond is the group average. Groups
+                        that vote "harsher" (lower average) are heavily disadvantaged if all projects compete globally
+                        instead of locally.
+                    </div>
+                    <div id="harshness-box" style="height:450px;"></div>
+                </div>
+                <div class="chart-panel" style="flex:1; padding:20px;">
+                    <div class="panel-header">
+                        <span class="section-title">Composition of Votes Cast</span>
+                    </div>
+                    <div style="font-size:0.9rem; color:#555; margin-bottom:16px; line-height:1.5;">
+                        Breaks down exactly how often each group used each rating. Some groups give lots of extreme "Ja"
+                        or "Nein" votes, while others stick to the moderate options.
+                    </div>
+                    <div id="harshness-bar" style="height:450px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ── state ────────────────────────────────────────────────────────
+        let allData = [];
+        let chart = null;
+        let state = {
+            group: 'all',   // 'all' | '1' | '2' | '3' | '4' | '5'
+            diffOnly: false,
+            sortBy: 'mean', // 'mean' | 'gms' | 'gmes' | 'lms' | 'lmes'
+            sortDir: 1,     // default sorting behavior: ranks are lowest-is-best (asc),  mean is highest-is-best
+            columnVisibility: { gms: false, gmes: false, lms: true, lmes: true }
+        };
+        let activeOverlaps = ['lms', 'lmes'];
+        let overlapsChart = null;
+        let harshnessStats = null;
+        let harshnessBox = null;
+        let harshnessBar = null;
+        let receiptsData = null;
+        // ...existing code...
+
+        // ── init ─────────────────────────────────────────────────────────
+        async function init() {
+            const [dataResp, reprResp, harshResp, receiptResp] = await Promise.all([
+                fetch('data.json'),
+                fetch('voter_repr.json'),
+                fetch('group_stats.json'),
+                fetch('receipts.json')
+            ]);
+            allData = await dataResp.json();
+            const voterRepr = await reprResp.json();
+            harshnessStats = await harshResp.json();
+            receiptsData = await receiptResp.json();
+
+            setupListeners();
+            setupTabs();
+            chart = echarts.init(document.getElementById('group-chart'), null, { renderer: 'svg' });
+            initGiniChart(voterRepr);
+            initReprCharts(voterRepr);
+            initHarshnessCharts();
+            initReceiptsTab();
+            render();
+        }
+
+        // ── Tab switching ─────────────────────────────────────────────────
+        function setupTabs() {
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const tab = btn.dataset.tab;
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    btn.classList.add('active');
+                    document.getElementById('tab-' + tab).classList.add('active');
+                    // Resize charts after tab becomes visible
+                    setTimeout(() => {
+                        if (chart) chart.resize();
+                        if (reprOverlay) reprOverlay.resize();
+                        if (giniChart) giniChart.resize();
+                        if (overlapsChart) overlapsChart.resize();
+                        if (harshnessBox) harshnessBox.resize();
+                        if (harshnessBar) harshnessBar.resize();
+                        if (tab === 'overlaps' && !overlapsChart) {
+                            initOverlapsChart();
+                        }
+                        if (tab === 'harshness' && !harshnessBox) {
+                            initHarshnessCharts();
+                        }
+                    }, 10);
+                });
+            });
+        }
+
+        // ── Receipts Tab ──────────────────────────────────────────────────
+        let receiptState = { combo: 'lmes' };
+        function initReceiptsTab() {
+            if (!receiptsData) return;
+
+            // Wire combo buttons
+            document.querySelectorAll('.receipt-combo-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.receipt-combo-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    receiptState.combo = btn.dataset.combo;
+                    renderReceipt();
+                });
+            });
+
+            // Default to Local MES
+            document.querySelectorAll('.receipt-combo-btn').forEach(b => b.classList.remove('active'));
+            const defaultBtn = document.querySelector('.receipt-combo-btn[data-combo="lmes"]');
+            if (defaultBtn) defaultBtn.classList.add('active');
+
+            renderReceipt();
+        }
+
+        function gradeClass(grade) {
+            if (grade === 'Ja') return 'grade-ja';
+            if (grade === 'EherJa') return 'grade-eherja';
+            if (grade === 'EherNein') return 'grade-ehernein';
+            if (grade === 'Nein') return 'grade-nein';
+            return '';
+        }
+        function gradeLabel(grade) {
+            const map = { Ja: '✓ Ja', EherJa: '~ EherJa', EherNein: '~ EherNein', Nein: '✗ Nein' };
+            return map[grade] || '';
+        }
+
+        function stdDev(arr) {
+            if (arr.length < 2) return 0;
+            const mean = arr.reduce((a, b) => a + b, 0) / arr.length;
+            return Math.sqrt(arr.reduce((s, x) => s + (x - mean) ** 2, 0) / arr.length);
+        }
+
+        function renderReceipt() {
+            const container = document.getElementById('receipt-content');
+            if (!receiptsData) { container.innerHTML = ''; return; }
+
+            const combo = receiptState.combo;
+            const comboData = receiptsData.combinations[combo];
+            const isMES = comboData.method === 'MES';
+            const color = COMBO_COLORS[combo];
+            const winners = new Set(comboData.winners);
+            const nTotalVoters = receiptsData.voters.length;
+
+            const supportSummary = (comboKey, projectId, voters, endowmentPerVoter) => {
+                const data = receiptsData.combinations[comboKey];
+                if (!data) return [];
+                return voters.map(v => ({
+                    voter: v,
+                    credit: (data.voters?.[v]?.credits || {})[projectId] || 0,
+                    grade: (data.voters?.[v]?.raw_votes || {})[projectId],
+                    remaining: endowmentPerVoter != null
+                        ? Math.max(0, endowmentPerVoter - (data.voters?.[v]?.total_spent || 0))
+                        : null
+                })).filter(r => r.grade).sort((a, b) => b.credit - a.credit).slice(0, 3);
+            };
+
+            // ── Stats ─────────────────────────────────────────────────────
+            const allVotersForCombo = Object.keys(comboData.voters || {});
+            const votersWithBallots = allVotersForCombo.filter(v => {
+                const rv = comboData.voters[v]?.raw_votes || {};
+                return Object.keys(rv).length > 0;
+            });
+            const pool = votersWithBallots.length ? votersWithBallots : allVotersForCombo;
+            const spentArr = pool.map(v => comboData.voters[v]?.total_spent || 0);
+            const meanSpent = spentArr.reduce((a, b) => a + b, 0) / Math.max(spentArr.length, 1);
+            const sdSpent = stdDev(spentArr);
+            const minSpent = spentArr.length ? Math.min(...spentArr) : 0;
+            const maxSpent = spentArr.length ? Math.max(...spentArr) : 0;
+            const endowmentAll = comboData.scope === 'Local'
+                ? comboData.budget / Math.max(allVotersForCombo.length, 1)
+                : comboData.budget / Math.max(receiptsData.voters.length, 1);
+            const fullyExhausted = spentArr.filter(s => Math.abs(s - endowmentAll) < 0.01).length;
+
+            const statsLabel = isMES ? 'budget spent' : 'influence';
+            const statsHTML = `
+                <div style="display:flex;gap:20px;flex-wrap:wrap;margin-bottom:22px;">
+                    ${[
+                    ['Mean ' + statsLabel, meanSpent.toFixed(3)],
+                    ['Std Dev', sdSpent.toFixed(3)],
+                    ['Min', minSpent.toFixed(3)],
+                    ['Max', maxSpent.toFixed(3)],
+                    isMES ? ['Fully exhausted', `${fullyExhausted}/${pool.length || 0}`] : null
+                ].filter(Boolean).map(([label, val]) => `
+                        <div style="background:#f5f6f7;border-radius:8px;padding:10px 16px;min-width:100px;border:1px solid #e4e6eb;">
+                            <div style="font-size:0.7rem;font-weight:700;color:#aaa;text-transform:uppercase;margin-bottom:2px;">${label}</div>
+                            <div style="font-size:1.25rem;font-weight:800;color:${color}">${val}</div>
+                        </div>`).join('')}
+                </div>`;
+
+            const groupSections = Object.keys(receiptsData.groups_meta).sort().map(gid => {
+                const groupMeta = receiptsData.groups_meta[gid];
+                const voters = groupMeta.voters;
+
+                let projectsToShow;
+                if (comboData.scope === 'Local') {
+                    projectsToShow = comboData.winners.filter(p => groupMeta.projects.includes(p));
+                } else {
+                    projectsToShow = comboData.winners.filter(p =>
+                        voters.some(v => !!(comboData.voters[v]?.raw_votes?.[p]))
+                    );
+                }
+
+                const nVoters = voters.length;
+                const budgetLabel = comboData.scope === 'Local'
+                    ? `${comboData.budget} (group budget)`
+                    : `${comboData.budget} (global budget)`;
+                const endowment = comboData.scope === 'Local'
+                    ? comboData.budget / nVoters
+                    : comboData.budget / nTotalVoters;
+                const endowmentDenomLabel = comboData.scope === 'Local'
+                    ? `${nVoters} voters in group ${gid}`
+                    : `${nTotalVoters} voters overall`;
+                const explainMES = `
+                    <div style="background:#f8f9fb;border:1px solid #e3e5ea;padding:12px 16px;border-radius:10px;margin-bottom:16px;font-size:0.88rem;line-height:1.6;color:#3a3f4a;">
+                        <strong>Group ${gid} — slots</strong>: Total budget <strong>${budgetLabel}</strong> divided across ${endowmentDenomLabel},
+                        giving <strong>${endowment.toFixed(2)} slots</strong> per voter.
+                    </div>`;
+                const explainScore = `
+                    <div style="background:#f8f9fb;border:1px solid #e3e5ea;padding:12px 16px;border-radius:10px;margin-bottom:16px;font-size:0.88rem;line-height:1.6;color:#3a3f4a;">
+                        <strong>Group ${gid} — influence</strong>: Shows each voter's proportional contribution to the funded projects' scores.
+                    </div>`;
+
+                const doCompare = combo === 'lmes' && receiptsData.combinations.lms;
+                const lmsCombo = receiptsData.combinations.lms;
+                const lmsEndowment = doCompare && lmsCombo ? (lmsCombo.budget / nVoters) : endowment;
+                const lmsWinners = doCompare ? new Set(lmsCombo.winners.filter(p => groupMeta.projects.includes(p))) : new Set();
+                const lmesWinners = new Set(projectsToShow);
+                const gained = [...lmesWinners].filter(p => !lmsWinners.has(p));
+                const dropped = [...lmsWinners].filter(p => !lmesWinners.has(p));
+
+                const diffs = [];
+                if (doCompare) {
+                    gained.forEach(p => {
+                        const swapped = dropped.shift();
+                        const gainSup = supportSummary('lmes', p, voters, endowment);
+                        const loseSup = swapped ? supportSummary('lms', swapped, voters, lmsEndowment) : [];
+                        const avgRemainGain = gainSup.length ? gainSup.reduce((s, r) => s + (r.remaining ?? 0), 0) / gainSup.length : 0;
+                        const avgRemainLose = loseSup.length ? loseSup.reduce((s, r) => s + (r.remaining ?? 0), 0) / loseSup.length : 0;
+                        const totalGainCred = gainSup.reduce((s, r) => s + r.credit, 0);
+                        const totalLoseCred = loseSup.reduce((s, r) => s + r.credit, 0);
+                        const gainTxt = gainSup.map(s => `${s.voter} (${s.credit.toFixed(2)}, rem ${s.remaining?.toFixed(2) ?? 'n/a'})`).join(', ') || 'broad minor backing';
+                        const loseTxt = loseSup.map(s => `${s.voter} (${s.credit.toFixed(2)}, rem ${s.remaining?.toFixed(2) ?? 'n/a'})`).join(', ') || 'thin support';
+                        let rationale;
+                        if (avgRemainGain < 0.05 && avgRemainLose < 0.05) {
+                            rationale = `Both sides were out of budget; ${String(p).padStart(3,'0')} squeaked in because its backers put slightly more weight on it (${totalGainCred.toFixed(2)} vs ${totalLoseCred.toFixed(2)}).`;
+                        } else if (avgRemainGain > avgRemainLose + 0.05) {
+                            rationale = `MES backers still had some slot left (~${avgRemainGain.toFixed(2)} vs ${avgRemainLose.toFixed(2)}), so their votes counted more when this project came up.`;
+                        } else if (totalGainCred > totalLoseCred + 0.05) {
+                            rationale = `MES picked it because supporters put more total weight here (${totalGainCred.toFixed(2)} vs ${totalLoseCred.toFixed(2)}).`;
+                        } else {
+                            rationale = `MES funded it first in the order because credit was basically tied (${totalGainCred.toFixed(2)} vs ${totalLoseCred.toFixed(2)}).`;
+                        }
+                        diffs.push(`<div style="margin-top:6px;padding:10px 12px;border:1px solid #e5e7eb;border-radius:10px;background:#fff;">
+                            <div style="font-weight:750;color:#1f2736;">MES funded <strong>${String(p).padStart(3,'0')}</strong>${swapped ? ` instead of <strong>${String(swapped).padStart(3,'0')}</strong>` : ''}</div>
+                            <div style="font-size:0.9rem;color:#4a5568;line-height:1.5;">Top MES backers: ${gainTxt}. ${swapped ? `Local Score favored ${String(swapped).padStart(3,'0')} (backers: ${loseTxt}).` : ''}</div>
+                            <div style="margin-top:6px;font-size:0.86rem;color:#566073;">${rationale}</div>
+                        </div>`);
+                    });
+                    if (!diffs.length) {
+                        diffs.push(`<div style="margin-top:6px;padding:10px 12px;border:1px dashed #d8dde5;border-radius:10px;background:#fbfcff;color:#556070;font-size:0.9rem;">Same winners as Local Score for this group.</div>`);
+                    }
+                }
+
+                const maxCredit = Math.max(...voters.flatMap(v =>
+                    Object.values(comboData.voters[v]?.credits || {})
+                ), 0.0001);
+
+                const tableRows = projectsToShow.map(p => {
+                    const pid = String(p).padStart(3, '0');
+                    const voterCells = voters.map(v => {
+                        const vData = comboData.voters[v] || {};
+                        const grade = (vData.raw_votes || {})[p];
+                        const credit = (vData.credits || {})[p] || 0;
+                        const opp = (vData.opposition || {})[p] || 0;
+                        if (!grade) return `<td style="color:#e0e0e0;text-align:center;">—</td>`;
+                        const barPct = Math.min(100, (credit / maxCredit) * 100);
+                        const creditStr = credit > 0
+                            ? `<div style="font-size:0.75rem;font-weight:700;color:${color}">${credit.toFixed(3)}</div>
+                               <div style="background:#eee;border-radius:2px;height:4px;margin-top:2px;">
+                                   <div style="width:${barPct}%;height:4px;background:${color};border-radius:2px;"></div>
+                               </div>`
+                            : opp > 0
+                                ? `<div style="font-size:0.72rem;color:#c0392b;">−${opp.toFixed(3)}</div>`
+                                : `<div style="font-size:0.75rem;color:#ccc;">0</div>`;
+                        return `<td class="${gradeClass(grade)}" style="padding:12px 14px;border-bottom:1px solid #f0f0f0;">
+                            <div class="grade-text">${gradeLabel(grade)}</div>
+                            ${creditStr}
+                        </td>`;
+                    }).join('');
+                    return `<tr>
+                        <td style="padding:6px 10px;border-bottom:1px solid #f0f0f0;font-weight:700;font-size:0.9rem;">${pid}</td>
+                        ${voterCells}
+                    </tr>`;
+                });
+
+                const voterHeaders = voters.map(v => {
+                    const spent = (comboData.voters[v]?.total_spent || 0).toFixed(2);
+                    return `<th style="padding:8px 8px 4px;font-size:0.78rem;color:${color};font-weight:800;">${v}
+                        <div style="font-size:0.7rem;color:${color};font-weight:800;">${isMES ? spent + ' spent' : spent + ' infl.'}</div>
+                    </th>`;
+                }).join('');
+
+                const tableHTML = `
+                    <div style="margin-bottom:6px;font-size:0.78rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.04em;">
+                        ${projectsToShow.length} funded projects — group ${gid} voters: ${voters.join(', ')}
+                    </div>
+                    <div style="overflow-x:auto;">
+                    <table class="receipt-table" style="min-width:600px;">
+                        <thead><tr>
+                            <th style="padding:8px 10px;border-bottom:2px solid #eee;font-size:0.8rem;color:#888;">Project</th>
+                            ${voterHeaders}
+                        </tr></thead>
+                        <tbody>${tableRows.join('')}</tbody>
+                    </table>
+                    </div>`;
+
+                return `
+                    <div style="border:1px solid #e2e4e8;border-radius:14px;padding:16px 16px 8px;margin-bottom:18px;background:linear-gradient(180deg, #fbfbfc 0%, #f4f6f8 100%);box-shadow:0 6px 16px rgba(0,0,0,0.06);">
+                        <div style="font-weight:850;font-size:1.05rem;margin-bottom:8px;color:#1f2736;">Group ${gid}</div>
+                        ${(isMES ? explainMES : explainScore)}
+                        ${(doCompare ? `<div style="margin-bottom:10px;font-size:0.85rem;font-weight:800;color:#c0392b;text-transform:uppercase;letter-spacing:.04em;">What would change with Local Score</div>` + diffs.join('') : '')}
+                        ${tableHTML}
+                    </div>`;
+            });
+
+            container.innerHTML = statsHTML + groupSections.join('');
+        }
+
+        // ── Gini coefficient bar chart ─────────────────────────────────────-
+        let giniChart = null;
+
+        function initGiniChart(voterRepr) {
+            giniChart = echarts.init(document.getElementById('gini-chart'), null, { renderer: 'svg' });
+
+            const reversedCombos = [...COMBOS].reverse();
+            const giniData = reversedCombos.map(c => {
+                const val = (voterRepr[c] || {}).gini || 0;
+                return {
+                    value: val,
+                    itemStyle: { color: COMBO_COLORS[c], opacity: 0.9 },
+                    label: {
+                        show: true,
+                        position: 'right',
+                        formatter: `{c}`,
+                        fontWeight: 700,
+                        fontSize: 12,
+                        color: COMBO_COLORS[c]
+                    }
+                };
+            });
+
+            giniChart.setOption({
+                backgroundColor: '#fff',
+                xAxis: { type: 'value', show: false, max: 0.2 },
+                yAxis: {
+                    type: 'category',
+                    data: reversedCombos.map(c => COMBO_LABELS[c].replace('Global ', 'G ').replace('Local ', 'L ')),
+                    axisLine: { show: false },
+                    axisTick: { show: false },
+                    axisLabel: { fontSize: 11, color: '#666', fontWeight: 600, margin: 12 }
+                },
+                series: [{ type: 'bar', data: giniData, barWidth: 24, itemStyle: { borderRadius: [0, 2, 2, 0] } }],
+                grid: { top: 10, right: 40, bottom: 10, left: 55 }
+            });
+        }
+
+        // ── Voter representation overlay chart ────────────────────────────
+        let reprOverlay = null;
+
+        function initReprCharts(voterRepr) {
+            reprOverlay = echarts.init(document.getElementById('repr-overlay'), null, { renderer: 'svg' });
+
+            // Find global min/max for the continuous x-axis
+            let minX = Infinity, maxX = -Infinity;
+            COMBOS.forEach(c => {
+                const curve = (voterRepr[c] || {}).curve || [];
+                curve.forEach(p => {
+                    if (p.x < minX) minX = p.x;
+                    if (p.x > maxX) maxX = p.x;
+                });
+            });
+
+            const series = COMBOS.map(c => {
+                const curve = (voterRepr[c] || {}).curve || [];
+                return {
+                    name: COMBO_LABELS[c],
+                    type: 'line',
+                    smooth: false, // The KDE points are already perfectly smooth
+                    data: curve.map(p => [p.x, p.y]),
+                    itemStyle: { color: COMBO_COLORS[c] },
+                    lineStyle: { color: COMBO_COLORS[c], width: 2.5 },
+                    areaStyle: { color: COMBO_COLORS[c], opacity: 0.08 },
+                    symbol: 'none' // Hide dots for the 100-point high-res curve
+                };
+            });
+
+            reprOverlay.setOption({
+                backgroundColor: '#fff',
+                legend: {
+                    data: COMBOS.map(c => COMBO_LABELS[c]),
+                    top: 4, right: 12,
+                    textStyle: { fontSize: 12 },
+                    itemWidth: 20, itemHeight: 3
+                },
+                tooltip: {
+                    trigger: 'axis',
+                    formatter: params => {
+                        // The x values are floats (e.g. 11.23), so we just show the nearest integer label
+                        const x = Math.round(params[0].axisValue * 10) / 10;
+                        let html = `<b>~${x} funded projects approved</b><br/>`;
+                        params.forEach(p => {
+                            html += `<span style="color:${p.color}">●</span> ${p.seriesName}: <b>${p.data[1].toFixed(2)}</b> voters<br/>`;
+                        });
+                        return html;
+                    }
+                },
+                xAxis: {
+                    type: 'value',
+                    min: Math.floor(minX),
+                    max: Math.ceil(maxX),
+                    name: '# funded projects approved (Ja / EherJa)',
+                    nameLocation: 'middle',
+                    nameGap: 30,
+                    nameTextStyle: { fontSize: 12, color: '#aaa' },
+                    axisLabel: { fontSize: 12 },
+                    splitLine: { show: false }
+                },
+                yAxis: {
+                    type: 'value',
+                    name: 'Density (Voters)',
+                    nameTextStyle: { fontSize: 12, color: '#aaa' },
+                    minInterval: 1,
+                    splitLine: { lineStyle: { color: '#f0f0f0' } },
+                    axisLabel: { fontSize: 12 }
+                },
+                series,
+                grid: { top: 40, left: 52, right: 16, bottom: 60 }
+            });
+        }
+
+        // ── Overlaps Force-Directed Chart ─────────────────────────────────
+
+        function initOverlapsChart() {
+            const chartDom = document.getElementById('overlaps-chart');
+            overlapsChart = echarts.init(chartDom); // default is canvas
+
+            // Sync button active states with current selection
+            document.querySelectorAll('.overlap-btn').forEach(btn => {
+                const combo = btn.dataset.combo;
+                btn.classList.toggle('active', activeOverlaps.includes(combo));
+            });
+
+            document.querySelectorAll('.overlap-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const combo = e.target.dataset.combo;
+                    e.target.classList.toggle('active');
+                    if (e.target.classList.contains('active')) {
+                        if (!activeOverlaps.includes(combo)) activeOverlaps.push(combo);
+                    } else {
+                        activeOverlaps = activeOverlaps.filter(c => c !== combo);
+                    }
+                    renderOverlaps();
+                });
+            });
+            renderOverlaps();
+        }
+
+        function renderOverlaps() {
+            if (!overlapsChart) return;
+            const projects = Object.values(buildProjectMap());
+
+            const anchorLayout = {
+                1: [[400, 300]],
+                2: [[200, 300], [600, 300]],
+                3: [[400, 100], [200, 450], [600, 450]],
+                4: [[200, 100], [600, 100], [200, 450], [600, 450]]
+            };
+            const layoutPoints = anchorLayout[activeOverlaps.length] || [];
+
+            const nodes = [];
+            const links = [];
+
+            // Create Fixed Anchor Nodes
+            activeOverlaps.forEach((key, i) => {
+                nodes.push({
+                    id: 'anchor_' + key,
+                    name: COMBO_LABELS[key],
+                    fixed: true,
+                    x: layoutPoints[i]?.[0] || 400,
+                    y: layoutPoints[i]?.[1] || 300,
+                    symbolSize: 85,
+                    itemStyle: {
+                        color: COMBO_COLORS[key],
+                        shadowBlur: 10,
+                        shadowColor: COMBO_COLORS[key],
+                        opacity: 0.8
+                    },
+                    label: {
+                        show: true,
+                        fontSize: 14,
+                        fontWeight: 800,
+                        color: '#fff',
+                        position: 'inside', // Center label inside
+                    }
+                });
+            });
+
+            // If 0 overlaps, just render empty
+            if (activeOverlaps.length === 0) {
+                overlapsChart.setOption({ series: [{ type: 'graph', data: [], links: [] }] }, true);
+                document.getElementById('overlaps-stats-container').innerHTML = `<div style="color:#888;">No combinations selected.</div>`;
+                return;
+            }
+
+            const stats = {};
+            let totalFunded = 0;
+
+            // Process Projects
+            projects.forEach(p => {
+                const fundedBy = activeOverlaps.filter(k => p[k + "_funded"] === "Yes");
+                if (fundedBy.length === 0) return; // Only show projects funded by AT LEAST ONE of the active selections
+
+                totalFunded++;
+                const key = fundedBy.map(k => COMBO_LABELS[k]).join(' & ');
+                if (!stats[key]) stats[key] = { count: 0, combos: fundedBy };
+                stats[key].count++;
+
+                const isUnique = fundedBy.length === 1;
+                const isUniversal = fundedBy.length === activeOverlaps.length;
+
+                // Helper to gracefully blend hex colors or assign pure combinations
+                const getClusterColor = (fundedBy) => {
+                    if (fundedBy.length === 1) return COMBO_COLORS[fundedBy[0]];
+                    if (fundedBy.length === activeOverlaps.length) return '#ffffff'; // Pristine clean center cluster
+                    // For pairs/trios, organically sum rgb
+                    let r = 0, g = 0, b = 0;
+                    fundedBy.forEach(k => {
+                        const hex = COMBO_COLORS[k];
+                        r += parseInt(hex.substring(1, 3), 16);
+                        g += parseInt(hex.substring(3, 5), 16);
+                        b += parseInt(hex.substring(5, 7), 16);
+                    });
+                    const count = fundedBy.length;
+                    return "#" + (1 << 24 | (r / count) << 16 | (g / count) << 8 | (b / count)).toString(16).slice(1);
+                };
+
+                const nodeColor = getClusterColor(fundedBy);
+
+                // Size scaling (scale back down as requested)
+                let baseSize = isUnique ? 12 : (isUniversal ? 24 : 18);
+                let finalSize = baseSize + Math.max(0, ((p.mean || 0) - 1.2) * 8);
+
+                nodes.push({
+                    id: 'p_' + p.Project,
+                    name: p.Project,
+                    value: p.mean,
+                    symbolSize: finalSize,
+                    itemStyle: {
+                        color: nodeColor,
+                        borderWidth: 0, // No borders as requested
+                        opacity: isUnique ? 0.8 : 0.95,
+                        shadowBlur: isUniversal ? 15 : 5,
+                        shadowColor: 'rgba(0,0,0,0.15)'
+                    },
+                    _fundedBy: fundedBy
+                });
+
+                // Link to anchors of the sets it's funded by
+                fundedBy.forEach(k => {
+                    links.push({
+                        source: 'p_' + p.Project,
+                        target: 'anchor_' + k,
+                        lineStyle: { width: 1.5, opacity: 0.15, curveness: 0.2, color: COMBO_COLORS[k] }
+                    });
+                });
+            });
+
+            // Render Chart
+            overlapsChart.setOption({
+                tooltip: {
+                    formatter: function (p) {
+                        if (p.dataType === 'node' && !p.data.id.startsWith('anchor_')) {
+                            return `<b>${p.data.name}</b><br/>Mean Score: ${p.data.value.toFixed(2)}<br/>` +
+                                `Funded in:<br/>` + p.data._fundedBy.map(k => `- ${COMBO_LABELS[k]}`).join('<br/>');
+                        }
+                    }
+                },
+                series: [{
+                    type: 'graph',
+                    layout: 'force',
+                    force: {
+                        repulsion: 220,
+                        gravity: 0,
+                        edgeLength: 90,
+                        friction: 0.2
+                    },
+                    roam: true,
+                    data: nodes,
+                    links: links,
+                    label: {
+                        show: true,
+                        position: 'right',
+                        formatter: '{b}',
+                        fontSize: 11,
+                        fontWeight: 600,
+                        color: '#444'
+                        // No borders around fonts as requested
+                    }
+                }]
+            }, true);
+
+            // Dynamically add group annotations after layout stabilizes
+            overlapsChart.off('finished'); // clear old listener
+            overlapsChart.on('finished', function () {
+                const positions = {};
+
+                // Get absolute viewport coordinates of every project node
+                const model = overlapsChart.getModel().getSeriesByIndex(0);
+                const data = model.getData();
+                data.each((idx) => {
+                    const node = data.getItemModel(idx).option;
+                    if (node.id.startsWith('p_')) {
+                        const layout = data.getItemLayout(idx);
+                        // Convert internal graph coordinates to pixel/viewport coords
+                        const pt = overlapsChart.convertToPixel({ seriesIndex: 0 }, layout);
+                        if (!pt) return;
+
+                        // Map node to its set combination signature (e.g. "Global MES & Local MES")
+                        const comboKey = node._fundedBy.map(k => COMBO_LABELS[k]).join(' & ');
+                        if (!positions[comboKey]) positions[comboKey] = { x: 0, y: 0, count: 0 };
+                        positions[comboKey].x += pt[0];
+                        positions[comboKey].y += pt[1];
+                        positions[comboKey].count += 1;
+                    }
+                });
+
+                const graphicElements = [];
+                for (const [combo, pos] of Object.entries(positions)) {
+                    const cx = pos.x / pos.count;
+                    const cy = (pos.y / pos.count) - 35; // Slight lift above cluster center
+                    const textStr = pos.count + (combo.includes('&') ? ' shared' : ' unique');
+
+                    graphicElements.push({
+                        type: 'text',
+                        z: 10,
+                        position: [cx, cy],
+                        style: {
+                            text: textStr,
+                            textAlign: 'center',
+                            textVerticalAlign: 'middle',
+                            font: 'bold 13px sans-serif',
+                            fill: combo.includes('&') ? '#2c3e50' : '#7f8c8d',
+                            stroke: 'rgba(255,255,255,0.8)',
+                            lineWidth: 3
+                        }
+                    });
+                }
+
+                // Add text annotations using ECharts 'graphic'
+                overlapsChart.setOption({
+                    graphic: {
+                        elements: graphicElements
+                    }
+                });
+            });
+
+            // Render Stats
+            const statHtml = Object.keys(stats)
+                .sort((a, b) => stats[b].count - stats[a].count)
+                .map(k => {
+                    const dots = stats[k].combos.map(c => `<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${COMBO_COLORS[c]};margin-right:4px;"></span>`).join('');
+                    return `<div style="display:flex; justify-content:space-between; align-items:center; padding: 10px 0; border-bottom:1px solid #eee;">
+                        <div style="font-size:12px; font-weight:600; color:#555; display:flex; align-items:center;">
+                            ${dots} <span style="margin-left:4px;">${k}</span>
+                        </div>
+                        <div style="font-size:14px; font-weight:700;">${stats[k].count}</div>
+                    </div>`;
+                }).join('');
+
+            document.getElementById('overlaps-stats-container').innerHTML =
+                `<div style="margin-bottom:12px; font-size:13px; color:#555;"><b>${totalFunded}</b> unique projects funded across selected sets.</div>` + statHtml;
+        }
+
+        // ── Build per-project flat object merging all 4 combos ────────────
+        function buildProjectMap() {
+            const map = {};
+            allData.forEach(d => {
+                const id = d.Project;
+                if (!map[id]) map[id] = { Project: id, Group: null, r0: 0, r1: 0, r2: 0, r3: 0 };
+                if (d.Scope === 'Global') {
+                    map[id].gms_rank = d.Rank_MS;
+                    map[id].gms_score = d.Score_MS;
+                    map[id].gms_funded = d.Funded_MS;
+                    map[id].gmes_rank = d.Rank_MES;
+                    map[id].gmes_score = d.Score_MES;
+                    map[id].gmes_funded = d.Funded_MES;
+                    map[id].mean = d.Mean_Score;
+                    map[id].mes_g_score = d.MES_Utility_Global;  // real total MES utility
+                    map[id].apprv = d.Approval_Count;
+                    // rating distribution (same for both scopes, use Global)
+                    map[id].r0 = d.r0 ?? 0;
+                    map[id].r1 = d.r1 ?? 0;
+                    map[id].r2 = d.r2 ?? 0;
+                    map[id].r3 = d.r3 ?? 0;
+                    if (d.Group != null) map[id].Group = d.Group;
+                }
+                if (d.Scope === 'Local') {
+                    map[id].lms_rank = d.Rank_MS;
+                    map[id].lms_score = d.Score_MS;
+                    map[id].lms_funded = d.Funded_MS;
+                    map[id].lmes_rank = d.Rank_MES;
+                    map[id].lmes_score = d.Score_MES;
+                    map[id].lmes_funded = d.Funded_MES;
+                    map[id].mes_l_score = d.MES_Utility_Local;   // real local total MES utility
+                    if (d.Group != null) map[id].Group = d.Group;
+                }
+            });
+            return Object.values(map);
+        }
+
+        // ── Listeners ─────────────────────────────────────────────────────
+        function setupListeners() {
+            document.querySelectorAll('#group-ctrl .group-btn').forEach(btn =>
+                btn.addEventListener('click', e => {
+                    state.group = e.target.dataset.group;
+                    document.querySelectorAll('#group-ctrl .group-btn').forEach(b => b.classList.remove('active'));
+                    e.target.classList.add('active');
+                    render();
+                })
+            );
+            document.getElementById('diff-btn').addEventListener('click', () => {
+                state.diffOnly = !state.diffOnly;
+                document.getElementById('diff-btn').classList.toggle('off', !state.diffOnly);
+                render();
+            });
+            document.querySelectorAll('#column-toggle .column-btn').forEach(btn => {
+                const col = btn.dataset.col;
+                if (!col || state.columnVisibility[col] === undefined) return;
+                btn.classList.toggle('active', !!state.columnVisibility[col]);
+                btn.addEventListener('click', () => {
+                    state.columnVisibility[col] = !state.columnVisibility[col];
+                    render();
+                });
+            });
+            document.addEventListener('click', e => {
+                const th = e.target.closest('th.sortable');
+                if (!th) return;
+                const col = th.dataset.sort;
+                if (state.sortBy === col) {
+                    state.sortDir *= -1;
+                } else {
+                    state.sortBy = col;
+                    state.sortDir = 1; // Always start asc/default on new column click
+                }
+                render();
+            });
+        }
+
+        function updateColumnVisibility() {
+            COMBOS.forEach(c => {
+                const visible = !!state.columnVisibility[c];
+                const legend = document.querySelector('.legend-' + c);
+                if (legend) legend.classList.toggle('col-hidden', !visible);
+                const toggle = document.querySelector('#column-toggle .column-btn[data-col="' + c + '"]');
+                if (toggle) toggle.classList.toggle('active', visible);
+            });
+        }
+
+        // ── Helpers ───────────────────────────────────────────────────────
+        const COMBOS = ['gms', 'gmes', 'lms', 'lmes'];
+        const COMBO_COLORS = {
+            gms: '#2471a3', gmes: '#16a085', lms: '#c0392b', lmes: '#d35400'
+        };
+        const COMBO_LABELS = {
+            gms: 'Global Score', gmes: 'Global MES', lms: 'Local Score', lmes: 'Local MES'
+        };
+
+        function buildColgroup(visibleCombos) {
+            const baseCols = ['<col>', '<col>', '<col>', '<col>', '<col>'];
+            const comboCols = visibleCombos.flatMap(c => [`<col class="col-${c}">`, `<col class="col-${c}">`]);
+            document.getElementById('results-colgroup').innerHTML = baseCols.concat(comboCols).join('');
+        }
+
+        function buildTableHeader(visibleCombos) {
+            const thead = document.getElementById('results-thead');
+            const superCells = [
+                '<th style="background:#fafafa;"></th>',
+                '<th colspan="2" style="background:#fafafa;"></th>',
+                '<th colspan="2" style="background:#fafafa; border-bottom:1px solid #ddd; font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:#777;">Ratings &amp; Scores</th>'
+            ];
+            visibleCombos.forEach(c => {
+                superCells.push(`<th colspan="2" class="col-${c} sortable" data-sort="${c}">${COMBO_LABELS[c]}</th>`);
+            });
+            const subCells = [
+                '<th style="color:#bbb; font-weight:400; width:32px;">#</th>',
+                '<th>ID</th>',
+                '<th>Group</th>',
+                '<th class="sortable" data-sort="mean">Mean ▾</th>',
+                '<th>Ratings</th>'
+            ];
+            visibleCombos.forEach(c => {
+                subCells.push(`<th class="col-${c} sortable" data-sort="${c}">Rank</th>`);
+                subCells.push(`<th class="col-${c}">Status</th>`);
+            });
+            thead.innerHTML = `<tr class="super-header">${superCells.join('')}</tr><tr class="col-header">${subCells.join('')}</tr>`;
+        }
+
+        function isContested(p, combos = COMBOS) {
+            const fundedStates = combos.map(c => p[c + '_funded']).filter(v => v !== undefined);
+            return fundedStates.length > 1 && new Set(fundedStates).size > 1;
+        }
+
+        function allFunded(p) {
+            return COMBOS.every(c => p[c + '_funded'] === 'Yes');
+        }
+
+        const badge = (f) => f === 'Yes'
+            ? '<span class="badge badge-yes">✓ Funded</span>'
+            : '<span class="badge badge-no">No</span>';
+
+        // ── Render ────────────────────────────────────────────────────────
+        function render() {
+            const visibleCombos = COMBOS.filter(c => state.columnVisibility[c]);
+            buildColgroup(visibleCombos);
+            buildTableHeader(visibleCombos);
+            updateColumnVisibility();
+
+            const projects = buildProjectMap();
+
+            // Global stats (always all data)
+            const gData = allData.filter(d => d.Scope === 'Global');
+            const lData = allData.filter(d => d.Scope === 'Local');
+
+            const allFour = projects.filter(p => isContested(p, visibleCombos));
+
+            // Header stat
+            const contestedCount = projects.filter(p => isContested(p, visibleCombos)).length;
+            const comboLabel = visibleCombos.length === 4 ? 'all 4 combinations' : `${visibleCombos.length} selected set${visibleCombos.length === 1 ? '' : 's'}`;
+            document.getElementById('header-stats').textContent =
+                `${contestedCount} contested across ${comboLabel}`;
+
+            // Group Chart — 4 series
+            const g = {};
+            for (const c of COMBOS) g[c] = [0, 0, 0, 0, 0];
+            allData.forEach(d => {
+                if (!d.Group) return;
+                const gi = Math.round(d.Group) - 1;
+                if (gi < 0 || gi > 4) return;
+                if (d.Scope === 'Global') {
+                    if (d.Funded_MS === 'Yes') g.gms[gi]++;
+                    if (d.Funded_MES === 'Yes') g.gmes[gi]++;
+                } else {
+                    if (d.Funded_MS === 'Yes') g.lms[gi]++;
+                    if (d.Funded_MES === 'Yes') g.lmes[gi]++;
+                }
+            });
+
+            chart.setOption({
+                backgroundColor: '#fff',
+                legend: {
+                    data: Object.values(COMBO_LABELS),
+                    textStyle: { fontSize: 13 }, bottom: 0
+                },
+                tooltip: { trigger: 'axis' },
+                xAxis: {
+                    type: 'category',
+                    data: ['Group 1', 'Group 2', 'Group 3', 'Group 4', 'Group 5'],
+                    axisLabel: { fontSize: 15, fontWeight: 700 }
+                },
+                yAxis: {
+                    min: 0, max: 24,
+                    splitLine: { lineStyle: { color: '#eee' } },
+                    axisLabel: { fontSize: 13 }
+                },
+                series: COMBOS.map(c => ({
+                    name: COMBO_LABELS[c], type: 'bar', barMaxWidth: 40,
+                    data: g[c], itemStyle: { color: COMBO_COLORS[c] },
+                    label: {
+                        show: true, position: 'top', fontSize: 14, fontWeight: 700,
+                        color: COMBO_COLORS[c]
+                    }
+                })),
+                grid: { top: 24, left: 50, right: 20, bottom: 60 }
+            });
+            chart.resize();
+
+            // Table — sort
+            let rows = [...projects];
+
+            // Group filter
+            if (state.group !== 'all') {
+                rows = rows.filter(p => p.Group != null && Math.round(p.Group) === parseInt(state.group));
+            }
+
+            rows.sort((a, b) => {
+                const sv = state.sortBy;
+                let delta = 0;
+
+                // Note: state.sortDir=1 is "Default/Ascending". 
+                // For Mean: default/asc should sort descending (highest value first).
+                // For Ranks: default/asc should sort ascending (smallest number first).
+
+                if (sv === 'mean') {
+                    delta = (b.mean ?? -999) - (a.mean ?? -999);
+                } else {
+                    if (sv === 'gms') delta = (a.gms_rank ?? 999) - (b.gms_rank ?? 999);
+                    if (sv === 'gmes') delta = (a.gmes_rank ?? 999) - (b.gmes_rank ?? 999);
+                    if (sv === 'lms') delta = (a.lms_rank ?? 999) - (b.lms_rank ?? 999);
+                    if (sv === 'lmes') delta = (a.lmes_rank ?? 999) - (b.lmes_rank ?? 999);
+                }
+
+                delta *= state.sortDir;
+                if (delta !== 0) return delta;
+
+                // Tie-break: contested first
+                const aC = isContested(a), bC = isContested(b);
+                if (aC && !bC) return -1;
+                if (!aC && bC) return 1;
+                return 0;
+            });
+
+            // Update sort indicators — check both super-header and col-header ths
+            document.querySelectorAll('th.sortable').forEach(th => {
+                th.classList.remove('sort-asc', 'sort-desc');
+                if (th.dataset.sort === state.sortBy) {
+                    // For rank sorts: ascending direction (sortDir=1) = smaller rank first = best first
+                    const isRank = ['gms', 'gmes', 'lms', 'lmes'].includes(state.sortBy);
+                    const showDesc = isRank ? state.sortDir === 1 : state.sortDir === -1;
+                    th.classList.add(showDesc ? 'sort-desc' : 'sort-asc');
+                }
+            });
+
+            if (state.diffOnly) rows = rows.filter(p => isContested(p, visibleCombos));
+
+            document.getElementById('row-count').textContent = rows.length + ' project' + (rows.length !== 1 ? 's' : '');
+
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = '';
+
+            if (rows.length === 0) {
+                const colCount = 5 + visibleCombos.length * 2;
+                tbody.innerHTML = `<tr><td colspan="${colCount}" style="text-align:center;padding:40px;color:#aaa;">No matching projects.</td></tr>`;
+                return;
+            }
+
+            let rowIndex = 0;
+            const sv = state.sortBy;
+            rows.forEach(p => {
+                rowIndex++;
+                const displayRank = ['gms', 'gmes', 'lms', 'lmes'].includes(sv) && p[sv + '_rank'] ? p[sv + '_rank'] : rowIndex;
+
+                const tr = document.createElement('tr');
+                const contested = isContested(p, visibleCombos);
+                const grpClass = p.Group != null ? 'g' + Math.round(p.Group) : '';
+                tr.className = grpClass;
+
+                if (['gms', 'gmes', 'lms', 'lmes'].includes(sv) && p[sv + '_funded'] === 'Yes') {
+                    if (state.group !== 'all' && p.Group != null) {
+                        tr.style.background = `var(--g${Math.round(p.Group)}-bg)`;
+                        tr.style.borderBottom = `1px solid var(--g${Math.round(p.Group)}-hover)`;
+                    } else {
+                        tr.style.background = '#f8fdf8';
+                        tr.style.borderBottom = '1px solid #e8f5e9';
+                    }
+                }
+
+                const grpNum = p.Group != null ? Math.round(p.Group) : null;
+                const grp = grpNum != null
+                    ? `<span class="grp-tag grp-${grpNum}">G${grpNum}</span>`
+                    : '—';
+
+                const cell = (c, rank, funded) =>
+                    `<td class="col-${c}">${rank != null ? '#' + rank : '—'}</td><td class="col-${c}">${badge(funded)}</td>`;
+
+                // Stacked rating bar (defensive defaults if counts are missing)
+                const r0 = Number(p.r0) || 0;
+                const r1 = Number(p.r1) || 0;
+                const r2 = Number(p.r2) || 0;
+                const r3 = Number(p.r3) || 0;
+                const total = Math.max(1, r0 + r1 + r2 + r3);
+                const pct = v => ((v / total) * 100).toFixed(1);
+                const rbar = `<div class="rbar" title="Ja:${r3} EherJa:${r2} EherNein:${r1} Nein:${r0}">
+                    <div class="rbar-seg rbar-ja"     style="width:${pct(r3)}%"></div>
+                    <div class="rbar-seg rbar-eherja" style="width:${pct(r2)}%"></div>
+                    <div class="rbar-seg rbar-ehernein" style="width:${pct(r1)}%"></div>
+                    <div class="rbar-seg rbar-nein"   style="width:${pct(r0)}%"></div>
+                    <div class="rbar-seg rbar-blank"  style="flex:1"></div>
+                </div>`;
+
+                const fmt = v => v != null ? (Number.isInteger(v) ? v : v.toFixed(3)) : '—';
+
+                const comboCells = visibleCombos.map(c => cell(c, p[c + '_rank'], p[c + '_funded'])).join('');
+
+                tr.innerHTML = `
+                <td style="color:#bbb; font-size:0.8rem; text-align:right; padding-right:8px; user-select:none;">${displayRank}</td>
+                <td><strong>${p.Project}</strong>${contested ? '<span class="badge badge-diff" style="background:var(--orange);color:#fff;">!</span>' : ''}</td>
+                <td>${grp}</td>
+                <td style="font-weight:600;">${fmt(p.mean)}</td>
+                <td>${rbar}</td>
+                ${comboCells}
+            `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // ── Harshness Charts ──────────────────────────────────────────────
+        function initHarshnessCharts() {
+            harshnessBox = echarts.init(document.getElementById('harshness-box'));
+            harshnessBar = echarts.init(document.getElementById('harshness-bar'));
+
+            const labels = harshnessStats.map(g => g.group_name + '\n(n=' + g.project_count + ' projs)');
+
+            // Map the pastel hover group row backgrounds to the box plots for better visibility
+            const groupBgs = ['#fde0e0', '#ddeeff', '#d9fff0', '#ffffcc', '#ebe0ff'];
+            const groupBorders = ['#ffaaaa', '#99ccff', '#80ffcc', '#ffff80', '#c299ff'];
+            const boxData = harshnessStats.map((g, idx) => {
+                const bg = groupBgs[idx % groupBgs.length];
+                const border = groupBorders[idx % groupBorders.length];
+                return {
+                    value: g.boxplot_raw,
+                    itemStyle: { color: bg, borderColor: border, borderWidth: 2 }
+                }
+            });
+            const scatterData = [];
+            harshnessStats.forEach((g, idx) => {
+                g.voter_means_raw.forEach(v => {
+                    // Add slight random jitter to X
+                    scatterData.push([idx + (Math.random() - 0.5) * 0.4, v]);
+                });
+            });
+
+            // Add the Group Means as a separate scatter series (Diamond)
+            const meanData = harshnessStats.map((g, idx) => {
+                let meanStr = g.mean_score.toFixed(2);
+                if (!meanStr.includes('-')) {
+                    meanStr = '+' + meanStr; // Explicitly show positive means
+                }
+                return { value: [idx, g.mean_score], name: meanStr }
+            });
+
+            harshnessBox.setOption({
+                tooltip: { trigger: 'item' },
+                xAxis: {
+                    type: 'category',
+                    data: labels,
+                    axisLine: { lineStyle: { color: '#ccc' } },
+                    axisLabel: { color: '#222', fontSize: 13, fontWeight: '700', lineHeight: 18 }
+                },
+                yAxis: {
+                    type: 'value', name: 'Score', splitLine: { lineStyle: { type: 'dashed' } },
+                    min: -2, max: 2, interval: 1
+                },
+                series: [
+                    {
+                        name: 'Score Boxplot',
+                        type: 'boxplot',
+                        data: boxData,
+                        itemStyle: { color: '#E0E0E0', borderColor: '#212121' }
+                    },
+                    {
+                        name: 'Voter Means',
+                        type: 'scatter',
+                        data: scatterData,
+                        itemStyle: { color: '#424242', opacity: 0.7 },
+                        symbolSize: 6
+                    },
+                    {
+                        name: 'Group Mean',
+                        type: 'scatter',
+                        data: meanData,
+                        symbol: 'diamond',
+                        symbolSize: 18,
+                        itemStyle: { color: '#0A4A8F' }, // darker blue for visibility
+                        label: {
+                            show: true,
+                            position: 'top',
+                            formatter: '{b}',
+                            fontWeight: '900',
+                            color: '#0A4A8F',
+                            fontSize: 16,
+                            distance: 10,
+                            textBorderColor: '#fff',
+                            textBorderWidth: 4
+                        },
+                        zlevel: 10
+                    }
+                ]
+            });
+
+            // Stacked Bar Chart - Map to .rbar-* colors
+            // rbar-nein: #ff764c, rbar-ehernein: #ffb8a1, rbar-eherja: #84d5a4, rbar-ja: #00c473
+            const voteColors = ['#ff764c', '#ffb8a1', '#84d5a4', '#00c473'];
+            const categories = ['Nein', 'EherNein', 'EherJa', 'Ja'];
+            const barSeries = categories.map((cat, i) => {
+                return {
+                    name: cat,
+                    type: 'bar',
+                    stack: 'total',
+                    barWidth: '60%',
+                    itemStyle: { color: voteColors[i] },
+                    label: {
+                        show: true,
+                        formatter: function (p) { return p.value > 0 ? p.value.toFixed(0) + '%' : ''; },
+                        position: 'inside',
+                        fontWeight: 'bold',
+                        color: '#000'
+                    },
+                    data: harshnessStats.map(g => g.vote_percentages[cat])
+                }
+            });
+
+            harshnessBar.setOption({
+                tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+                legend: { data: [...categories].reverse(), top: 0, right: 0, orient: 'vertical' },
+                xAxis: {
+                    type: 'category',
+                    data: labels,
+                    axisLine: { lineStyle: { color: '#ccc' } },
+                    axisLabel: { color: '#222', fontSize: 13, fontWeight: '700', lineHeight: 18 }
+                },
+                yAxis: { type: 'value', max: 100, name: 'Percentage of Votes (%)', axisLabel: { formatter: '{value}%' }, splitLine: { show: false } },
+                series: barSeries
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', init);
+        window.addEventListener('resize', () => {
+            if (chart) chart.resize();
+            if (reprOverlay) reprOverlay.resize();
+            if (giniChart) giniChart.resize();
+            if (overlapsChart) overlapsChart.resize();
+            if (harshnessBox) harshnessBox.resize();
+            if (harshnessBar) harshnessBar.resize();
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,381 @@
+{
+  "ROT": {
+    "funded": [
+      99,
+      117,
+      105,
+      82
+    ],
+    "rejection_states": {
+      "28": {
+        "supporter_budget": 49000.0,
+        "group_budget": 49000.0
+      },
+      "13": {
+        "supporter_budget": 49000.0,
+        "group_budget": 49000.0
+      },
+      "71": {
+        "supporter_budget": 42000.0,
+        "group_budget": 49000.0
+      },
+      "82": {
+        "supporter_budget": 35000.0,
+        "group_budget": 49000.0
+      },
+      "53": {
+        "supporter_budget": 42000.0,
+        "group_budget": 49000.0
+      },
+      "23": {
+        "supporter_budget": 42000.0,
+        "group_budget": 49000.0
+      },
+      "105": {
+        "supporter_budget": 35000.0,
+        "group_budget": 49000.0
+      },
+      "140": {
+        "supporter_budget": 28000.0,
+        "group_budget": 49000.0
+      },
+      "32": {
+        "supporter_budget": 35000.0,
+        "group_budget": 49000.0
+      },
+      "68": {
+        "supporter_budget": 42000.0,
+        "group_budget": 49000.0
+      },
+      "111": {
+        "supporter_budget": 42000.0,
+        "group_budget": 49000.0
+      },
+      "57": {
+        "supporter_budget": 35000.0,
+        "group_budget": 49000.0
+      },
+      "62": {
+        "supporter_budget": 35000.0,
+        "group_budget": 49000.0
+      },
+      "117": {
+        "supporter_budget": 35000.0,
+        "group_budget": 49000.0
+      },
+      "103": {
+        "supporter_budget": 28000.0,
+        "group_budget": 49000.0
+      },
+      "134": {
+        "supporter_budget": 28000.0,
+        "group_budget": 49000.0
+      },
+      "50": {
+        "supporter_budget": 28000.0,
+        "group_budget": 49000.0
+      },
+      "131": {
+        "supporter_budget": 21000.0,
+        "group_budget": 49000.0
+      },
+      "99": {
+        "supporter_budget": 35000.0,
+        "group_budget": 49000.0
+      },
+      "27": {
+        "supporter_budget": 28000.0,
+        "group_budget": 49000.0
+      },
+      "121": {
+        "supporter_budget": 21000.0,
+        "group_budget": 49000.0
+      },
+      "84": {
+        "supporter_budget": 14000.0,
+        "group_budget": 49000.0
+      },
+      "22": {
+        "supporter_budget": 14000.0,
+        "group_budget": 49000.0
+      },
+      "64": {
+        "supporter_budget": 14000.0,
+        "group_budget": 49000.0
+      },
+      "110": {
+        "supporter_budget": 14000.0,
+        "group_budget": 49000.0
+      },
+      "88": {
+        "supporter_budget": 14000.0,
+        "group_budget": 49000.0
+      },
+      "123": {
+        "supporter_budget": 0,
+        "group_budget": 49000.0
+      }
+    },
+    "final_budgets": {
+      "MIH": 0.0,
+      "VAA": 450.0537111051866,
+      "SEW": 0.0,
+      "NAK": 1360.0100581716279,
+      "AND": 690.0434831580928,
+      "OLK": 0.0,
+      "FAG": 0.0
+    }
+  },
+  "SCHWARZ": {
+    "funded": [
+      104,
+      30,
+      40
+    ],
+    "rejection_states": {
+      "95": {
+        "supporter_budget": 42000.0,
+        "group_budget": 49000.0
+      },
+      "56": {
+        "supporter_budget": 35000.0,
+        "group_budget": 49000.0
+      },
+      "19": {
+        "supporter_budget": 35000.0,
+        "group_budget": 49000.0
+      },
+      "126": {
+        "supporter_budget": 28000.0,
+        "group_budget": 49000.0
+      },
+      "129": {
+        "supporter_budget": 42000.0,
+        "group_budget": 49000.0
+      },
+      "40": {
+        "supporter_budget": 35000.0,
+        "group_budget": 49000.0
+      },
+      "45": {
+        "supporter_budget": 28000.0,
+        "group_budget": 49000.0
+      },
+      "67": {
+        "supporter_budget": 42000.0,
+        "group_budget": 49000.0
+      },
+      "81": {
+        "supporter_budget": 28000.0,
+        "group_budget": 49000.0
+      },
+      "94": {
+        "supporter_budget": 35000.0,
+        "group_budget": 49000.0
+      },
+      "104": {
+        "supporter_budget": 35000.0,
+        "group_budget": 49000.0
+      },
+      "7": {
+        "supporter_budget": 28000.0,
+        "group_budget": 49000.0
+      },
+      "12": {
+        "supporter_budget": 28000.0,
+        "group_budget": 49000.0
+      },
+      "33": {
+        "supporter_budget": 28000.0,
+        "group_budget": 49000.0
+      },
+      "112": {
+        "supporter_budget": 28000.0,
+        "group_budget": 49000.0
+      },
+      "8": {
+        "supporter_budget": 21000.0,
+        "group_budget": 49000.0
+      },
+      "30": {
+        "supporter_budget": 28000.0,
+        "group_budget": 49000.0
+      },
+      "31": {
+        "supporter_budget": 21000.0,
+        "group_budget": 49000.0
+      },
+      "89": {
+        "supporter_budget": 21000.0,
+        "group_budget": 49000.0
+      },
+      "90": {
+        "supporter_budget": 21000.0,
+        "group_budget": 49000.0
+      },
+      "92": {
+        "supporter_budget": 21000.0,
+        "group_budget": 49000.0
+      },
+      "17": {
+        "supporter_budget": 14000.0,
+        "group_budget": 49000.0
+      },
+      "18": {
+        "supporter_budget": 14000.0,
+        "group_budget": 49000.0
+      },
+      "136": {
+        "supporter_budget": 21000.0,
+        "group_budget": 49000.0
+      },
+      "116": {
+        "supporter_budget": 14000.0,
+        "group_budget": 49000.0
+      },
+      "76": {
+        "supporter_budget": 7000.0,
+        "group_budget": 49000.0
+      },
+      "124": {
+        "supporter_budget": 7000.0,
+        "group_budget": 49000.0
+      }
+    },
+    "final_budgets": {
+      "MAP": 0.0,
+      "PID": 0.0,
+      "JAM": 0.0,
+      "RIM": 0.0,
+      "MAH": 0.0,
+      "PEO": 0.0,
+      "THB": 276.1622158575028
+    }
+  },
+  "BLAU": {
+    "funded": [
+      106,
+      115,
+      98,
+      96,
+      51
+    ],
+    "rejection_states": {
+      "51": {
+        "supporter_budget": 63000.0,
+        "group_budget": 63000.0
+      },
+      "109": {
+        "supporter_budget": 49000.0,
+        "group_budget": 63000.0
+      },
+      "1": {
+        "supporter_budget": 49000.0,
+        "group_budget": 63000.0
+      },
+      "108": {
+        "supporter_budget": 56000.0,
+        "group_budget": 63000.0
+      },
+      "54": {
+        "supporter_budget": 49000.0,
+        "group_budget": 63000.0
+      },
+      "119": {
+        "supporter_budget": 21000.0,
+        "group_budget": 63000.0
+      },
+      "48": {
+        "supporter_budget": 35000.0,
+        "group_budget": 63000.0
+      },
+      "96": {
+        "supporter_budget": 35000.0,
+        "group_budget": 63000.0
+      },
+      "4": {
+        "supporter_budget": 42000.0,
+        "group_budget": 63000.0
+      },
+      "98": {
+        "supporter_budget": 49000.0,
+        "group_budget": 63000.0
+      },
+      "135": {
+        "supporter_budget": 35000.0,
+        "group_budget": 63000.0
+      },
+      "97": {
+        "supporter_budget": 49000.0,
+        "group_budget": 63000.0
+      },
+      "70": {
+        "supporter_budget": 35000.0,
+        "group_budget": 63000.0
+      },
+      "74": {
+        "supporter_budget": 35000.0,
+        "group_budget": 63000.0
+      },
+      "29": {
+        "supporter_budget": 42000.0,
+        "group_budget": 63000.0
+      },
+      "69": {
+        "supporter_budget": 28000.0,
+        "group_budget": 63000.0
+      },
+      "142": {
+        "supporter_budget": 35000.0,
+        "group_budget": 63000.0
+      },
+      "38": {
+        "supporter_budget": 28000.0,
+        "group_budget": 63000.0
+      },
+      "24": {
+        "supporter_budget": 28000.0,
+        "group_budget": 63000.0
+      },
+      "114": {
+        "supporter_budget": 21000.0,
+        "group_budget": 63000.0
+      },
+      "115": {
+        "supporter_budget": 28000.0,
+        "group_budget": 63000.0
+      },
+      "42": {
+        "supporter_budget": 21000.0,
+        "group_budget": 63000.0
+      },
+      "118": {
+        "supporter_budget": 14000.0,
+        "group_budget": 63000.0
+      },
+      "106": {
+        "supporter_budget": 14000.0,
+        "group_budget": 63000.0
+      },
+      "35": {
+        "supporter_budget": 7000.0,
+        "group_budget": 63000.0
+      },
+      "46": {
+        "supporter_budget": 0,
+        "group_budget": 63000.0
+      }
+    },
+    "final_budgets": {
+      "ROM": 0.0,
+      "ANA": 0.0,
+      "MEM": 0.0,
+      "CLS": 0.0,
+      "MAJ": 0.0,
+      "ILN": 0.0,
+      "THM": 0.0,
+      "FRN": 3000.0074297166125,
+      "ADG": 0.0
+    }
+  }
+}

@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KK26 | Outcome-Tabelle</title>
+    <!-- JetBrains Mono from Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Inter:wght@400;600;700;850&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/common.css">
+    <script src="js/theme.js"></script>
+    <script>initTheme();</script>
+    <script src="js/data.js"></script>
+
+    <style>
+        /* Table-specific styles */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            max-width: 1050px;
+            margin: 0 auto;
+            font-family: var(--font-mono);
+            font-size: var(--fs-sm);
+            table-layout: auto;
+        }
+
+        th {
+            background: var(--filter-bg);
+            padding: var(--spacing-xs) 0.4rem;
+            text-align: left;
+            color: var(--text-dim);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 2px solid var(--filter-border);
+        }
+
+        td {
+            padding: 0.4rem var(--spacing-xs);
+            border-bottom: 1px solid var(--filter-border);
+            color: var(--text-secondary);
+            vertical-align: middle;
+            line-height: 1.25;
+            white-space: nowrap;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: var(--filter-hover);
+        }
+
+        .table-container {
+            background: var(--filter-bg);
+            border: 1px solid var(--filter-border);
+            border-radius: 8px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            margin-bottom: var(--spacing-lg);
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .col-rank {
+            width: 1%;
+            text-align: center;
+        }
+
+        .col-project {
+            width: 90%;
+            white-space: normal;
+        }
+
+        .col-cost {
+            width: 1%;
+            text-align: right;
+            padding-right: 0.7rem;
+        }
+
+        .col-points {
+            width: 1%;
+            text-align: center;
+        }
+
+        .col-efficiency {
+            width: 1%;
+            text-align: center;
+        }
+
+        .col-status {
+            width: 1%;
+            text-align: center;
+        }
+
+        .col-budget-flow {
+            width: 320px;
+        }
+
+        .col-id {
+            color: var(--text-dim);
+            font-size: var(--fs-xs);
+            margin-right: 0.3rem;
+        }
+
+        .col-title {
+            font-weight: 700;
+            font-size: var(--fs-sm);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: inline-block;
+            max-width: 400px;
+            color: var(--text-primary);
+            line-height: 1.4;
+            vertical-align: middle;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.1rem 0.4rem;
+            border-radius: 3px;
+            font-size: var(--fs-xs);
+            font-weight: 850;
+            text-transform: uppercase;
+        }
+
+        .status-yes {
+            background: rgba(42, 157, 143, 0.1);
+            color: #2a9d8f;
+            border: 1px solid rgba(42, 157, 143, 0.3);
+        }
+
+        .status-none {
+            color: var(--text-dim);
+            font-weight: 400;
+            font-size: var(--fs-sm);
+        }
+
+        .info-box {
+            background: rgba(69, 123, 157, 0.1);
+            border-left: 4px solid var(--accent-blue);
+            padding: var(--spacing-sm) 1.25rem;
+            margin-bottom: var(--spacing-lg);
+            border-radius: 0 8px 8px 0;
+            font-size: var(--fs-sm);
+            line-height: 1.5;
+            color: var(--text-primary);
+        }
+
+        .rank-change {
+            font-size: var(--fs-xs);
+            font-weight: 600;
+            margin-left: 0.4rem;
+        }
+
+        .rank-up {
+            color: #2a9d8f;
+        }
+
+        .rank-down {
+            color: #e76f51;
+        }
+
+        .rank-change.positive {
+            color: #2a9d8f;
+        }
+
+        .rank-same {
+            color: #bbb;
+        }
+
+        .explanation-text {
+            font-family: var(--font-main);
+            font-size: var(--fs-sm);
+            color: var(--text-muted);
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .explanation-text:hover {
+            -webkit-line-clamp: unset;
+            line-clamp: unset;
+            background: rgba(0, 0, 0, 0.05);
+            padding: var(--spacing-xs);
+            border-radius: 4px;
+        }
+
+        .row-funded td {
+            background: rgba(42, 157, 143, 0.04) !important;
+            border-bottom: 1px solid rgba(42, 157, 143, 0.2);
+        }
+
+        .tech-item.highlight-step {
+            border-left: 3px solid #2a9d8f;
+            background: rgba(42, 157, 143, 0.05); /* Matching tint */
+        }
+        .tech-item.highlight-step h4 {
+            color: #2a9d8f;
+        }
+        .row-funded .col-rank {
+            border-left: 3px solid #2a9d8f;
+            color: #2a9d8f;
+            font-weight: 800;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: var(--spacing-xxl);
+            padding-bottom: var(--spacing-lg);
+            border-top: 1px solid var(--filter-border);
+            padding-top: var(--spacing-lg);
+        }
+
+        .footer p {
+            color: var(--text-dim);
+            font-size: var(--fs-xs);
+            font-family: var(--font-mono);
+        }
+
+        @media screen and (max-width: 850px) {
+            /* Transform outcome table to cards on mobile screen (ignores print) */
+            .table-container table,
+            .table-container tbody,
+            .table-container tr,
+            .table-container td {
+                display: block;
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+            .table-container thead {
+                display: none;
+            }
+
+            .table-container tr {
+                display: flex;
+                flex-wrap: wrap;
+                padding: 0.8rem 0.6rem;
+                border: 1px solid var(--filter-border);
+                background: var(--bg-color);
+                border-radius: 8px;
+                margin-bottom: 0.6rem;
+                align-items: center;
+                gap: 0; /* Remove gap to stop tiling effect */
+            }
+
+            .table-container td {
+                border-bottom: none !important;
+                padding: 0 0.15rem !important;
+                text-align: left !important;
+                white-space: normal !important;
+                background: transparent !important; /* Stop individual TD background tiling */
+            }
+
+            /* Fix Row Funding styling for mobile card */
+            .table-container .row-funded {
+                border: 1px solid rgba(42, 157, 143, 0.3) !important;
+                border-left: 5px solid #2a9d8f !important;
+                background: rgba(42, 157, 143, 0.04) !important;
+            }
+
+            /* --- ROW 1: Rank, Title, Budget --- */
+            .table-container .col-rank {
+                width: 10% !important;
+                font-size: 1.15rem !important;
+                font-weight: 900 !important;
+            }
+
+            .table-container .col-project {
+                width: 58% !important;
+                flex-grow: 1;
+                font-size: 0.95rem;
+            }
+
+            .table-container .col-cost {
+                width: 30% !important;
+                text-align: right !important;
+                font-size: 1rem !important;
+            }
+
+            /* --- ROW 2: Information --- */
+            .table-container .col-points,
+            .table-container .col-efficiency,
+            .table-container .col-status,
+            .table-container .col-coverage {
+                margin-top: 0.6rem;
+                padding-top: 0.5rem !important;
+                border-top: 1px solid rgba(0,0,0,0.06);
+            }
+
+            html[data-theme="dark"] .table-container .col-points,
+            html[data-theme="dark"] .table-container .col-efficiency,
+            html[data-theme="dark"] .table-container .col-status,
+            html[data-theme="dark"] .table-container .col-coverage {
+                border-top: 1px solid rgba(255,255,255,0.08); /* Dark mode gentle divider */
+            }
+
+            .table-container .col-points {
+                width: 30% !important;
+            }
+
+            /* Make points inline so they don't consume so much vertical space */
+            .table-container .col-points > div:first-child {
+                display: inline-block;
+                margin-right: 0.35rem;
+                font-size: 1rem !important;
+            }
+            .table-container .col-points > div:last-child {
+                display: inline-block;
+                font-size: 0.72rem !important;
+            }
+
+            .table-container .col-efficiency {
+                width: 25% !important;
+                text-align: center !important;
+            }
+
+            .table-container .col-status {
+                width: 15% !important;
+                text-align: center !important;
+            }
+
+            .table-container .col-coverage {
+                width: 30% !important;
+                text-align: right !important;
+            }
+
+            /* Ensure coverage progress bar is tight */
+            .table-container .col-coverage > div {
+                text-align: right !important;
+            }
+            .table-container .col-coverage > div:nth-child(2) {
+                margin-top: 0.25rem !important;
+            }
+
+            /* --- ROW 3: Budget flow --- */
+            .table-container .col-budget-flow {
+                width: 100% !important;
+                margin-top: 0.65rem !important;
+            }
+
+            /* Clean UI Labels */
+            .table-container .col-efficiency::before,
+            .table-container .col-status::before,
+            .table-container .col-points::before,
+            .table-container .col-coverage::before {
+                display: block;
+                font-size: 0.52rem;
+                color: #888;
+                font-weight: 800;
+                margin-bottom: 0.18rem;
+                font-family: var(--font-mono);
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+            }
+
+            .table-container .col-efficiency::before { content: "CHF/PNT"; }
+            .table-container .col-status::before { content: "MES"; }
+            .table-container .col-points::before { content: "PUNKTE"; }
+            .table-container .col-coverage::before { content: "ABDECKUNG"; text-align: right; }
+
+            .table-container .row-funded .col-rank {
+                border-left: none; /* remove legacy side border from individual cell */
+            }
+        }
+    </style>
+    <script>initTheme();</script>
+</head>
+
+<body class="dark-mode">
+    <button class="theme-toggle" onclick="toggleTheme()" title="Design umschalten">
+        <span class="icon-moon">🌙</span>
+        <span class="icon-sun" style="display: none;">☀️</span>
+    </button>
+
+    <nav class="nav-toggle">
+        <a href="index.html" class="nav-link">Persönlich</a>
+        <a href="projects.html" class="nav-link">Projekte</a>
+        <a href="outcomes.html" class="nav-link active">Outcome-Tabelle</a>
+        <a href="personal_report.html" class="nav-link">Druckansicht</a>
+    </nav>
+
+    <div class="container" style="max-width: 1300px;">
+        <header class="page-header">
+            <div class="brand-logo">KK26_Quttig</div>
+            <h1>Outcome-Tabelle</h1>
+        </header>
+
+        <div class="intro-section">
+            <p>Vollständige Übersicht aller Projekte, sortiert nach Beliebtheit.
+                Das MES-Verfahren identifiziert "einfache" Entscheidungen automatisch, um am Diskussionstag Zeit für
+                komplexe Fragen zu schaffen.</p>
+        </div>
+
+        <div class="filter-bar">
+            <button class="filter-btn active" onclick="loadGroupData('ROT')" data-group="ROT">ROT</button>
+            <button class="filter-btn" onclick="loadGroupData('BLAU')" data-group="BLAU">BLAU</button>
+            <button class="filter-btn" onclick="loadGroupData('SCHWARZ')" data-group="SCHWARZ">SCHWARZ</button>
+        </div>
+
+        <details class="intro-dropdown" id="tech-info">
+            <summary>Lesehilfe: So verstehen Sie die Tabelle</summary>
+            <div class="dropdown-content">
+                <div class="tech-grid single-column">
+                    <div class="tech-item highlight-step">
+                        <h4>Punkte (je höher, desto besser)</h4>
+                        <p>Die <strong>Punkte</strong> sind die Summe aller Stimmen (Ja = 2 Punkte, Eher Ja = 1 Punkt). Je mehr Punkte ein Projekt hat, desto beliebter war es in der Gruppe. Die Projekte sind nach dieser Beliebtheit sortiert.</p>
+                    </div>
+                    <div class="tech-item highlight-step">
+                        <h4>CHF/PUNKT (je tiefer, desto besser)</h4>
+                        <p>Die <strong>Effizienz</strong> zeigt die Kosten pro Punkt. Ein tieferer Wert bedeutet, dass das Projekt günstiger ist – ein besseres Kosten-Punkte-Verhältnis für die Community.</p>
+                    </div>
+                    <div class="tech-item highlight-step">
+                        <h4>Abdeckung (Finanzierbarkeit)</h4>
+                        <p>Die <strong>Abdeckung</strong> zeigt, wie viel Prozent der Projektkosten durch das verfügbare Budget der Unterstützenden zum Zeitpunkt der Prüfung gedeckt werden konnten. 100% = vollständig finanzierbar. Bei nicht finanzierten Projekten war diese Abdeckung zu gering.</p>
+                    </div>
+                    <div class="tech-item highlight-step">
+                        <h4>Budget-Abfluss (Visualisierung)</h4>
+                        <p>Die rechte Spalte zeigt, wie das Gesamtbudget der Gruppe schrittweise aufgebraucht wurde. Der farbige Balken wächst mit jedem finanzierten Projekt, und die Zahl "Übrig" zeigt das verbleibende Budget an.</p>
+                    </div>
+                    <div class="tech-item highlight-step">
+                        <h4>So funktioniert der MES-Algorithmus</h4>
+                        <p>Der <strong>Method of Equal Shares (MES)</strong> Algorithmus prüft Projekte in Runden. In jeder Runde berechnet er einen "Preis pro Punkt" (Rho). Das Projekt mit dem tiefsten Rho wird finanziert, wenn seine Unterstützenden gemeinsam genug Budget haben. Dann zahlt jede Person anteilig aus ihrem restlichen Budget. Dieser Prozess wiederholt sich, bis keine Projekte mehr finanzierbar sind.</p>
+                    </div>
+                    <div class="tech-item highlight-step">
+                        <h4>Mehr erfahren</h4>
+                        <p>Ausführliche Informationen zum Method of Equal Shares Verfahren finden Sie auf <a href="https://equalshares.net/de/explanation/" target="_blank" rel="noopener noreferrer" style="color: var(--accent-blue); text-decoration: underline; font-weight: 700;">equalshares.net/de/explanation</a></p>
+                    </div>
+                </div>
+            </div>
+        </details>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="th-rank">RANG</th>
+                        <th class="th-project">PROJEKT</th>
+                        <th class="th-budget text-right">BUDGET</th>
+                        <th class="th-points text-center">PUNKTE</th>
+                        <th class="th-efficiency text-center">CHF/PUNKT</th>
+                        <th class="th-status text-center">MES</th>
+                        <th class="th-coverage text-center">ABDECKUNG</th>
+                        <th class="th-budget-flow">BUDGET-ABFLUSS</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <!-- Rows will be injected here -->
+                </tbody>
+            </table>
+        </div>
+
+        <footer class="footer">
+            <p>© 2026 Kultur Komitee Winterthur | Forschungsprojekt Joshua C. Yang</p>
+        </footer>
+    </div>
+
+    <script src="outcomes.js"></script>
+</body>
+
+</html>
