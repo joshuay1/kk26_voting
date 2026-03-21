@@ -315,6 +315,11 @@
                 margin: 0.7cm;
             }
 
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
             .page-header,
             .filter-bar,
             .intro-section,
@@ -330,12 +335,13 @@
             body {
                 margin: 0;
                 padding: 0;
-                background: white;
+                background: white !important;
             }
 
             .receipts-grid {
                 display: block !important;
                 padding: 0.15cm 0.2cm 0.2cm !important;
+                background: white !important;
             }
 
             .group-column {
@@ -346,6 +352,7 @@
                 page-break-before: always;
                 break-before: page;
                 margin: 0 !important;
+                background: white !important;
             }
 
             .receipts-grid.all-groups-view .group-column {
@@ -368,6 +375,10 @@
                 page-break-inside: avoid;
                 margin: 0;
                 break-inside: avoid;
+                transform: none !important;
+                filter: none !important;
+                box-shadow: none !important;
+                background: transparent !important;
             }
 
             .receipt-body {
@@ -378,6 +389,62 @@
 
             .receipt-edge {
                 display: none !important;
+            }
+
+            .receipt-modern {
+                background: #fff !important;
+                box-shadow: none !important;
+                filter: none !important;
+                border: 1px solid rgba(0, 0, 0, 0.08) !important;
+                isolation: isolate !important;
+                overflow: hidden !important;
+            }
+
+            .receipt-content,
+            .reasoning-box,
+            .rejection-box,
+            .project-bottom-bar,
+            .project-bottom-metric,
+            .project-bottom-metric-primary {
+                box-shadow: none !important;
+                background-image: none !important;
+            }
+
+            .status-modern-banner {
+                box-shadow: none !important;
+            }
+
+            .receipt-content,
+            .items-table,
+            .items-table thead,
+            .items-table tbody,
+            .items-table tr,
+            .items-table th,
+            .items-table td {
+                background: #fff !important;
+            }
+
+            .receipt-modern.funded .reasoning-box {
+                background: #eef8f9 !important;
+                border-color: #d2eaed !important;
+            }
+
+            .receipt-modern.funded .project-bottom-bar {
+                background: #eef8f9 !important;
+                border-top-color: #d2eaed !important;
+            }
+
+            .receipt-modern.funded .project-bottom-metric-primary {
+                background: #eef3f8 !important;
+                border-color: #cdd8e4 !important;
+            }
+
+            .receipt-modern.unfunded .rejection-box {
+                background: #fdf0f0 !important;
+            }
+
+            .receipt-modern .receipt-top-meta > span:last-child {
+                background: #f1f4f7 !important;
             }
 
             /* Make sections more compact */

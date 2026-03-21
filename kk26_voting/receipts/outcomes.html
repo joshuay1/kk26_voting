@@ -535,9 +535,11 @@
 
             .nav-toggle,
             .page-header,
+            .filter-bar,
             .group-switcher,
             .theme-toggle,
             .intro-section,
+            .intro-dropdown,
             footer {
                 display: none !important;
             }
@@ -550,12 +552,12 @@
 
             .container {
                 max-width: 100%;
-                padding: 0.5cm;
+                padding: 0.2cm 0.35cm 0.35cm;
             }
 
             .print-title {
                 display: block !important;
-                margin: 0 0 0.35cm 0;
+                margin: 0 0 0.18cm 0;
                 font-family: var(--font-mono);
                 font-size: 1.1rem;
                 font-weight: 800;
@@ -775,6 +777,13 @@
                 border-radius: 999px !important;
                 border: 1px solid rgba(0, 0, 0, 0.12) !important;
                 background-clip: padding-box !important;
+                white-space: nowrap !important;
+                font-size: 0 !important;
+            }
+
+            .table-container .budget-flow-segment {
+                height: 100% !important;
+                flex: 0 0 auto !important;
             }
 
             .table-container .budget-flow-labels {

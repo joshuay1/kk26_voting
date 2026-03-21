@@ -214,6 +214,10 @@
         }
 
         @media print {
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
 
             .page-header,
             .filter-bar,
@@ -226,17 +230,19 @@
             body {
                 margin: 0;
                 padding: 0;
-                background: white;
+                background: white !important;
             }
 
             .receipts-grid {
                 display: block;
                 margin: 0;
                 padding: 0;
+                background: white !important;
             }
 
             .group-column {
                 display: block !important;
+                background: white !important;
             }
 
             .receipt {
@@ -249,6 +255,10 @@
                 align-items: center;
                 justify-content: center;
                 min-height: 100vh;
+                background: white !important;
+                transform: none !important;
+                filter: none !important;
+                box-shadow: none !important;
             }
 
             .receipt:first-child {
@@ -256,13 +266,23 @@
             }
 
             .receipt-body {
-                box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08) !important;
+                box-shadow: none !important;
                 border: 1px solid rgba(29, 53, 87, 0.16) !important;
                 background: white !important;
+                background-image: none !important;
+                filter: none !important;
+            }
+
+            .receipt-body::before {
+                content: none !important;
+                background-image: none !important;
             }
 
             .receipt-edge {
                 display: none !important;
+                background: white !important;
+                mask: none !important;
+                -webkit-mask: none !important;
             }
         }
 

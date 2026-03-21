@@ -97,19 +97,9 @@ function renderOutcomeRows(tbody, data, group) {
         const currentEndPct = Math.min(100, currentStartPct + (isFunded ? currentCostPct : 0));
 
         const groupColor = OUTCOME_GROUP_COLORS[group] || '#444';
-        const budgetFlowBackground = isFunded
-            ? `linear-gradient(to right,
-                ${groupColor}22 0%,
-                ${groupColor}22 ${currentStartPct}%,
-                ${groupColor} ${currentStartPct}%,
-                ${groupColor} ${currentEndPct}%,
-                rgba(0,0,0,0.16) ${currentEndPct}%,
-                rgba(0,0,0,0.16) 100%)`
-            : `linear-gradient(to right,
-                #ececec 0%,
-                #ececec ${remainingAfterPct}%,
-                rgba(0,0,0,0.16) ${remainingAfterPct}%,
-                rgba(0,0,0,0.16) 100%)`;
+        const remainingSegmentPct = isFunded ? currentStartPct : remainingAfterPct;
+        const currentSegmentPct = isFunded ? currentCostPct : 0;
+        const spentSegmentPct = Math.max(0, 100 - remainingSegmentPct - currentSegmentPct);
 
         // Calculate Coverage (Abdeckung) - Use numerical field from backend
         let coverage = 100;
@@ -152,7 +142,11 @@ function renderOutcomeRows(tbody, data, group) {
             </td>
             <td class="col-budget-flow">
                 <div class="budget-flow-stack" style="display: flex; flex-direction: column; gap: 0.25rem;">
-                    <div class="budget-flow-bar" style="height: 12px; border-radius: 3px; overflow: hidden; background: ${budgetFlowBackground}; border: 1px solid rgba(0,0,0,0.12);"></div>
+                    <div class="budget-flow-bar" style="height: 12px; border-radius: 3px; overflow: hidden; border: 1px solid rgba(0,0,0,0.12); display: flex;">
+                        <span class="budget-flow-segment budget-flow-segment-remaining" style="display: block; width: ${remainingSegmentPct}%; background: ${isFunded ? `${groupColor}22` : '#ececec'};"></span>
+                        <span class="budget-flow-segment budget-flow-segment-current" style="display: block; width: ${currentSegmentPct}%; background: ${groupColor};"></span>
+                        <span class="budget-flow-segment budget-flow-segment-spent" style="display: block; width: ${spentSegmentPct}%; background: rgba(0,0,0,0.16);"></span>
+                    </div>
                     <div class="budget-flow-labels" style="display: flex; justify-content: space-between; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: #888;">
                         <div class="budget-flow-remaining">
                             <span class="budget-flow-prefix" style="color: #bbb; margin-right: 0.5rem;">Verfügbar:</span>
