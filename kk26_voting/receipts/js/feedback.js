@@ -206,26 +206,8 @@ document.addEventListener('DOMContentLoaded', function() {
      * @returns {boolean} True if valid
      */
     function validateStage1Data(data) {
-        // Check open question is not empty
-        if (!data.open_question || data.open_question.length < 10) {
-            throw new Error('Bitte geben Sie mindestens 10 Zeichen in Ihr Feedback ein.');
-        }
-
-        // Check overall understanding is answered
-        if (data.overall_understanding === null || data.overall_understanding < 1 || data.overall_understanding > 7) {
-            throw new Error('Bitte beantworten Sie die Frage zum Verständnis.');
-        }
-
-        // Check feeling contribution before is answered
-        if (data.feeling_contribution_before === null || data.feeling_contribution_before < 1 || data.feeling_contribution_before > 7) {
-            throw new Error('Bitte beantworten Sie die Frage zum Beitragsgefühl (vor dem Ansehen der Quittung).');
-        }
-
-        // Check feeling contribution after is answered
-        if (data.feeling_contribution_after === null || data.feeling_contribution_after < 1 || data.feeling_contribution_after > 7) {
-            throw new Error('Bitte beantworten Sie die Frage zum Beitragsgefühl (nach dem Ansehen der Quittung).');
-        }
-
+        // All questions are now optional - just return true
+        // This allows users to skip any questions they don't want to answer
         return true;
     }
 
