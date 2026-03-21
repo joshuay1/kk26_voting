@@ -14,8 +14,18 @@ document.addEventListener('DOMContentLoaded', function() {
     let stage1Data = null; // Store stage 1 data
     let stage1DocumentId = null; // Store Firebase document ID
 
+    const STORAGE_KEY = 'kk26_feedback_draft';
+    const STAGE_KEY = 'kk26_feedback_stage';
+
+    // Restore saved form data on page load
+    restoreFormData();
+
     if (form) {
         form.addEventListener('submit', handleFormSubmit);
+
+        // Auto-save form data whenever any input changes
+        form.addEventListener('change', saveFormData);
+        form.addEventListener('input', debounce(saveFormData, 500));
     }
 
     // Skip stage 2 button
@@ -23,10 +33,141 @@ document.addEventListener('DOMContentLoaded', function() {
         stage2SkipBtn.addEventListener('click', function() {
             showMessage('success', 'Vielen Dank für Ihr Feedback!');
             stage2.classList.add('stage-hidden');
+            clearFormData(); // Clear saved data when user skips
             setTimeout(() => {
                 window.location.href = 'index.html';
             }, 2000);
         });
+    }
+
+    /**
+     * Debounce function to limit how often a function is called
+     * @param {Function} func - Function to debounce
+     * @param {number} wait - Milliseconds to wait
+     * @returns {Function} Debounced function
+     */
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    /**
+     * Save current form data to localStorage
+     */
+    function saveFormData() {
+        try {
+            const formData = {
+                user_id: document.getElementById('user-id-select')?.value || '',
+                open_question: document.getElementById('open-question')?.value || '',
+                overall_understanding: getRadioValue('overall_understanding'),
+                feeling_contribution_before: getRadioValue('feeling_contribution_before'),
+                feeling_contribution_after: getRadioValue('feeling_contribution_after'),
+                format_a_q1: getRadioValue('format_a_q1'),
+                format_a_q2: getRadioValue('format_a_q2'),
+                format_a_q3: getRadioValue('format_a_q3'),
+                format_b_q1: getRadioValue('format_b_q1'),
+                format_b_q2: getRadioValue('format_b_q2'),
+                format_b_q3: getRadioValue('format_b_q3'),
+                format_c_q1: getRadioValue('format_c_q1'),
+                format_c_q2: getRadioValue('format_c_q2'),
+                format_c_q3: getRadioValue('format_c_q3'),
+                overall_trust: getRadioValue('overall_trust'),
+                saved_at: new Date().toISOString()
+            };
+
+            // Save current stage
+            const currentStage = stage2.classList.contains('stage-hidden') ? 1 : 2;
+
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
+            localStorage.setItem(STAGE_KEY, currentStage.toString());
+
+            console.log('Form data auto-saved');
+        } catch (error) {
+            console.warn('Failed to save form data:', error);
+        }
+    }
+
+    /**
+     * Restore saved form data from localStorage
+     */
+    function restoreFormData() {
+        try {
+            const savedData = localStorage.getItem(STORAGE_KEY);
+            const savedStage = localStorage.getItem(STAGE_KEY);
+
+            if (!savedData) {
+                return; // No saved data
+            }
+
+            const formData = JSON.parse(savedData);
+
+            // Restore text inputs
+            if (formData.user_id) {
+                const userIdSelect = document.getElementById('user-id-select');
+                if (userIdSelect) userIdSelect.value = formData.user_id;
+            }
+
+            if (formData.open_question) {
+                const openQuestion = document.getElementById('open-question');
+                if (openQuestion) openQuestion.value = formData.open_question;
+            }
+
+            // Restore radio button selections
+            setRadioValue('overall_understanding', formData.overall_understanding);
+            setRadioValue('feeling_contribution_before', formData.feeling_contribution_before);
+            setRadioValue('feeling_contribution_after', formData.feeling_contribution_after);
+            setRadioValue('format_a_q1', formData.format_a_q1);
+            setRadioValue('format_a_q2', formData.format_a_q2);
+            setRadioValue('format_a_q3', formData.format_a_q3);
+            setRadioValue('format_b_q1', formData.format_b_q1);
+            setRadioValue('format_b_q2', formData.format_b_q2);
+            setRadioValue('format_b_q3', formData.format_b_q3);
+            setRadioValue('format_c_q1', formData.format_c_q1);
+            setRadioValue('format_c_q2', formData.format_c_q2);
+            setRadioValue('format_c_q3', formData.format_c_q3);
+            setRadioValue('overall_trust', formData.overall_trust);
+
+            // Restore stage visibility
+            if (savedStage === '2') {
+                stage1.classList.add('stage-hidden');
+                stage2.classList.remove('stage-hidden');
+            }
+
+            console.log('Form data restored from auto-save');
+        } catch (error) {
+            console.warn('Failed to restore form data:', error);
+        }
+    }
+
+    /**
+     * Clear saved form data from localStorage
+     */
+    function clearFormData() {
+        try {
+            localStorage.removeItem(STORAGE_KEY);
+            localStorage.removeItem(STAGE_KEY);
+            console.log('Saved form data cleared');
+        } catch (error) {
+            console.warn('Failed to clear form data:', error);
+        }
+    }
+
+    /**
+     * Set radio button value
+     * @param {string} name - Radio button group name
+     * @param {number|null} value - Value to set
+     */
+    function setRadioValue(name, value) {
+        if (value === null || value === undefined) return;
+        const radio = document.querySelector(`input[name="${name}"][value="${value}"]`);
+        if (radio) radio.checked = true;
     }
 
     /**
@@ -110,6 +251,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Update the existing Firebase document with stage 2 data
             await updateFirebaseDocument(stage1DocumentId, stage2Data);
+
+            // Clear saved form data after successful submission
+            clearFormData();
 
             // Show success message
             showMessage('success', 'Vielen Dank! Ihr vollständiges Feedback wurde erfolgreich gespeichert.');

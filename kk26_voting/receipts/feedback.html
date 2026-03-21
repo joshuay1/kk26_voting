@@ -342,6 +342,22 @@
                 font-size: 0.85rem;
             }
         }
+
+        .auto-save-notice {
+            background: rgba(69, 123, 157, 0.15);
+            border: 1.5px solid var(--accent-blue);
+            border-radius: 8px;
+            padding: var(--spacing-sm) var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+            text-align: center;
+            font-size: var(--fs-xs);
+            color: var(--text-dim);
+            font-style: italic;
+        }
+
+        body.light-mode .auto-save-notice {
+            background: rgba(69, 123, 157, 0.1);
+        }
     </style>
 
     <!-- Theme -->
@@ -406,6 +422,11 @@
 
     <!-- Feedback form -->
     <form id="feedback-form" class="feedback-form">
+        <!-- Auto-save notice -->
+        <div class="auto-save-notice">
+            💾 Ihre Antworten werden automatisch gespeichert. Sie können jederzeit zurückkommen und weitermachen.
+        </div>
+
         <!-- STAGE 1: Quick Feedback -->
         <div id="stage-1">
             <div class="stage-indicator">TEIL 1 VON 2</div>
