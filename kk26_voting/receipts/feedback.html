@@ -246,65 +246,6 @@
             display: none;
         }
 
-        .continue-message {
-            max-width: 800px;
-            margin: var(--spacing-lg) auto;
-            padding: var(--spacing-lg);
-            background: rgba(69, 123, 157, 0.15);
-            border: 1.5px solid rgba(69, 123, 157, 0.3);
-            border-radius: 12px;
-            text-align: center;
-        }
-
-        .continue-message h3 {
-            font-family: var(--font-mono);
-            font-size: var(--fs-lg);
-            color: var(--accent-blue);
-            margin-bottom: var(--spacing-sm);
-        }
-
-        .continue-message p {
-            color: var(--text-muted);
-            margin-bottom: var(--spacing-md);
-            line-height: 1.6;
-        }
-
-        .continue-btn,
-        .skip-btn {
-            padding: var(--spacing-sm) var(--spacing-lg);
-            border: none;
-            border-radius: 8px;
-            font-size: var(--fs-sm);
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-family: var(--font-mono);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin: 0 var(--spacing-xs);
-        }
-
-        .continue-btn {
-            background: var(--accent-blue);
-            color: white;
-        }
-
-        .continue-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(69, 123, 157, 0.3);
-        }
-
-        .skip-btn {
-            background: transparent;
-            color: var(--text-dim);
-            border: 1px solid var(--filter-border);
-        }
-
-        .skip-btn:hover {
-            color: var(--text-primary);
-            border-color: var(--text-dim);
-        }
-
         .stage-indicator {
             text-align: center;
             margin-bottom: var(--spacing-lg);
@@ -321,12 +262,6 @@
 
             .stage-indicator {
                 font-size: var(--fs-xs);
-            }
-
-            .continue-btn,
-            .skip-btn {
-                width: 100%;
-                margin: var(--spacing-xs) 0;
             }
 
             .form-label {
@@ -391,18 +326,6 @@
             .submit-btn {
                 padding: var(--spacing-md);
                 font-size: var(--fs-base);
-            }
-
-            .continue-message {
-                padding: var(--spacing-md);
-            }
-
-            .continue-message h3 {
-                font-size: var(--fs-md);
-            }
-
-            .continue-message p {
-                font-size: var(--fs-sm);
             }
         }
 
@@ -607,48 +530,14 @@
                         <span>7 = sehr stark</span>
                     </div>
                 </div>
-            </div>
-
-            <!-- Open-Ended Question -->
-            <div class="form-section">
-                <legend>Ihr Feedback</legend>
-
-                <div class="form-group">
-                    <label class="form-label" for="open-question">
-                        Was möchten Sie uns noch mitteilen?<span class="required-indicator">*</span>
-                    </label>
-                    <textarea
-                        id="open-question"
-                        name="open_question"
-                        class="textarea-field"
-                        placeholder="Teilen Sie uns Ihre Gedanken mit..."
-                        rows="8"
-                        required
-                    ></textarea>
-                </div>
-            </div>
-
-            <!-- Stage 1 Submit button -->
-            <button type="submit" class="submit-btn" id="stage-1-submit">
-                Feedback absenden
-            </button>
-        </div>
-
-        <!-- STAGE 2: Detailed Questions (hidden initially) -->
-        <div id="stage-2" class="stage-hidden">
-            <div class="stage-indicator">TEIL 2 VON 2 (OPTIONAL)</div>
-
-            <!-- Contribution question AFTER seeing receipt -->
-            <div class="form-section">
-                <legend>Nach dem Ansehen der Quittung</legend>
 
                 <div class="form-group">
                     <label class="form-label">
-                        Haben Sie das Gefühl, dass Ihre Stimme etwas bewirkt hat? (Nach dem Ansehen der Quittung)
+                        Haben Sie das Gefühl, dass Ihre Stimme etwas bewirkt hat? (Nach dem Ansehen der Quittung)<span class="required-indicator">*</span>
                     </label>
                     <div class="rating-scale">
                         <div class="rating-option">
-                            <input type="radio" id="contribution-after-1" name="feeling_contribution_after" value="1">
+                            <input type="radio" id="contribution-after-1" name="feeling_contribution_after" value="1" required>
                             <label for="contribution-after-1">1</label>
                         </div>
                         <div class="rating-option">
@@ -682,6 +571,35 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Open-Ended Question -->
+            <div class="form-section">
+                <legend>Ihr Feedback</legend>
+
+                <div class="form-group">
+                    <label class="form-label" for="open-question">
+                        Was möchten Sie uns noch mitteilen?<span class="required-indicator">*</span>
+                    </label>
+                    <textarea
+                        id="open-question"
+                        name="open_question"
+                        class="textarea-field"
+                        placeholder="Teilen Sie uns Ihre Gedanken mit..."
+                        rows="8"
+                        required
+                    ></textarea>
+                </div>
+            </div>
+
+            <!-- Stage 1 Submit button -->
+            <button type="submit" class="submit-btn" id="stage-1-submit">
+                Feedback absenden
+            </button>
+        </div>
+
+        <!-- STAGE 2: Detailed Questions (hidden initially) -->
+        <div id="stage-2" class="stage-hidden">
+            <div class="stage-indicator">TEIL 2 VON 2 (OPTIONAL)</div>
 
             <!-- Format A: Personal Receipts -->
         <div class="form-section">
@@ -1103,24 +1021,17 @@
             </div>
         </div>
 
-            <!-- Stage 2 Submit button -->
-            <button type="submit" class="submit-btn" id="stage-2-submit">
-                Detailliertes Feedback absenden
-            </button>
+            <!-- Stage 2 Submit and Skip buttons -->
+            <div style="display: flex; gap: 1rem; justify-content: center; margin-top: var(--spacing-lg);">
+                <button type="button" class="submit-btn" style="background: transparent; color: var(--text-dim); border: 1.5px solid var(--filter-border);" id="stage-2-skip">
+                    Überspringen
+                </button>
+                <button type="submit" class="submit-btn" id="stage-2-submit">
+                    Detailliertes Feedback absenden
+                </button>
+            </div>
         </div>
     </form>
-
-    <!-- Transition message (shown after stage 1) -->
-    <div id="continue-message" class="continue-message stage-hidden">
-        <h3>Vielen Dank für Ihr Feedback!</h3>
-        <p>Ihre Antworten wurden gespeichert. Möchten Sie noch detailliertere Fragen zu den einzelnen Formaten beantworten? Dies dauert etwa 2-3 Minuten.</p>
-        <button type="button" class="continue-btn" id="continue-btn">
-            Ja, weiter zu den detaillierten Fragen
-        </button>
-        <button type="button" class="skip-btn" id="skip-btn">
-            Nein, danke
-        </button>
-    </div>
 
     <!-- Message container (populated by JS) -->
     <div id="message-container"></div>

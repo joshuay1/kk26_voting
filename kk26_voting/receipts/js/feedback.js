@@ -8,9 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('feedback-form');
     const stage1 = document.getElementById('stage-1');
     const stage2 = document.getElementById('stage-2');
-    const continueMessage = document.getElementById('continue-message');
-    const continueBtn = document.getElementById('continue-btn');
-    const skipBtn = document.getElementById('skip-btn');
+    const stage2SkipBtn = document.getElementById('stage-2-skip');
     const messageContainer = document.getElementById('message-container');
 
     let stage1Data = null; // Store stage 1 data
@@ -20,20 +18,11 @@ document.addEventListener('DOMContentLoaded', function() {
         form.addEventListener('submit', handleFormSubmit);
     }
 
-    // Continue to stage 2
-    if (continueBtn) {
-        continueBtn.addEventListener('click', function() {
-            continueMessage.classList.add('stage-hidden');
-            stage2.classList.remove('stage-hidden');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
-    }
-
-    // Skip stage 2
-    if (skipBtn) {
-        skipBtn.addEventListener('click', function() {
+    // Skip stage 2 button
+    if (stage2SkipBtn) {
+        stage2SkipBtn.addEventListener('click', function() {
             showMessage('success', 'Vielen Dank für Ihr Feedback!');
-            continueMessage.classList.add('stage-hidden');
+            stage2.classList.add('stage-hidden');
             setTimeout(() => {
                 window.location.href = 'index.html';
             }, 2000);
@@ -99,9 +88,9 @@ document.addEventListener('DOMContentLoaded', function() {
             // Hide stage 1
             stage1.classList.add('stage-hidden');
 
-            // Show continue message
-            continueMessage.classList.remove('stage-hidden');
-            continueMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            // Show stage 2 directly
+            stage2.classList.remove('stage-hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
 
         } finally {
             submitBtn.disabled = false;
@@ -155,6 +144,7 @@ document.addEventListener('DOMContentLoaded', function() {
             open_question: document.getElementById('open-question')?.value.trim() || '',
             overall_understanding: getRadioValue('overall_understanding'),
             feeling_contribution_before: getRadioValue('feeling_contribution_before'),
+            feeling_contribution_after: getRadioValue('feeling_contribution_after'),
             stage_completed: 1,
             metadata: {
                 submitted_at: new Date().toISOString(),
@@ -175,7 +165,6 @@ document.addEventListener('DOMContentLoaded', function() {
      */
     function collectStage2Data() {
         const data = {
-            feeling_contribution_after: getRadioValue('feeling_contribution_after'),
             format_a: {
                 q1_understanding_funding: getRadioValue('format_a_q1'),
                 q2_vote_impact: getRadioValue('format_a_q2'),
@@ -230,6 +219,11 @@ document.addEventListener('DOMContentLoaded', function() {
         // Check feeling contribution before is answered
         if (data.feeling_contribution_before === null || data.feeling_contribution_before < 1 || data.feeling_contribution_before > 7) {
             throw new Error('Bitte beantworten Sie die Frage zum Beitragsgefühl (vor dem Ansehen der Quittung).');
+        }
+
+        // Check feeling contribution after is answered
+        if (data.feeling_contribution_after === null || data.feeling_contribution_after < 1 || data.feeling_contribution_after > 7) {
+            throw new Error('Bitte beantworten Sie die Frage zum Beitragsgefühl (nach dem Ansehen der Quittung).');
         }
 
         return true;
