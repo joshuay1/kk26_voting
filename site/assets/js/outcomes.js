@@ -19,7 +19,7 @@ async function loadGroupData(group) {
         console.error('Error loading data:', err);
         const tableBody = document.getElementById('table-body');
         if (tableBody) {
-            tableBody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 3rem; color: #f72585;">Fehler beim Laden der Daten.<br><small>${err.message}</small></td></tr>`;
+            tableBody.innerHTML = `<tr><td colspan="9" style="text-align: center; padding: 3rem; color: #f72585;">Fehler beim Laden der Daten.<br><small>${err.message}</small></td></tr>`;
         }
     }
 }
@@ -130,7 +130,7 @@ function renderOutcomeRows(tbody, data, group) {
             <td class="col-points-per-person" style="text-align: center;"><span class="metric-value">${pointsPerPerson}</span></td>
             <td class="col-efficiency" style="text-align: center;"><span class="metric-value">${totalUtility > 0 ? parseFloat(item.Efficiency || 0).toFixed(0) : '—'}</span></td>
             <td class="col-status" style="text-align: center;">
-                ${isFunded ? `<span class="status-pill" title="Vom MES finanziert" aria-label="Vom MES finanziert" style="display: inline-flex; align-items: center; justify-content: center; font-size: 0.95rem; line-height: 1;">✅</span>` : '<span style="color: #ccc;">—</span>'}
+                ${isFunded ? `<span class="status-pill" title="Vom MES finanziert" aria-label="Vom MES finanziert">✓</span>` : '<span style="color: #ccc;">—</span>'}
             </td>
             <td class="col-coverage" style="text-align: center;">
                 <div class="metric-value" style="font-weight: 700; color: ${isFunded ? '#2a9d8f' : '#e76f51'};">
@@ -193,11 +193,19 @@ window.renderOutcomeTableForGroup = renderOutcomeTableForGroup;
 
 // Initial load
 document.addEventListener('DOMContentLoaded', () => {
-    if (window.KK26_OUTCOMES && document.getElementById('table-body')) {
-        loadGroupData('ROT');
-    } else {
-        if (!window.KK26_OUTCOMES) {
-            console.error('KK26_OUTCOMES not found. Check data.js loading.');
-        }
-    }
+    (window.KK26_DATA_READY || Promise.resolve())
+        .then(() => {
+            if (window.KK26_OUTCOMES && document.getElementById('table-body')) {
+                loadGroupData('ROT');
+            } else if (!window.KK26_OUTCOMES) {
+                console.error('KK26_OUTCOMES not found. Check assets/data/kk26.json loading.');
+            }
+        })
+        .catch(err => {
+            console.error('Error loading public data:', err);
+            const tableBody = document.getElementById('table-body');
+            if (tableBody) {
+                tableBody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 3rem; color: #f72585;">Fehler beim Laden der öffentlichen Daten.</td></tr>';
+            }
+        });
 });

@@ -10,10 +10,11 @@
     <link
         href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="css/common.css">
-    <script src="js/theme.js"></script>
+    <link rel="stylesheet" href="assets/css/common.css">
+    <script src="assets/js/theme.js"></script>
     <script>initTheme();</script>
-    <script src="js/data.js?v=20260320-summary-v3"></script>
+    <script src="assets/data/kk26-data.js?v=20260617-public-data-js"></script>
+    <script src="assets/js/data-loader.js?v=20260617-public-data-js"></script>
     <style>
         /* Page-specific styles */
 
@@ -542,6 +543,348 @@
                 padding-right: 0.9rem !important;
             }
         }
+
+        .receipt-modern.project-card {
+            background: #ffffff !important;
+            border: 2px solid #000000 !important;
+            border-left: 2px solid #000000 !important;
+            border-top: 2px solid #000000 !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            color: #000000 !important;
+            overflow: hidden !important;
+            font-family: var(--font-main) !important;
+        }
+
+        .receipt-modern.project-card.funded,
+        .receipt-modern.project-card.unfunded {
+            border-left: 2px solid #000000 !important;
+        }
+
+        .receipt-modern.project-card .receipt-content.project-card-content {
+            display: grid !important;
+            gap: 0.75rem !important;
+            padding: 1rem !important;
+        }
+
+        .project-card-topline,
+        .project-card-header,
+        .project-bottom-bar,
+        .budget-coverage-topline {
+            width: 100%;
+        }
+
+        .project-card-topline {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 0.75rem;
+        }
+
+        .project-card-status {
+            display: inline-flex;
+            align-items: center;
+            min-height: 1.75rem;
+            padding: 0.3rem 0.55rem;
+            background: #000000;
+            color: #ffffff;
+            font-family: var(--font-main);
+            font-size: 0.74rem;
+            font-weight: 700;
+            line-height: 1;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .receipt-modern.project-card .receipt-top-meta {
+            display: flex !important;
+            justify-content: flex-end !important;
+            align-items: center !important;
+            gap: 0.38rem !important;
+            flex-wrap: wrap !important;
+        }
+
+        .receipt-modern.project-card .group-pill,
+        .receipt-modern.project-card .project-id-pill {
+            display: inline-flex !important;
+            align-items: center !important;
+            min-height: 1.75rem !important;
+            padding: 0.3rem 0.5rem !important;
+            background: #ffffff !important;
+            border: 2px solid #000000 !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            color: #000000 !important;
+            font-family: var(--font-main) !important;
+            font-size: 0.78rem !important;
+            font-weight: 700 !important;
+            letter-spacing: 0 !important;
+            line-height: 1 !important;
+        }
+
+        .receipt-modern.project-card .project-card-header {
+            display: grid;
+            gap: 0.22rem;
+        }
+
+        .receipt-modern.project-card .receipt-brand-line {
+            display: flex !important;
+            align-items: center !important;
+            gap: 0.4rem !important;
+            padding: 0 !important;
+        }
+
+        .receipt-modern.project-card .logo-small,
+        .receipt-modern.project-card .subtitle-small {
+            color: #000000 !important;
+            font-family: var(--font-main) !important;
+            font-size: 0.84rem !important;
+            font-weight: 700 !important;
+            letter-spacing: 0.04em !important;
+            text-transform: uppercase !important;
+        }
+
+        .receipt-modern.project-card .subtitle-small {
+            color: rgba(0, 0, 0, 0.62) !important;
+            font-weight: 600 !important;
+        }
+
+        .receipt-modern.project-card .project-title {
+            color: #000000 !important;
+            font-family: var(--font-main) !important;
+            font-size: 1.3rem !important;
+            font-weight: 700 !important;
+            line-height: 1.08 !important;
+            margin: 0 !important;
+            overflow-wrap: anywhere;
+        }
+
+        .project-supporter-count {
+            color: rgba(0, 0, 0, 0.5);
+            font-family: var(--font-main);
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .supporter-table-frame {
+            border: 2px solid #000000;
+            overflow: hidden;
+        }
+
+        .receipt-modern.project-card .project-supporters-table {
+            width: 100% !important;
+            background: #ffffff !important;
+            border-collapse: collapse !important;
+            font-family: var(--font-main) !important;
+            font-size: 0.86rem !important;
+        }
+
+        .receipt-modern.project-card .project-supporters-table th,
+        .receipt-modern.project-card .project-supporters-table td {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.12) !important;
+            color: #000000 !important;
+            padding: 0.28rem 0.45rem !important;
+            vertical-align: middle;
+        }
+
+        .receipt-modern.project-card .project-supporters-table th {
+            background: #f5f5f5 !important;
+            font-size: 0.76rem !important;
+            font-weight: 700 !important;
+            text-align: left;
+            text-transform: uppercase;
+        }
+
+        .supporter-id-col {
+            width: 55%;
+        }
+
+        .supporter-vote-col {
+            width: 15%;
+            text-align: right !important;
+        }
+
+        .supporter-amount-col {
+            width: 30%;
+            text-align: right !important;
+        }
+
+        .receipt-modern.project-card .project-supporter-row .item-title {
+            font-weight: 700;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .supporter-budget {
+            color: rgba(0, 0, 0, 0.48);
+            font-size: 0.76rem;
+            font-weight: 600;
+            margin-left: 0.18rem;
+        }
+
+        .receipt-modern.project-card .project-supporter-row .item-vote,
+        .receipt-modern.project-card .project-supporter-row .item-amount {
+            text-align: right;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .receipt-modern.project-card .supporter-total-row {
+            background: #f5f5f5 !important;
+        }
+
+        .receipt-modern.project-card .supporter-total-row td {
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .supporter-total-row span {
+            display: block;
+            color: rgba(0, 0, 0, 0.52);
+            font-size: 0.62rem;
+            font-weight: 700;
+        }
+
+        .supporter-total-row strong {
+            display: block;
+            font-size: 0.95rem;
+            line-height: 1.1;
+        }
+
+        .receipt-modern.project-card .reasoning-box,
+        .receipt-modern.project-card .rejection-box {
+            background: #ffffff !important;
+            border: 2px solid #000000 !important;
+            border-left: 2px solid #000000 !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            margin: 0 !important;
+            padding: 0.7rem 0.8rem !important;
+        }
+
+        .receipt-modern.project-card .reasoning-box p {
+            color: rgba(0, 0, 0, 0.72);
+            font-size: 0.82rem;
+            font-style: italic;
+            font-weight: 600;
+            line-height: 1.45;
+            margin: 0;
+        }
+
+        .budget-coverage-topline {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            color: rgba(0, 0, 0, 0.58);
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .budget-coverage-topline strong {
+            color: #000000;
+            font-size: 0.82rem;
+        }
+
+        .budget-coverage-track {
+            height: 0.32rem;
+            margin-top: 0.35rem;
+            background: rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .budget-coverage-fill {
+            width: var(--coverage);
+            height: 100%;
+            background: #000000;
+        }
+
+        .receipt-modern.project-card .project-bottom-bar {
+            display: grid !important;
+            grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+            gap: 0 !important;
+            margin: 0 -1rem -1rem !important;
+            padding: 0 !important;
+            background: #f5f5f5 !important;
+            border: 0 !important;
+            border-top: 2px solid #000000 !important;
+            border-radius: 0 !important;
+        }
+
+        .receipt-modern.project-card .project-bottom-metric,
+        .receipt-modern.project-card .project-bottom-metric-primary {
+            display: grid !important;
+            align-content: center !important;
+            justify-items: center !important;
+            min-width: 0 !important;
+            min-height: 3.9rem !important;
+            padding: 0.55rem 0.45rem !important;
+            background: transparent !important;
+            border: 0 !important;
+            border-right: 1px solid rgba(0, 0, 0, 0.18) !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            color: #000000 !important;
+            text-align: center !important;
+        }
+
+        .receipt-modern.project-card .project-bottom-metric:last-child {
+            border-right: 0 !important;
+        }
+
+        .receipt-modern.project-card .project-bottom-metric span {
+            color: rgba(0, 0, 0, 0.5) !important;
+            font-family: var(--font-main) !important;
+            font-size: 0.62rem !important;
+            font-weight: 700 !important;
+            letter-spacing: 0 !important;
+            text-transform: uppercase !important;
+        }
+
+        .receipt-modern.project-card .project-bottom-metric strong {
+            color: #000000 !important;
+            font-family: var(--font-main) !important;
+            font-size: 1.08rem !important;
+            font-weight: 700 !important;
+            line-height: 1 !important;
+        }
+
+        .receipt-modern.project-card .project-bottom-metric small {
+            color: rgba(0, 0, 0, 0.52);
+            font-size: 0.65rem;
+            font-weight: 600;
+        }
+
+        @media (max-width: 700px) {
+            .receipt-modern.project-card .receipt-content.project-card-content {
+                padding: 0.85rem !important;
+            }
+
+            .project-card-topline {
+                align-items: center;
+            }
+
+            .receipt-modern.project-card .receipt-top-meta {
+                justify-content: flex-end !important;
+            }
+
+            .receipt-modern.project-card .project-bottom-bar {
+                grid-template-columns: 1fr !important;
+                margin: 0 -0.85rem -0.85rem !important;
+            }
+
+            .receipt-modern.project-card .project-bottom-metric {
+                border-right: 0 !important;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.18) !important;
+            }
+
+            .receipt-modern.project-card .project-bottom-metric:last-child {
+                border-bottom: 0 !important;
+            }
+        }
     </style>
 </head>
 
@@ -555,10 +898,13 @@
         <a href="index.html" class="nav-link">Persönlich</a>
         <a href="projects.html" class="nav-link active">Projekte</a>
         <a href="outcomes.html" class="nav-link">Outcome-Tabelle</a>
-        <a href="feedback.html" class="nav-link">Feedback</a>
+        <a href="info.html" class="nav-link">Info</a>
     </div>
     <div class="page-header">
-        <div class="brand-logo">KK26_Quttig</div>
+        <div class="brand-logo">
+            <span class="brand-logo-title">KULTUR KOMITEE</span>
+            <span class="brand-logo-subtitle">Equal Shares &amp; Voting Receipts</span>
+        </div>
         <h1>Projekt-Quittungen</h1>
     </div>
 
@@ -707,7 +1053,7 @@
                 Yang</strong> (ETH Zürich, <a href="mailto:joyang@ethz.ch"
                 style="color: var(--text-muted); text-decoration: underline;">joyang@ethz.ch</a>)</p>
     </footer>
-    <script src="projects.js"></script>
+    <script src="assets/js/projects.js"></script>
 </body>
 
 </html>

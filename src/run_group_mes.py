@@ -19,6 +19,36 @@ os.makedirs(output_dir, exist_ok=True)
 
 utility_map = {'Ja': 2, 'EherJa': 1, 'EherNein': 0, 'Nein': 0}
 score_map = {'Ja': 2, 'EherJa': 1, 'EherNein': -1, 'Nein': -2}
+UNIFIED_EXPLANATION_VERSION = 3
+
+
+def format_chf(value):
+    if value is None or pd.isna(value):
+        return "–"
+    return f"{value:,.0f}".replace(",", "'")
+
+
+def format_number(value, digits=2):
+    if value is None or pd.isna(value):
+        return "–"
+    return f"{value:.{digits}f}"
+
+
+def classify_mes_edge_case(is_mes, support_share_pct, coverage_pct, mean_score):
+    near_threshold = 97 <= coverage_pct <= 103
+    strong_support = support_share_pct >= 50
+    moderate_support = support_share_pct < 50
+    mixed_sentiment = mean_score < 0
+
+    if not is_mes and strong_support and coverage_pct < 100:
+        return "popular_but_unaffordable"
+    if is_mes and moderate_support:
+        return "funded_with_moderate_support"
+    if near_threshold:
+        return "near_affordability_threshold"
+    if is_mes and mixed_sentiment:
+        return "funded_despite_mixed_reactions"
+    return "standard"
 
 def get_qualitative_summary(p_id, title, comments, support_count, mean_score, total_voters):
     if not comments:
@@ -61,44 +91,125 @@ def get_qualitative_summary(p_id, title, comments, support_count, mean_score, to
     except Exception as e:
         return {"de": f"Zusammenfassung nicht verfügbar", "en": f"Summary not available"}
 
-def get_unified_voter_explanation(p_id, title, comments, support_count, mean_score, is_mes, cost_val, outcome_logic, total_voters):
+def get_unified_voter_explanation(
+    p_id,
+    title,
+    comments,
+    support_count,
+    mean_score,
+    is_mes,
+    cost_val,
+    outcome_logic,
+    total_voters,
+    total_utility,
+    supporter_budget,
+    group_budget_remaining,
+    rho,
+    rank,
+):
     """
     Combines votes, comments, and MES logic into a single, cohesive, simple narrative.
     """
+    support_share_pct = (support_count / total_voters * 100) if total_voters else 0
+    coverage_pct = (supporter_budget / cost_val * 100) if cost_val else 0
+    affordability_gap = supporter_budget - cost_val
+    rho_text = format_number(rho, 2) if isinstance(rho, (int, float)) and not pd.isna(rho) else "not available"
+    gap_direction = "surplus" if affordability_gap >= 0 else "shortfall"
+    gap_amount = abs(affordability_gap)
+    explanation_mode = classify_mes_edge_case(is_mes, support_share_pct, coverage_pct, mean_score)
+
     prompt = f"""
     Project: '{title}' ({p_id})
-    Votes: {support_count} out of {total_voters} people supported this (COMMUNITY BACKING)
-    Average Score: {mean_score:.2f}
-    Cost: {cost_val} CHF
+    MES Snapshot:
+    - Rank in MES order: {rank}
     Status: {'FUNDED' if is_mes else 'NOT FUNDED'}
-    Context: {outcome_logic}
+    - Supporters: {support_count} out of {total_voters} people ({support_share_pct:.1f}%)
+    - Total utility points: {total_utility}
+    - Average score: {mean_score:.2f}
+    - Project cost: CHF {format_chf(cost_val)}
+    - Supporter budget at consideration: CHF {format_chf(supporter_budget)}
+    - Coverage at consideration: {coverage_pct:.1f}%
+    - Affordability {gap_direction}: CHF {format_chf(gap_amount)}
+    - Group budget remaining at consideration: CHF {format_chf(group_budget_remaining)}
+    - MES rho / price per point: {rho_text}
+    - Explanation mode: {explanation_mode}
+    Algorithmic context: {outcome_logic}
     Voter Comments: {' | '.join(comments) if comments else 'None'}
     
     Instruction:
-    1. Write a single, warm, and cohesive explanation (2 sentences) in positive, human-like language.
-    2. Focus on how the project resonated with the community.
-    3. CRITICAL: Frame the support level ({support_count}/{total_voters}) accurately. 
-    - If more than 50% of people supported it, highlight its great popularity. 
-    - Never say "few votes" if more than 30% of the group voted for it.
-    4. If there were critical comments but high votes, explain that the project convinced many voters despite some open questions.
-    5. If it was NOT funded, express regret: "Despite its many supporters, the project unfortunately could not be realized this time due to the limited total budget and other priorities." (adapt this naturally).
-    6. Ensure the language is warm, direct, and non-bureaucratic.
-    7. Return a German (Swiss Standard, no 'ß') and an English version.
-    8. Return ONLY a JSON object: {{"de": "...", "en": "..."}}
+    1. Write a short explanation in 2 or 3 sentences.
+    2. Use simple, direct, easy-to-understand language. Avoid jargon and unnecessarily complex wording.
+    3. Start with what people liked, questioned, or found important about the project.
+    4. In normal cases, keep the focus on the comments, the support level, and the overall impression. MES should stay in the background.
+    5. Only explain the MES logic more clearly if the case is hard to understand, especially if `Explanation mode` is:
+       - `popular_but_unaffordable`
+       - `funded_with_moderate_support`
+       - `near_affordability_threshold`
+       - `funded_despite_mixed_reactions`
+    6. In those edge cases, explain the result in plain language and use one or two concrete numbers from the MES snapshot.
+    7. Be specific, but only mention the numbers that really help.
+    8. If support is high, say that clearly. If support is mixed, say that clearly too.
+    9. Do not use vague phrases like "other priorities" unless you explain them with the data.
+    10. Use Swiss Standard German (no 'ß') for the German version.
+    11. Return a German and an English version.
+    12. Return ONLY a JSON object: {{"de": "...", "en": "..."}}
     """
     try:
         response = client.chat.completions.create(
             model="gpt-5.1",
             response_format={"type": "json_object"},
             messages=[
-                {"role": "system", "content": "You are a warm and helpful community advisor. You write in a personal, encouraging, and human tone. You frame support relative to the group size and value every vote."},
+                {"role": "system", "content": "You are a warm and clear community advisor. You write in direct, easy-to-understand language and use data only when it helps explain the result."},
                 {"role": "user", "content": prompt}
             ]
         )
         content = response.choices[0].message.content
         return json.loads(content)
     except Exception as e:
-        return {"de": f"Erklärung: {outcome_logic}", "en": f"Explanation: {outcome_logic}"}
+        if is_mes and explanation_mode == "standard":
+            de = (
+                f"{title} fand in der Gruppe Resonanz und wurde von {support_count} von {total_voters} Personen unterstützt. "
+                f"Die Rückmeldungen zeigen, warum das Projekt für einige inhaltlich überzeugt hat und schliesslich auch finanziert wurde."
+            )
+            en = (
+                f"{title} resonated with the group and was supported by {support_count} out of {total_voters} people. "
+                f"The feedback shows why the project appealed to participants and ultimately received funding."
+            )
+        elif is_mes:
+            rho_clause_de = f" Der Preis lag bei CHF {format_number(rho, 0)} pro Punkt." if isinstance(rho, (int, float)) and not pd.isna(rho) else ""
+            rho_clause_en = f" Its price was CHF {format_number(rho, 0)} per point." if isinstance(rho, (int, float)) and not pd.isna(rho) else ""
+            de = (
+                f"{title} erhielt {support_count} von {total_voters} Unterstützer:innen und wurde im MES finanziert, "
+                f"weil diese Unterstützer:innen die benötigten CHF {format_chf(cost_val)} bei der Prüfung decken konnten."
+                f"{rho_clause_de}"
+            )
+            en = (
+                f"{title} received support from {support_count} out of {total_voters} people and was funded by MES "
+                f"because those supporters could cover the required CHF {format_chf(cost_val)} when it was considered."
+                f"{rho_clause_en}"
+            )
+        elif explanation_mode == "standard":
+            de = (
+                f"{title} fand in der Gruppe durchaus Anklang und wurde von {support_count} von {total_voters} Personen unterstützt. "
+                f"Die Rückmeldungen zeigen, wo das Projekt überzeugt hat und wo für einige noch Fragen offen blieben."
+            )
+            en = (
+                f"{title} did resonate with the group and was supported by {support_count} out of {total_voters} people. "
+                f"The feedback shows what people found compelling and where some still had open questions."
+            )
+        else:
+            shortfall = max(0, cost_val - supporter_budget)
+            de = (
+                f"{title} erhielt zwar {support_count} von {total_voters} Unterstützer:innen und {total_utility} Punkte, "
+                f"wurde im MES aber nicht finanziert. Entscheidend war, dass bei der Prüfung nur CHF {format_chf(supporter_budget)} "
+                f"für benötigte CHF {format_chf(cost_val)} verfügbar waren; es fehlten also CHF {format_chf(shortfall)}."
+            )
+            en = (
+                f"{title} did receive support from {support_count} out of {total_voters} people and reached {total_utility} points, "
+                f"but it was not funded by MES. The decisive reason was that only CHF {format_chf(supporter_budget)} were available "
+                f"when it was considered, while CHF {format_chf(cost_val)} were needed, leaving a shortfall of CHF {format_chf(shortfall)}."
+            )
+        return {"de": de, "en": en}
 
 def get_individual_explanation(voter_id, p, title, vote, cost_val, amount_paid, is_funded, voter_spent, voter_rem, total_utility, rho, rank, support_cnt):
     prompt = f"""
@@ -120,7 +231,10 @@ def get_individual_explanation(voter_id, p, title, vote, cost_val, amount_paid, 
         )
         return json.loads(response.choices[0].message.content)
     except Exception as e:
-        return {"de": "Erklärung nicht verfügbar", "en": "Explanation not available"}
+        return {
+            "de": f"Das Projekt \"{title}\" konnte im MES nicht finanziert werden. Zwar wurde es von {support_cnt} Unterstützer:innen getragen, aber innerhalb des verfügbaren Budgets reichte es diesmal nicht für die benötigten {cost_val} CHF.",
+            "en": f"The project \"{title}\" could not be funded by MES. It had support from {support_cnt} supporters, but within the available budget it still fell short of the required {cost_val} CHF."
+        }
 
 def get_algorithmic_rationale(p, title, is_mes, is_greedy, cost_val, total_utility, support_cnt, mes_voters, group_budget, tb_type, rho, metadata=None):
     rho_str = f"{rho:.2f}" if isinstance(rho, (int, float)) else str(rho)
@@ -169,6 +283,8 @@ for input_file in input_files:
                 try:
                     p_id = str(int(row.get('Project_ID', 0))).zfill(3)
                     existing_rationales[p_id] = {
+                        "mes_winner": row.get('MES_Winner', 'No'),
+                        "unified_version": row.get('Unified_Explanation_Version', 0),
                         "qual": {"de": row.get('Qualitative_Rationale_DE', 'N/A'), "en": row.get('Qualitative_Rationale_EN', 'N/A')},
                         "algo": {"de": row.get('Algorithmic_Rationale_DE', 'N/A'), "en": row.get('Algorithmic_Rationale_EN', 'N/A')},
                         "unified": {"de": row.get('Unified_Explanation_DE', 'N/A'), "en": row.get('Unified_Explanation_EN', 'N/A')}
@@ -288,6 +404,15 @@ for input_file in input_files:
         for i, p in enumerate(remaining_projects_sorted):
             mes_rank_map[p] = len(new_rank_order) + i + 1
 
+        spent_before_by_project = {}
+        spent_so_far = 0
+        for event_project in event_log:
+            spent_before_by_project[event_project] = spent_so_far
+            if event_project in winners_mes:
+                spent_so_far += cost[event_project]
+        for p in projects:
+            spent_before_by_project.setdefault(p, spent_so_far)
+
         # Outcome Analysis
         outcome_results = []
         for p in projects:
@@ -303,33 +428,45 @@ for input_file in input_files:
             p_metadata = event_metadata.get(p)
             
             # Numeric supporter budget for "Coverage" calculation
-            p_supporter_budget = cost[p] if is_mes else (p_metadata.get('money_behind', 0) if p_metadata else 0)
+            p_supporter_budget = p_metadata.get('money_behind', cost[p] if is_mes else 0) if p_metadata else (cost[p] if is_mes else 0)
+            p_group_budget_remaining = max(0, total_budget - spent_before_by_project.get(p, 0))
 
             # USE CACHE if available to avoid expensive LLM calls
             cached = existing_rationales.get(p)
             
             # We use cache if we have it, AND (either we have rho or it's unfunded and we don't need rho)
             # Actually, the check 'cached['algo']['de'] != 'N/A'' is enough if we trust the cache.
-            if cached and cached['algo']['de'] != 'N/A':
+            cached_status_matches = cached and str(cached.get('mes_winner', 'No')) == ('Yes' if is_mes else 'No')
+            cached_unified_matches = cached and int(cached.get('unified_version', 0) or 0) == UNIFIED_EXPLANATION_VERSION
+            if cached and cached['algo']['de'] != 'N/A' and cached_status_matches:
                 print(f"  [Cache] Using existing rationale for {p}...")
                 alg_rationale = cached['algo']
                 qual_summary = cached['qual']
-                unified_explanation = cached['unified']
+                if cached_unified_matches and cached['unified']['de'] != 'N/A':
+                    unified_explanation = cached['unified']
+                else:
+                    unified_explanation = get_unified_voter_explanation(
+                        p, p_title, project_comments.get(p, []), p_support_count, p_mean_score, is_mes,
+                        cost[p], alg_rationale['de'], len(voters), p_total_utility, p_supporter_budget,
+                        p_group_budget_remaining, p_rho, mes_rank_map[p]
+                    )
             else:
                 print(f"  [LLM] Generating rationale for {p}...")
-                # ALWAYS regenerate for the new unified system
                 alg_rationale = get_algorithmic_rationale(
                     p, p_title, is_mes, is_greedy, cost[p], p_total_utility, 
                     p_support_count, mes_approver_counts.get(p,0), total_budget, tiebreak_log.get(p, "N/A"),
                     p_rho, metadata=p_metadata
                 )
 
-                # ALWAYS regenerate qualitative summary
-                qual_summary = get_qualitative_summary(p, p_title, project_comments.get(p, []), p_support_count, p_mean_score, len(voters))
+                if cached and cached['qual']['de'] != 'N/A':
+                    qual_summary = cached['qual']
+                else:
+                    qual_summary = get_qualitative_summary(p, p_title, project_comments.get(p, []), p_support_count, p_mean_score, len(voters))
                 
-                # NEW: Unified Explanation
                 unified_explanation = get_unified_voter_explanation(
-                    p, p_title, project_comments.get(p, []), p_support_count, p_mean_score, is_mes, cost[p], alg_rationale['de'], len(voters)
+                    p, p_title, project_comments.get(p, []), p_support_count, p_mean_score, is_mes,
+                    cost[p], alg_rationale['de'], len(voters), p_total_utility, p_supporter_budget,
+                    p_group_budget_remaining, p_rho, mes_rank_map[p]
                 )
             
             # Get full vote distribution
@@ -344,6 +481,7 @@ for input_file in input_files:
                 'MES_Rho': p_rho if isinstance(p_rho, (int, float)) else None,
                 'MES_Winner': 'Yes' if is_mes else 'No', 'Greedy_Winner': 'Yes' if is_greedy else 'No',
                 'Method_Agreement': 'Agree' if is_mes == is_greedy else 'Disagree',
+                'Unified_Explanation_Version': UNIFIED_EXPLANATION_VERSION,
                 'Unified_Explanation_DE': unified_explanation['de'],
                 'Unified_Explanation_EN': unified_explanation['en'],
                 'Qualitative_Rationale_DE': qual_summary['de'],

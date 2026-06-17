@@ -1,6 +1,6 @@
 """
-Generate a JSON data file for the receipts page.
-Processes the KK26 Receipts and Outcome CSVs and outputs data.json.
+Generate the public JSON data file for the receipts site.
+Processes the KK26 Receipts and Outcome CSVs and outputs site/assets/data/kk26.json.
 """
 import pandas as pd
 import os
@@ -24,7 +24,7 @@ GROUPS = {
 
 
 def generate_receipts_data():
-    output_dir = "kk26_voting/receipts/"
+    output_dir = "site/assets/data/"
     os.makedirs(output_dir, exist_ok=True)
 
     all_voter_receipts = []
@@ -227,9 +227,10 @@ def generate_receipts_data():
         "project_receipts": all_projects
     }
 
-    out_path = os.path.join(output_dir, "data.json")
+    out_path = os.path.join(output_dir, "kk26.json")
     with open(out_path, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
+        json.dump(data, f, indent=2, ensure_ascii=False, allow_nan=False)
+        f.write("\n")
     
     print(f"\n  ✅ Saved data for {len(all_voter_receipts)} voters and {len(all_projects)} projects to {out_path}")
 

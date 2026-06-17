@@ -7,10 +7,10 @@ function initTheme() {
     const savedTheme = localStorage.getItem('theme') || 'light';
     if (savedTheme === 'light') {
         document.documentElement.classList.add('light-mode');
-        document.body.classList.add('light-mode');
+        if (document.body) document.body.classList.add('light-mode');
     } else {
         document.documentElement.classList.remove('light-mode');
-        document.body.classList.remove('light-mode');
+        if (document.body) document.body.classList.remove('light-mode');
     }
 }
 

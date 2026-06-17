@@ -26,6 +26,7 @@ wheels/
 .env.*
 .claude/
 .venv/
+internal/
 # raw_data/
 # data/
 

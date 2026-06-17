@@ -11,40 +11,44 @@
     <link
         href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Inter:wght@400;600;700;850&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="css/common.css">
-    <script src="js/theme.js"></script>
+    <link rel="stylesheet" href="assets/css/common.css">
+    <script src="assets/js/theme.js"></script>
     <script>initTheme();</script>
-    <script src="js/data.js?v=20260320-summary-v3"></script>
+    <script src="assets/data/kk26-data.js?v=20260617-public-data-js"></script>
+    <script src="assets/js/data-loader.js?v=20260617-public-data-js"></script>
 
     <style>
         /* Table-specific styles */
         table {
             border-collapse: collapse;
             width: 100%;
-            max-width: 1050px;
-            margin: 0 auto;
+            min-width: 1120px;
+            max-width: none;
+            margin: 0;
             font-family: var(--font-mono);
-            font-size: var(--fs-sm);
-            table-layout: auto;
+            font-size: 0.9rem;
+            table-layout: fixed;
         }
 
         th {
             background: var(--filter-bg);
-            padding: var(--spacing-xs) 0.4rem;
+            padding: 0.62rem 0.55rem;
             text-align: left;
             color: var(--text-dim);
-            font-weight: 800;
+            font-size: 0.82rem;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0;
             border-bottom: 2px solid var(--filter-border);
+            vertical-align: middle;
         }
 
         td {
-            padding: 0.4rem var(--spacing-xs);
+            padding: 0.5rem 0.55rem;
             border-bottom: 1px solid var(--filter-border);
             color: var(--text-secondary);
             vertical-align: middle;
-            line-height: 1.25;
+            line-height: 1.18;
             white-space: nowrap;
         }
 
@@ -59,54 +63,104 @@
         .table-container {
             background: var(--filter-bg);
             border: 1px solid var(--filter-border);
-            border-radius: 8px;
+            border-radius: 0;
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            box-shadow: none;
             margin-bottom: var(--spacing-lg);
             max-width: 1200px;
             margin-left: auto;
             margin-right: auto;
         }
 
+        .table-container table {
+            width: 100% !important;
+            max-width: none !important;
+            margin: 0 !important;
+        }
+
         .col-rank {
-            width: 1%;
+            width: 4rem;
             text-align: center;
         }
 
         .col-project {
-            width: 90%;
+            width: auto;
             white-space: normal;
         }
 
         .col-cost {
-            width: 1%;
+            width: 7rem;
             text-align: right;
             padding-right: 0.7rem;
         }
 
         .col-points {
-            width: 1%;
+            width: 5.3rem;
             text-align: center;
         }
 
         .col-points-per-person {
-            width: 1%;
+            width: 6.5rem;
             text-align: center;
         }
 
         .col-efficiency {
-            width: 1%;
+            width: 6.2rem;
             text-align: center;
         }
 
         .col-status {
-            width: 1%;
+            width: 3.6rem;
             text-align: center;
         }
 
+        .col-coverage {
+            width: 7rem;
+        }
+
         .col-budget-flow {
-            width: 320px;
+            width: 9rem;
+        }
+
+        .th-rank,
+        .col-rank {
+            width: 4rem;
+        }
+
+        .th-budget,
+        .col-cost {
+            width: 7rem;
+        }
+
+        .th-points,
+        .col-points {
+            width: 5.3rem;
+        }
+
+        .th-points-per-person,
+        .col-points-per-person {
+            width: 6.5rem;
+        }
+
+        .th-efficiency,
+        .col-efficiency {
+            width: 6.2rem;
+        }
+
+        .th-status,
+        .col-status {
+            width: 3.6rem;
+        }
+
+        .th-coverage,
+        .col-coverage {
+            width: 7rem;
+        }
+
+        .th-budget-flow,
+        .col-budget-flow {
+            width: 9rem;
         }
 
         .col-id {
@@ -117,14 +171,14 @@
 
         .col-title {
             font-weight: 700;
-            font-size: var(--fs-sm);
+            font-size: 0.9rem;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
             display: inline-block;
-            max-width: 400px;
+            max-width: 100%;
             color: var(--text-primary);
-            line-height: 1.4;
+            line-height: 1.2;
             vertical-align: middle;
         }
 
@@ -204,8 +258,8 @@
         }
 
         .row-funded td {
-            background: rgba(42, 157, 143, 0.04) !important;
-            border-bottom: 1px solid rgba(42, 157, 143, 0.2);
+            background: rgba(0, 196, 115, 0.08) !important;
+            border-bottom: 1px solid var(--filter-border);
         }
 
         .tech-item.highlight-step {
@@ -216,9 +270,45 @@
             color: #2a9d8f;
         }
         .row-funded .col-rank {
-            border-left: 3px solid #2a9d8f;
-            color: #2a9d8f;
+            border-left: 0;
+            color: var(--text-primary);
             font-weight: 800;
+        }
+
+        .table-container .status-pill {
+            display: inline-grid !important;
+            place-items: center !important;
+            width: 1.3rem;
+            height: 1.3rem;
+            background: var(--accent-green);
+            color: #000000;
+            font-size: 0.95rem !important;
+            line-height: 1 !important;
+        }
+
+        .table-container .coverage-bar {
+            height: 3px !important;
+            margin-top: 0.22rem !important;
+            background: #ffffff !important;
+        }
+
+        .table-container .budget-flow-stack {
+            gap: 0.18rem !important;
+        }
+
+        .table-container .budget-flow-bar {
+            height: 0.42rem !important;
+            border-radius: 0 !important;
+        }
+
+        .table-container .budget-flow-labels {
+            justify-content: flex-end !important;
+            font-size: 0.66rem !important;
+            line-height: 1.1 !important;
+        }
+
+        .table-container .budget-flow-prefix {
+            display: none !important;
         }
 
         .footer {
@@ -251,6 +341,7 @@
             .table-container tbody {
                 display: block;
                 width: 100%;
+                min-width: 0 !important;
             }
 
             .table-container thead {
@@ -886,7 +977,6 @@
             }
         }
     </style>
-    <script>initTheme();</script>
 </head>
 
 <body>
@@ -899,13 +989,16 @@
         <a href="index.html" class="nav-link">Persönlich</a>
         <a href="projects.html" class="nav-link">Projekte</a>
         <a href="outcomes.html" class="nav-link active">Outcome-Tabelle</a>
-        <a href="feedback.html" class="nav-link">Feedback</a>
+        <a href="info.html" class="nav-link">Info</a>
     </nav>
 
     <div class="container" style="max-width: 1300px;">
         <div class="print-title">Outcome-Tabelle</div>
         <header class="page-header">
-            <div class="brand-logo">KK26_Quttig</div>
+            <div class="brand-logo">
+                <span class="brand-logo-title">KULTUR KOMITEE</span>
+                <span class="brand-logo-subtitle">Equal Shares &amp; Voting Receipts</span>
+            </div>
             <h1>Outcome-Tabelle</h1>
         </header>
 
@@ -979,7 +1072,7 @@
         </footer>
     </div>
 
-    <script src="outcomes.js"></script>
+    <script src="assets/js/outcomes.js"></script>
 </body>
 
 </html>
