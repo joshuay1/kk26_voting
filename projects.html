@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KK26 Projekt-Quittungen</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/common.css">
+    <script src="assets/js/theme.js"></script>
+    <script>initTheme();</script>
+    <script src="assets/data/kk26-data.js?v=20260617-public-data-js"></script>
+    <script src="assets/js/data-loader.js?v=20260617-public-data-js"></script>
+    <style>
+        /* Page-specific styles */
+
+
+
+
+        .filter-bar {
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .filter-bar.group-filters {
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .filter-bar.status-filters {
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .receipts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr));
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            align-items: start;
+        }
+
+        .receipts-grid.all-groups-view {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .group-column {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(min(100%, 370px), 1fr));
+            gap: 2rem;
+            min-width: 0;
+            transition: all 0.3s ease;
+        }
+
+        .receipts-grid.all-groups-view .group-column {
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media (max-width: 1200px) {
+            .receipts-grid.all-groups-view {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+
+            .group-column {
+                grid-template-columns: 1fr;
+            }
+
+            .column-header {
+                font-size: 1.1rem;
+                margin-bottom: 0.5rem;
+                padding: 0.5rem;
+            }
+        }
+
+        .column-header {
+            font-family: var(--font-mono);
+            font-size: var(--fs-md);
+            font-weight: 800;
+            text-align: center;
+            padding: var(--spacing-sm);
+            border-bottom: 2px solid var(--header-border);
+            margin-bottom: var(--spacing-sm);
+            letter-spacing: 0.2em;
+            grid-column: 1 / -1;
+        }
+
+        .group-column.hidden {
+            display: none;
+        }
+
+        .unfunded-explanation {
+            background: rgba(0, 0, 0, 0.03);
+            border: 1px dashed #ccc;
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 4px;
+        }
+
+        .reason-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: #555;
+            margin-bottom: 0.5rem;
+            text-decoration: underline;
+        }
+
+        .reason-text {
+            font-size: 0.75rem;
+            line-height: 1.4;
+            color: #666;
+            font-style: italic;
+        }
+
+
+        .logo-line {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.7rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: 0.15em;
+            color: #111;
+        }
+
+        .subtitle {
+            font-size: var(--fs-xs);
+            font-weight: 500;
+            color: #555;
+            letter-spacing: 0.06em;
+        }
+
+        .subtitle.light {
+            color: #888;
+            font-size: var(--fs-xs);
+        }
+
+        .receipt-date {
+            font-size: var(--fs-xs);
+            color: #999;
+            margin-top: 0.2rem;
+        }
+
+        .project-info {
+            text-align: left;
+            margin-bottom: 0.4rem;
+            padding-left: 0.1rem;
+        }
+
+        .project-title {
+            font-size: var(--fs-lg);
+            font-weight: 800;
+            line-height: 1.15;
+            color: #111;
+            margin-bottom: 0.1rem;
+        }
+
+        .project-meta {
+            font-size: var(--fs-xs);
+            font-weight: 500;
+            color: #666;
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: var(--fs-sm);
+        }
+
+        .items-table th {
+            font-size: var(--fs-xs);
+            font-weight: 700;
+            color: #999;
+            text-align: left;
+            padding: 0.2rem 0;
+            letter-spacing: 0.08em;
+            border-bottom: 1px solid #d5d0c5;
+        }
+
+        .th-vote,
+        .th-amount {
+            text-align: right !important;
+        }
+
+        .item-row td {
+            padding: 0.3rem 0;
+            vertical-align: top;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: var(--fs-sm);
+            padding: 0.2rem 0;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .total-row.grand {
+            font-size: var(--fs-md);
+            font-weight: 800;
+            color: #111;
+            padding: 0.25rem 0;
+        }
+
+        .receipt-footer {
+            text-align: center;
+            padding-top: 0.3rem;
+        }
+
+        .footer-line {
+            font-size: var(--fs-xs);
+            font-weight: 500;
+            color: #999;
+            letter-spacing: 0.03em;
+            margin-bottom: 0.1rem;
+        }
+
+        .barcode {
+            font-size: var(--fs-lg);
+            letter-spacing: 0.08em;
+            color: #c5c0b5;
+            margin-top: var(--spacing-xs);
+        }
+
+        .status-badge {
+            position: absolute;
+            top: var(--spacing-xs);
+            right: var(--spacing-xs);
+            padding: 0.35rem 0.8rem;
+            border-radius: 4px;
+            font-size: var(--fs-xs);
+            font-weight: 800;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            z-index: 10;
+        }
+
+        .status-badge.funded {
+            background: #27ae60;
+            color: #fff;
+        }
+
+        .status-badge.unfunded {
+            background: #999;
+            color: #fff;
+        }
+
+        .status-stamp {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-15deg);
+            font-size: 4.5rem;
+            font-weight: 900;
+            opacity: 0.06;
+            pointer-events: none;
+            z-index: 5;
+            white-space: nowrap;
+            text-transform: uppercase;
+            border: 8px solid;
+            padding: 0.5rem 1.5rem;
+            border-radius: 12px;
+        }
+
+        .status-stamp.funded {
+            color: #27ae60;
+            border: none;
+            font-size: 8rem;
+            opacity: 0.1;
+        }
+
+        .status-stamp.unfunded {
+            color: #888;
+            border: none;
+            font-size: 8rem;
+            opacity: 0.1;
+        }
+
+        .unfunded-explanation {
+            background: rgba(0, 0, 0, 0.03);
+            border: 1px solid #ccc;
+            padding: var(--spacing-sm);
+            border-radius: 4px;
+            margin: var(--spacing-sm) 0;
+            text-align: center;
+        }
+
+        .reason-title {
+            font-size: var(--fs-sm);
+            font-weight: 800;
+            color: #444;
+            letter-spacing: 0.05em;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .reason-text {
+            font-size: var(--fs-xs);
+            color: #666;
+            line-height: 1.4;
+        }
+
+        @media print {
+            @page {
+                margin: 0.7cm;
+            }
+
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .page-header,
+            .filter-bar,
+            .intro-section,
+            .intro-dropdown,
+            #tech-info,
+            .column-header,
+            .nav-toggle,
+            .theme-toggle,
+            footer {
+                display: none !important;
+            }
+
+            body {
+                margin: 0;
+                padding: 0;
+                background: white !important;
+            }
+
+            .receipts-grid {
+                display: block !important;
+                padding: 0.15cm 0.2cm 0.2cm !important;
+                background: white !important;
+            }
+
+            .group-column {
+                display: grid !important;
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                gap: 0.9rem !important;
+                align-items: start !important;
+                page-break-before: always;
+                break-before: page;
+                margin: 0 !important;
+                background: white !important;
+            }
+
+            .receipts-grid.all-groups-view .group-column {
+                display: grid !important;
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                gap: 0.9rem !important;
+                align-items: start !important;
+                page-break-before: always;
+                break-before: page;
+                margin: 0 !important;
+            }
+
+            .group-column:first-child,
+            .receipts-grid.all-groups-view .group-column:first-child {
+                page-break-before: avoid !important;
+                break-before: auto !important;
+            }
+
+            .receipt {
+                page-break-inside: avoid;
+                margin: 0;
+                break-inside: avoid;
+                transform: none !important;
+                filter: none !important;
+                box-shadow: none !important;
+                background: transparent !important;
+            }
+
+            .receipt-body {
+                box-shadow: none !important;
+                border: none !important;
+                background: white !important;
+            }
+
+            .receipt-edge {
+                display: none !important;
+            }
+
+            .receipt-modern {
+                background: #fff !important;
+                box-shadow: none !important;
+                filter: none !important;
+                border: 1px solid rgba(0, 0, 0, 0.08) !important;
+                isolation: isolate !important;
+                overflow: hidden !important;
+            }
+
+            .receipt-content,
+            .reasoning-box,
+            .rejection-box,
+            .project-bottom-bar,
+            .project-bottom-metric,
+            .project-bottom-metric-primary {
+                box-shadow: none !important;
+                background-image: none !important;
+            }
+
+            .status-modern-banner {
+                box-shadow: none !important;
+            }
+
+            .receipt-content,
+            .items-table,
+            .items-table thead,
+            .items-table tbody,
+            .items-table tr,
+            .items-table th,
+            .items-table td {
+                background: #fff !important;
+            }
+
+            .receipt-modern.funded .reasoning-box {
+                background: #eef8f9 !important;
+                border-color: #d2eaed !important;
+            }
+
+            .receipt-modern.funded .project-bottom-bar {
+                background: #eef8f9 !important;
+                border-top-color: #d2eaed !important;
+            }
+
+            .receipt-modern.funded .project-bottom-metric-primary {
+                background: #eef3f8 !important;
+                border-color: #cdd8e4 !important;
+            }
+
+            .receipt-modern.unfunded .rejection-box {
+                background: #fdf0f0 !important;
+            }
+
+            .receipt-modern .receipt-top-meta > span:last-child {
+                background: #f1f4f7 !important;
+            }
+
+            /* Make sections more compact */
+            .rejection-box {
+                padding: 0.4rem 0.6rem !important;
+                margin-bottom: 0.4rem !important;
+            }
+
+            .reasoning-box {
+                padding: 0.5rem 0.65rem !important;
+                margin-bottom: 0.4rem !important;
+            }
+
+            .project-bottom-bar {
+                padding: 0.4rem 0.8rem !important;
+            }
+
+            .project-bottom-metric span {
+                font-size: 0.6rem !important;
+            }
+
+            .project-bottom-metric div {
+                font-size: 0.9rem !important;
+            }
+
+            .project-bottom-metric-primary span {
+                font-size: 0.62rem !important;
+            }
+
+            .project-bottom-metric-primary div {
+                font-size: 1.1rem !important;
+            }
+        }
+
+        @media (max-width: 1100px) {
+            .receipts-grid {
+                grid-template-columns: 1fr;
+                gap: var(--spacing-sm);
+            }
+
+            .group-column {
+                gap: var(--spacing-sm);
+            }
+        }
+
+        @media (max-width: 700px) {
+            .receipts-grid.all-groups-view {
+                grid-template-columns: 1fr !important;
+                gap: 1.25rem !important;
+            }
+
+            .group-column {
+                grid-template-columns: 1fr !important;
+                gap: 1.25rem !important;
+            }
+
+            .receipt-header-modern {
+                flex-direction: column !important;
+                gap: 0.55rem !important;
+            }
+
+            .receipt-brand-line {
+                padding-top: 0.7rem !important;
+            }
+
+            .receipt-top-meta {
+                width: 100%;
+                justify-content: flex-start !important;
+            }
+
+            .project-title {
+                font-size: 1.2rem !important;
+                line-height: 1.2 !important;
+            }
+
+            .supporter-budget-note {
+                display: none;
+            }
+
+            .project-bottom-bar {
+                flex-wrap: wrap !important;
+                justify-content: space-between !important;
+                gap: 0.6rem !important;
+                padding: 0.65rem 0.9rem !important;
+                margin-left: -0.9rem !important;
+                margin-right: -0.9rem !important;
+            }
+
+            .project-bottom-metric {
+                min-width: calc(50% - 0.4rem);
+            }
+
+            .receipt-content {
+                padding-left: 0.9rem !important;
+                padding-right: 0.9rem !important;
+            }
+        }
+
+        .receipt-modern.project-card {
+            background: #ffffff !important;
+            border: 2px solid #000000 !important;
+            border-left: 2px solid #000000 !important;
+            border-top: 2px solid #000000 !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            color: #000000 !important;
+            overflow: hidden !important;
+            font-family: var(--font-main) !important;
+        }
+
+        .receipt-modern.project-card.funded,
+        .receipt-modern.project-card.unfunded {
+            border-left: 2px solid #000000 !important;
+        }
+
+        .receipt-modern.project-card .receipt-content.project-card-content {
+            display: grid !important;
+            gap: 0.75rem !important;
+            padding: 1rem !important;
+        }
+
+        .project-card-topline,
+        .project-card-header,
+        .project-bottom-bar,
+        .budget-coverage-topline {
+            width: 100%;
+        }
+
+        .project-card-topline {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 0.75rem;
+        }
+
+        .project-card-status {
+            display: inline-flex;
+            align-items: center;
+            min-height: 1.75rem;
+            padding: 0.3rem 0.55rem;
+            background: #000000;
+            border: 2px solid #000000;
+            color: #ffffff;
+            font-family: var(--font-main);
+            font-size: 0.74rem;
+            font-weight: 700;
+            line-height: 1;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .receipt-modern.project-card.funded .project-card-status {
+            background: var(--accent-green);
+            color: #000000;
+        }
+
+        .receipt-modern.project-card.unfunded .project-card-status {
+            background: var(--accent-red);
+            color: #000000;
+        }
+
+        .receipt-modern.project-card .receipt-top-meta {
+            display: flex !important;
+            justify-content: flex-end !important;
+            align-items: center !important;
+            gap: 0.38rem !important;
+            flex-wrap: wrap !important;
+        }
+
+        .receipt-modern.project-card .group-pill,
+        .receipt-modern.project-card .project-id-pill {
+            display: inline-flex !important;
+            align-items: center !important;
+            min-height: 1.75rem !important;
+            padding: 0.3rem 0.5rem !important;
+            background: #ffffff !important;
+            border: 2px solid #000000 !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            color: #000000 !important;
+            font-family: var(--font-main) !important;
+            font-size: 0.78rem !important;
+            font-weight: 700 !important;
+            letter-spacing: 0 !important;
+            line-height: 1 !important;
+        }
+
+        .receipt-modern.project-card .project-card-header {
+            display: grid;
+            gap: 0.22rem;
+        }
+
+        .receipt-modern.project-card .receipt-brand-line {
+            display: flex !important;
+            align-items: center !important;
+            gap: 0.4rem !important;
+            padding: 0 !important;
+        }
+
+        .receipt-modern.project-card .logo-small,
+        .receipt-modern.project-card .subtitle-small {
+            color: #000000 !important;
+            font-family: var(--font-main) !important;
+            font-size: 0.84rem !important;
+            font-weight: 700 !important;
+            letter-spacing: 0.04em !important;
+            text-transform: uppercase !important;
+        }
+
+        .receipt-modern.project-card .subtitle-small {
+            color: rgba(0, 0, 0, 0.62) !important;
+            font-weight: 600 !important;
+        }
+
+        .receipt-modern.project-card .project-title {
+            color: #000000 !important;
+            font-family: var(--font-main) !important;
+            font-size: 1.3rem !important;
+            font-weight: 700 !important;
+            line-height: 1.08 !important;
+            margin: 0 !important;
+            overflow-wrap: anywhere;
+        }
+
+        .project-supporter-count {
+            color: rgba(0, 0, 0, 0.5);
+            font-family: var(--font-main);
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .supporter-table-frame {
+            border: 2px solid #000000;
+            overflow: hidden;
+        }
+
+        .receipt-modern.project-card .project-supporters-table {
+            width: 100% !important;
+            background: #ffffff !important;
+            border-collapse: collapse !important;
+            font-family: var(--font-main) !important;
+            font-size: 0.86rem !important;
+        }
+
+        .receipt-modern.project-card .project-supporters-table th,
+        .receipt-modern.project-card .project-supporters-table td {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.12) !important;
+            color: #000000 !important;
+            padding: 0.28rem 0.45rem !important;
+            vertical-align: middle;
+        }
+
+        .receipt-modern.project-card .project-supporters-table th {
+            background: #f5f5f5 !important;
+            font-size: 0.76rem !important;
+            font-weight: 700 !important;
+            text-align: left;
+            text-transform: uppercase;
+        }
+
+        .supporter-id-col {
+            width: 55%;
+        }
+
+        .supporter-vote-col {
+            width: 15%;
+            text-align: right !important;
+        }
+
+        .supporter-amount-col {
+            width: 30%;
+            text-align: right !important;
+        }
+
+        .receipt-modern.project-card .project-supporter-row .item-title {
+            font-weight: 700;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .supporter-budget {
+            color: rgba(0, 0, 0, 0.48);
+            font-size: 0.76rem;
+            font-weight: 600;
+            margin-left: 0.18rem;
+        }
+
+        .receipt-modern.project-card .project-supporter-row .item-vote,
+        .receipt-modern.project-card .project-supporter-row .item-amount {
+            text-align: right;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .receipt-modern.project-card .supporter-total-row {
+            background: #f5f5f5 !important;
+        }
+
+        .receipt-modern.project-card .supporter-total-row td {
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .supporter-total-row span {
+            display: block;
+            color: rgba(0, 0, 0, 0.52);
+            font-size: 0.62rem;
+            font-weight: 700;
+        }
+
+        .supporter-total-row strong {
+            display: block;
+            font-size: 0.95rem;
+            line-height: 1.1;
+        }
+
+        .receipt-modern.project-card .reasoning-box,
+        .receipt-modern.project-card .rejection-box {
+            background: #ffffff !important;
+            border: 2px solid #000000 !important;
+            border-left: 2px solid #000000 !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            margin: 0 !important;
+            padding: 0.7rem 0.8rem !important;
+        }
+
+        .receipt-modern.project-card .reasoning-box p {
+            color: rgba(0, 0, 0, 0.72);
+            font-size: 0.82rem;
+            font-style: italic;
+            font-weight: 600;
+            line-height: 1.45;
+            margin: 0;
+        }
+
+        .budget-coverage-topline {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            color: rgba(0, 0, 0, 0.58);
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .budget-coverage-topline strong {
+            color: #000000;
+            font-size: 0.82rem;
+        }
+
+        .budget-coverage-track {
+            height: 0.32rem;
+            margin-top: 0.35rem;
+            background: rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .budget-coverage-fill {
+            width: var(--coverage);
+            height: 100%;
+            background: #000000;
+        }
+
+        .receipt-modern.project-card .project-bottom-bar {
+            display: grid !important;
+            grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+            gap: 0 !important;
+            margin: 0 -1rem -1rem !important;
+            padding: 0 !important;
+            background: #f5f5f5 !important;
+            border: 0 !important;
+            border-top: 2px solid #000000 !important;
+            border-radius: 0 !important;
+        }
+
+        .receipt-modern.project-card .project-bottom-metric,
+        .receipt-modern.project-card .project-bottom-metric-primary {
+            display: grid !important;
+            align-content: center !important;
+            justify-items: center !important;
+            min-width: 0 !important;
+            min-height: 3.9rem !important;
+            padding: 0.55rem 0.45rem !important;
+            background: transparent !important;
+            border: 0 !important;
+            border-right: 1px solid rgba(0, 0, 0, 0.18) !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            color: #000000 !important;
+            text-align: center !important;
+        }
+
+        .receipt-modern.project-card .project-bottom-metric:last-child {
+            border-right: 0 !important;
+        }
+
+        .receipt-modern.project-card .project-bottom-metric span {
+            color: rgba(0, 0, 0, 0.5) !important;
+            font-family: var(--font-main) !important;
+            font-size: 0.62rem !important;
+            font-weight: 700 !important;
+            letter-spacing: 0 !important;
+            text-transform: uppercase !important;
+        }
+
+        .receipt-modern.project-card .project-bottom-metric strong {
+            color: #000000 !important;
+            font-family: var(--font-main) !important;
+            font-size: 1.08rem !important;
+            font-weight: 700 !important;
+            line-height: 1 !important;
+        }
+
+        .receipt-modern.project-card .project-bottom-metric small {
+            color: rgba(0, 0, 0, 0.52);
+            font-size: 0.65rem;
+            font-weight: 600;
+        }
+
+        @media (max-width: 700px) {
+            .receipt-modern.project-card .receipt-content.project-card-content {
+                padding: 0.85rem !important;
+            }
+
+            .project-card-topline {
+                align-items: center;
+            }
+
+            .receipt-modern.project-card .receipt-top-meta {
+                justify-content: flex-end !important;
+            }
+
+            .receipt-modern.project-card .project-bottom-bar {
+                grid-template-columns: 1fr !important;
+                margin: 0 -0.85rem -0.85rem !important;
+            }
+
+            .receipt-modern.project-card .project-bottom-metric {
+                border-right: 0 !important;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.18) !important;
+            }
+
+            .receipt-modern.project-card .project-bottom-metric:last-child {
+                border-bottom: 0 !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <button class="theme-toggle" onclick="toggleTheme()" title="Design umschalten">
+        <span class="icon-moon">🌙</span>
+        <span class="icon-sun" style="display: none;">☀️</span>
+    </button>
+
+    <div class="nav-toggle">
+        <a href="index.html" class="nav-link">Persönlich</a>
+        <a href="projects.html" class="nav-link active">Projekte</a>
+        <a href="outcomes.html" class="nav-link">Outcome-Tabelle</a>
+        <a href="info.html" class="nav-link">Info</a>
+    </div>
+    <div class="page-header">
+        <div class="brand-logo">
+            <span class="brand-logo-title">KULTUR KOMITEE</span>
+            <span class="brand-logo-subtitle">Equal Shares &amp; Voting Receipts</span>
+        </div>
+        <h1>Projekt-Quittungen</h1>
+    </div>
+
+    <div class="intro-section" id="intro-text">
+        <p>Laden der Daten...</p>
+    </div>
+
+    <details class="intro-dropdown" id="tech-info">
+        <summary>Lesehilfe: Die Projekt-Quittungen verstehen</summary>
+        <div class="dropdown-content">
+            <div class="tech-grid single-column">
+                <div class="tech-item highlight-step">
+                    <h4>Rang (Position in der Prüfung)</h4>
+                    <p>Der <strong>Rang</strong> zeigt die Reihenfolge, in der der MES-Algorithmus die Projekte geprüft hat. Niedrigerer Rang = früher betrachtet. Geförderte Projekte stehen immer vor nicht geförderten.</p>
+                </div>
+                <div class="tech-item highlight-step">
+                    <h4>Punkte</h4>
+                    <p>Die <strong>Punkte</strong> zeigen die Summe aller Stimmen (Ja = 2 Punkte, Eher Ja = 1 Punkt). Je höher die Punktzahl, desto beliebter war das Projekt in der Gruppe.</p>
+                </div>
+                <div class="tech-item highlight-step">
+                    <h4>Pro Person (durchschnittliche Kosten)</h4>
+                    <p>Diese Zahl zeigt, wie viel das Projekt pro Unterstützende/r kosten würde, wenn die <strong>Kosten</strong> gleichmässig aufgeteilt würden. Je niedriger, desto breiter verteilt sich die Last.</p>
+                </div>
+                <div class="tech-item highlight-step">
+                    <h4>Kosten (Gesamtbudget des Projekts)</h4>
+                    <p>Die <strong>Kosten</strong> zeigen das beantragte Gesamtbudget in CHF. Bei geförderten Projekten wurde dieser Betrag bewilligt und von den Unterstützenden gemeinsam finanziert.</p>
+                </div>
+                <div class="tech-item highlight-step">
+                    <h4>Unterstützer:innen & Beiträge</h4>
+                    <p>Die Tabelle listet alle Personen auf, die mit <strong>Ja</strong> oder <strong>Eher Ja</strong> gestimmt haben. Bei geförderten Projekten sehen Sie den individuellen <strong>Beitrag</strong> jeder Person – berechnet proportional zur Stimme und zum verfügbaren Budget.</p>
+                </div>
+                <div class="tech-item highlight-step">
+                    <h4>Fehlbetrag (bei nicht geförderten Projekten)</h4>
+                    <p>Wenn ein Projekt <strong>NICHT FINANZIERT</strong> wurde, zeigt der <strong>Fehlbetrag</strong>, wie viel zusätzliches Budget die Unterstützenden gebraucht hätten. Das erklärt, warum das Projekt abgelehnt wurde.</p>
+                </div>
+                <div class="tech-item highlight-step">
+                    <h4>Mehr erfahren</h4>
+                    <p>Ausführliche Informationen zum Method of Equal Shares Verfahren finden Sie auf <a href="https://equalshares.net/de/explanation/" target="_blank" rel="noopener noreferrer" style="color: var(--accent-blue); text-decoration: underline; font-weight: 700;">equalshares.net/de/explanation</a></p>
+                </div>
+            </div>
+        </div>
+    </details>
+
+    <div class="filter-bar group-filters">
+        <button class="filter-btn active" data-filter-group="ALL" onclick="setGroupFilter('ALL')">ALLE GRUPPEN</button>
+        <button class="filter-btn" data-filter-group="ROT" onclick="setGroupFilter('ROT')">ROT</button>
+        <button class="filter-btn" data-filter-group="SCHWARZ" onclick="setGroupFilter('SCHWARZ')">SCHWARZ</button>
+        <button class="filter-btn" data-filter-group="BLAU" onclick="setGroupFilter('BLAU')">BLAU</button>
+    </div>
+
+    <div class="filter-bar status-filters">
+        <button class="filter-btn active" data-filter-status="ALL" onclick="setStatusFilter('ALL')">ALLE ERGEBNISSE</button>
+        <button class="filter-btn color-funded" data-filter-status="FUNDED" onclick="setStatusFilter('FUNDED')">FINANZIERT</button>
+        <button class="filter-btn color-unfunded" data-filter-status="UNFUNDED" onclick="setStatusFilter('UNFUNDED')">NICHT AUSGEWÄHLT</button>
+    </div>
+
+
+    <style>
+        /* Tooltip Styles */
+        .tooltip {
+            position: absolute;
+            background: #fff;
+            color: #111;
+            padding: var(--spacing-sm);
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            border: 1px solid #eee;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none;
+            width: 250px;
+            font-family: var(--font-main);
+        }
+
+        .tooltip.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        body.dark-mode .tooltip {
+            background: #222;
+            color: #fff;
+            border-color: #333;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .tooltip-title {
+            font-family: var(--font-mono);
+            font-weight: 800;
+            font-size: var(--fs-sm);
+            margin-bottom: var(--spacing-sm);
+            padding-bottom: var(--spacing-xs);
+            border-bottom: 1px dashed #eee;
+            line-height: 1.3;
+        }
+
+        body.dark-mode .tooltip-title {
+            border-color: #444;
+            color: #fff;
+        }
+
+        .tooltip-stat {
+            display: flex;
+            justify-content: space-between;
+            font-size: var(--fs-xs);
+            margin-bottom: 0.4rem;
+            color: #666;
+        }
+
+        body.dark-mode .tooltip-stat {
+            color: #aaa;
+        }
+
+        .tooltip-stat strong {
+            color: #111;
+            font-weight: 700;
+        }
+
+        body.dark-mode .tooltip-stat strong {
+            color: #fff;
+        }
+    </style>
+
+    <div class="receipts-grid all-groups-view" id="receipts-grid"
+        style="display: grid; gap: 1.5rem; width: 100%;">
+        <div class="group-column" id="col-ROT">
+            <div class="column-header" style="color: #e63946; border-color: rgba(230, 57, 70, 0.2)">ROT</div>
+        </div>
+        <div class="group-column" id="col-SCHWARZ">
+            <div class="column-header" style="color: var(--text-primary); border-color: rgba(0, 0, 0, 0.15)">SCHWARZ
+            </div>
+        </div>
+        <div class="group-column" id="col-BLAU">
+            <div class="column-header" style="color: #457b9d; border-color: rgba(69, 123, 157, 0.2)">BLAU</div>
+        </div>
+    </div>
+
+    <div id="quick-tooltip" class="tooltip"></div>
+    <footer
+        style="text-align: center; margin: 4rem auto 2rem; padding: 2rem; border-top: 1px solid var(--filter-border); max-width: 800px; color: var(--text-dim); font-size: 0.85rem; line-height: 1.6;">
+        <p>Die Wähler-Quittig Plattform wurde vom Forschungspartner des Kultur Komitees entwickelt:<br><strong>Joshua C.
+                Yang</strong> (ETH Zürich, <a href="mailto:joyang@ethz.ch"
+                style="color: var(--text-muted); text-decoration: underline;">joyang@ethz.ch</a>)</p>
+    </footer>
+    <script src="assets/js/projects.js"></script>
+</body>
+
+</html>

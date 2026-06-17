@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KK26 Wähler:innen-Quittung</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/common.css">
+    <script src="assets/js/theme.js"></script>
+    <script>initTheme();</script>
+    <script src="assets/data/kk26-data.js?v=20260617-public-data-js"></script>
+    <script src="assets/js/data-loader.js?v=20260617-public-data-js"></script>
+    <style>
+        /* Page-specific styles */
+
+        /* Thermal voter receipt layout */
+        .receipts-grid {
+            --receipt-width: 360px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(var(--receipt-width), var(--receipt-width)));
+            justify-content: center;
+            align-items: start;
+            gap: 1.5rem;
+            max-width: 1160px;
+            margin: 0 auto;
+        }
+
+        .receipt {
+            --receipt-accent: var(--accent-red);
+            width: min(var(--receipt-width), calc(100vw - 2rem));
+            max-width: var(--receipt-width);
+            margin: 0 auto;
+            color: #14213d;
+        }
+
+        .receipt[data-group="ROT"] {
+            --receipt-accent: var(--accent-red);
+        }
+
+        .receipt[data-group="SCHWARZ"] {
+            --receipt-accent: #000000;
+        }
+
+        .receipt[data-group="BLAU"] {
+            --receipt-accent: var(--accent-pink);
+        }
+
+        .receipt-edge {
+            display: block;
+            width: calc(100% - 3rem);
+            height: 14px;
+            margin: 0 auto;
+            filter: drop-shadow(0 9px 18px rgba(0, 0, 0, 0.08));
+            position: relative;
+            z-index: 1;
+        }
+
+        .receipt-edge.top {
+            margin-bottom: -1px;
+            background-image: radial-gradient(circle at 8px 14px, #ffffff 7.5px, transparent 8px);
+            background-size: 16px 14px;
+            background-repeat: repeat-x;
+            background-position: center bottom;
+        }
+
+        .receipt-edge.bottom {
+            margin-top: -1px;
+            background-image: radial-gradient(circle at 8px 0, #ffffff 7.5px, transparent 8px);
+            background-size: 16px 14px;
+            background-repeat: repeat-x;
+            background-position: center top;
+        }
+
+        .receipt-body.voter-receipt {
+            width: 100%;
+            max-width: var(--receipt-width);
+            margin: 0 auto;
+            padding: 1.55rem 1.45rem 1.45rem;
+            border: 0;
+            background: #ffffff;
+            color: #14213d;
+            font-family: var(--font-receipt);
+            font-size: 0.78rem;
+            line-height: 1.18;
+            letter-spacing: 0;
+            box-shadow: 0 18px 36px rgba(0, 0, 0, 0.12) !important;
+            overflow: hidden;
+        }
+
+        .voter-receipt .receipt-header {
+            margin: 0 0 0.8rem;
+            text-align: center;
+        }
+
+        .voter-receipt .receipt-logo {
+            font-family: var(--font-main);
+            font-size: 1.85rem;
+            font-weight: 800;
+            letter-spacing: 0.15em;
+            line-height: 1;
+            margin-left: 0.15em;
+            color: #000000;
+            text-transform: lowercase;
+        }
+
+        .voter-receipt .receipt-subtitle {
+            margin-top: 0.65rem;
+            color: rgba(0, 0, 0, 0.62);
+            font-family: var(--font-receipt);
+            font-size: 0.76rem;
+            font-weight: 700;
+            letter-spacing: 0.18em;
+            line-height: 1.2;
+            text-transform: uppercase;
+        }
+
+        .voter-receipt .receipt-meta-line {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.55rem;
+            margin-top: 0.55rem;
+            color: rgba(0, 0, 0, 0.42);
+            font-size: 0.7rem;
+            line-height: 1.1;
+        }
+
+        .voter-receipt .receipt-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            color: #14213d;
+            font-size: 0.76rem;
+            line-height: 1.15;
+        }
+
+        .voter-receipt .receipt-table th {
+            padding: 0.08rem 0 0.16rem;
+            border-bottom: 0;
+            color: #000000;
+            font-family: var(--font-receipt);
+            font-size: 0.78rem;
+            font-weight: 700;
+            line-height: 1;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .voter-receipt .receipt-table td {
+            padding: 0.07rem 0;
+            border-bottom: 1px solid rgba(20, 33, 61, 0.1);
+            vertical-align: top;
+        }
+
+        .voter-receipt .col-title {
+            width: 58%;
+            text-align: left;
+        }
+
+        .voter-receipt .col-vote {
+            width: 16%;
+            text-align: center;
+        }
+
+        .voter-receipt .col-amount {
+            width: 26%;
+            text-align: right;
+        }
+
+        .voter-receipt .item-title {
+            overflow: hidden;
+            padding-right: 0.25rem;
+            text-overflow: clip;
+            white-space: normal;
+        }
+
+        .voter-receipt .item-vote {
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .voter-receipt .item-amount {
+            text-align: right;
+            font-family: var(--font-receipt);
+            font-variant-numeric: tabular-nums;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .voter-receipt .receipt-divider {
+            height: 1px;
+            margin: 0.75rem 0;
+            background: rgba(20, 33, 61, 0.16);
+        }
+
+        .voter-receipt .receipt-divider.dashed {
+            background: transparent;
+            border-top: 1px dashed rgba(20, 33, 61, 0.22);
+        }
+
+        .voter-receipt .receipt-divider.double {
+            height: 0;
+            margin: 1rem 0 0.85rem;
+            border-top: 1px dashed rgba(20, 33, 61, 0.16);
+            border-bottom: 1px dashed rgba(20, 33, 61, 0.16);
+        }
+
+        .voter-receipt .receipt-totals {
+            display: grid;
+            gap: 0.75rem;
+            margin: 1rem 0;
+        }
+
+        .voter-receipt .receipt-total-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            color: rgba(0, 0, 0, 0.58);
+            font-size: 1rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .voter-receipt .receipt-total-row.grand {
+            color: #000000;
+            font-size: 1.12rem;
+            text-transform: uppercase;
+        }
+
+        .voter-receipt .receipt-total-row.grand strong {
+            color: #457b9d;
+            font-family: var(--font-receipt);
+            font-size: 1.12rem;
+        }
+
+        .voter-receipt .receipt-method {
+            margin: 0.65rem 0 0.85rem;
+            color: #14213d;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .voter-receipt .receipt-time {
+            margin: 0.4rem 0;
+            color: #14213d;
+            font-size: 0.76rem;
+        }
+
+        .voter-receipt .receipt-note {
+            margin: 0.5rem auto 0.7rem;
+            max-width: 18rem;
+            color: #14213d;
+            font-size: 0.66rem;
+            line-height: 1.25;
+            text-align: center;
+        }
+
+        .voter-receipt .unfunded-section {
+            margin-top: 0;
+            padding-top: 0;
+            border-top: 0;
+        }
+
+        .voter-receipt .receipt-section-title {
+            padding: 0.1rem 0 0.35rem;
+            color: #14213d;
+            font-family: var(--font-receipt);
+            font-size: 0.78rem;
+            font-weight: 700;
+            line-height: 1;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .voter-receipt .unfunded-table {
+            margin-top: 0;
+        }
+
+        .voter-receipt .item-row.unfunded td {
+            color: rgba(0, 0, 0, 0.5);
+            font-size: 0.72rem;
+            font-weight: 500;
+        }
+
+        .voter-receipt .receipt-footer {
+            display: grid;
+            gap: 0.58rem;
+            justify-items: center;
+            margin-top: 0;
+            padding-top: 0;
+            border-top: 0;
+            color: rgba(0, 0, 0, 0.42);
+            font-family: var(--font-receipt);
+            font-size: 0.7rem;
+            font-weight: 700;
+            line-height: 1.05;
+            text-align: center;
+        }
+
+        .voter-receipt .receipt-footer span {
+            display: block;
+            max-width: 100%;
+            overflow-wrap: anywhere;
+            text-align: center;
+        }
+
+        .voter-receipt .receipt-code {
+            color: #14213d;
+            font-family: var(--font-receipt);
+            font-size: 0.6rem;
+            font-weight: 400;
+            overflow-wrap: anywhere;
+            text-transform: none;
+        }
+
+        .voter-receipt .receipt-barcode {
+            display: block;
+            margin: 0.35rem auto 0;
+            width: min(100%, 18rem);
+            height: 1.65rem;
+            overflow: hidden;
+            background: repeating-linear-gradient(90deg,
+                    #000000 0,
+                    #000000 3px,
+                    transparent 3px,
+                    transparent 10px);
+            color: transparent;
+            font-size: 0;
+            line-height: 1;
+        }
+
+        .receipts-info summary::before {
+            content: none;
+            margin: 0;
+        }
+
+        .footer-contact a {
+            color: var(--text-secondary);
+            text-decoration: underline;
+            text-underline-offset: 0.18em;
+            font-weight: 700;
+        }
+
+        .footer-contact {
+            text-align: center;
+            margin: 4rem auto 2rem;
+            padding: 2rem;
+            border-top: 2px solid #000000;
+            max-width: 800px;
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            line-height: 1.7;
+        }
+
+        .footer-contact h2 {
+            font-family: var(--font-mono);
+            color: var(--text-primary);
+            font-size: var(--fs-sm);
+            font-weight: 850;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        @media (max-width: 850px) {
+            .receipts-grid {
+                grid-template-columns: minmax(0, calc(100vw - 2rem));
+                justify-items: center;
+                width: 100%;
+                max-width: 100%;
+            }
+
+            .receipt {
+                width: min(var(--receipt-width), calc(100vw - 2rem));
+                max-width: min(var(--receipt-width), calc(100vw - 2rem));
+            }
+
+            .receipt-body.voter-receipt {
+                width: 100%;
+                max-width: min(var(--receipt-width), calc(100vw - 2rem));
+            }
+        }
+
+        @media print {
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .page-header,
+            .filter-bar,
+            .intro-section,
+            .nav-toggle,
+            .theme-toggle {
+                display: none !important;
+            }
+
+            body {
+                margin: 0;
+                padding: 0;
+                background: white !important;
+            }
+
+            .receipts-grid {
+                display: block;
+                margin: 0;
+                padding: 0;
+                background: white !important;
+            }
+
+            .group-column {
+                display: block !important;
+                background: white !important;
+            }
+
+            .receipt {
+                page-break-before: always;
+                page-break-after: always;
+                page-break-inside: avoid;
+                margin: 0 auto;
+                padding: 2cm 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                min-height: 100vh;
+                background: white !important;
+                transform: none !important;
+                filter: none !important;
+                box-shadow: none !important;
+            }
+
+            .receipt:first-child {
+                page-break-before: avoid;
+            }
+
+            .receipt-body {
+                box-shadow: none !important;
+                border: 1px solid rgba(29, 53, 87, 0.16) !important;
+                background: white !important;
+                background-image: none !important;
+                filter: none !important;
+            }
+
+            .receipt-body::before {
+                content: none !important;
+                background-image: none !important;
+            }
+
+            .receipt-edge {
+                display: none !important;
+                background: white !important;
+                mask: none !important;
+                -webkit-mask: none !important;
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+    <button class="theme-toggle" onclick="toggleTheme()" title="Design umschalten">
+        <span class="icon-moon">🌙</span>
+        <span class="icon-sun" style="display: none;">☀️</span>
+    </button>
+    <nav class="nav-toggle">
+        <a href="index.html" class="nav-link active">Persönlich</a>
+        <a href="projects.html" class="nav-link">Projekte</a>
+        <a href="outcomes.html" class="nav-link">Outcome-Tabelle</a>
+        <a href="info.html" class="nav-link">Info</a>
+    </nav>
+    <div class="page-header">
+        <div class="brand-logo">
+            <span class="brand-logo-title">KULTUR KOMITEE</span>
+            <span class="brand-logo-subtitle">Equal Shares &amp; Voting Receipts</span>
+        </div>
+        <h1>WÄHLER:INNEN-QUITTUNG</h1>
+    </div>
+
+    <div class="intro-section">
+        <div id="intro-text">
+            <p>Laden der Daten...</p>
+        </div>
+
+        <details class="intro-dropdown receipts-info" id="tech-info">
+            <summary id="info">Lesehilfe: Die persönlichen Quittungen verstehen</summary>
+            <div class="dropdown-content">
+                <div class="tech-grid single-column">
+                    <div class="tech-item highlight-step">
+                        <h4>Budget</h4>
+                        <p>Jede Person startete mit demselben <strong>Budget</strong> (z.B. 7'000 CHF). Dieses Geld wird nur für Projekte ausgegeben, die Sie mit <strong>Ja</strong> oder <strong>Eher Ja</strong> unterstützt haben.</p>
+                    </div>
+                    <div class="tech-item highlight-step">
+                        <h4>Betrag (Ihr Beitrag pro Projekt)</h4>
+                        <p>Der <strong>Betrag</strong> zeigt, wie viel Sie für jedes finanzierte Projekt bezahlt haben. Dieser Betrag zeigt <strong>nicht</strong>, wie sehr Sie ein Projekt mögen. Die Höhe hängt von der Berechnung ab: Sie zahlen <strong>weniger</strong>, wenn viele andere Personen das Projekt unterstützen. Sie zahlen <strong>mehr</strong>, wenn Sie eine:r der wenigen sind, die noch Budget übrig haben.</p>
+                    </div>
+                    <div class="tech-item highlight-step">
+                        <h4>Stimme (Ihre Bewertung)</h4>
+                        <p>Die <strong>Stimme</strong> zeigt Ihre ursprüngliche Bewertung: <strong>Ja</strong> = 2 Punkte, <strong>Eher Ja</strong> = 1 Punkt. Dies ist das, was Sie tatsächlich gewählt haben, nicht der Betrag.</p>
+                    </div>
+                    <div class="tech-item highlight-step">
+                        <h4>Projekte finanziert</h4>
+                        <p>Die Anzahl Ihrer unterstützten Projekte, die finanziert wurden. Nicht alle werden finanziert. Dies hängt davon ab, ob genug gemeinsames Budget da war.</p>
+                    </div>
+                    <div class="tech-item highlight-step">
+                        <h4>Ausgegeben</h4>
+                        <p>Die Summe aller Beträge, die Sie für finanzierte Projekte bezahlt haben.</p>
+                    </div>
+                    <div class="tech-item highlight-step">
+                        <h4>Nicht finanzierte Projekte</h4>
+                        <p>Projekte, die Sie unterstützt haben, die aber nicht finanziert wurden. Entweder reichte das gemeinsame Budget nicht aus, oder das Gruppenbudget war bereits aufgebraucht.</p>
+                    </div>
+                    <div class="tech-item highlight-step">
+                        <h4>Mehr erfahren</h4>
+                        <p>Ausführliche Informationen zum Method of Equal Shares Verfahren finden Sie auf <a href="https://equalshares.net/de/explanation/" target="_blank" rel="noopener noreferrer">equalshares.net/de/explanation</a>.</p>
+                    </div>
+                </div>
+            </div>
+        </details>
+    </div>
+
+    <div class="filter-bar" id="filter-bar" style="display:none;">
+        <button class="filter-btn active" data-group="ALL" onclick="filterReceipts('ALL')">ALLE</button>
+        <button class="filter-btn" data-group="ROT" onclick="filterReceipts('ROT')">ROT</button>
+        <button class="filter-btn" data-group="SCHWARZ" onclick="filterReceipts('SCHWARZ')">SCHWARZ</button>
+        <button class="filter-btn" data-group="BLAU" onclick="filterReceipts('BLAU')">BLAU</button>
+    </div>
+
+    <div class="receipts-grid" id="receipts-grid">
+        <!-- Receipts will be rendered here -->
+    </div>
+
+    <footer class="footer-contact">
+        <h2>Contact</h2>
+        <p>Fragen zur Methode: Joshua Yang</p>
+        <p>Fragen zum Kultur Komitee: <a href="mailto:info@kulturkomitee.win">info@kulturkomitee.win</a></p>
+    </footer>
+    <script src="assets/js/receipts.js"></script>
+</body>
+
+</html>

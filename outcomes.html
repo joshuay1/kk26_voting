@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KK26 | Outcome-Tabelle</title>
+    <!-- JetBrains Mono from Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Inter:wght@400;600;700;850&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/common.css">
+    <script src="assets/js/theme.js"></script>
+    <script>initTheme();</script>
+    <script src="assets/data/kk26-data.js?v=20260617-public-data-js"></script>
+    <script src="assets/js/data-loader.js?v=20260617-public-data-js"></script>
+
+    <style>
+        /* Table-specific styles */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            min-width: 1120px;
+            max-width: none;
+            margin: 0;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            table-layout: fixed;
+        }
+
+        th {
+            background: var(--filter-bg);
+            padding: 0.62rem 0.55rem;
+            text-align: left;
+            color: var(--text-dim);
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0;
+            border-bottom: 2px solid var(--filter-border);
+            vertical-align: middle;
+        }
+
+        td {
+            padding: 0.5rem 0.55rem;
+            border-bottom: 1px solid var(--filter-border);
+            color: var(--text-secondary);
+            vertical-align: middle;
+            line-height: 1.18;
+            white-space: nowrap;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: var(--filter-hover);
+        }
+
+        .table-container {
+            background: var(--filter-bg);
+            border: 1px solid var(--filter-border);
+            border-radius: 0;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            box-shadow: none;
+            margin-bottom: var(--spacing-lg);
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .table-container table {
+            width: 100% !important;
+            max-width: none !important;
+            margin: 0 !important;
+        }
+
+        .col-rank {
+            width: 4rem;
+            text-align: center;
+        }
+
+        .col-project {
+            width: auto;
+            white-space: normal;
+        }
+
+        .col-cost {
+            width: 7rem;
+            text-align: right;
+            padding-right: 0.7rem;
+        }
+
+        .col-points {
+            width: 5.3rem;
+            text-align: center;
+        }
+
+        .col-points-per-person {
+            width: 6.5rem;
+            text-align: center;
+        }
+
+        .col-efficiency {
+            width: 6.2rem;
+            text-align: center;
+        }
+
+        .col-status {
+            width: 3.6rem;
+            text-align: center;
+        }
+
+        .col-coverage {
+            width: 7rem;
+        }
+
+        .col-budget-flow {
+            width: 9rem;
+        }
+
+        .th-rank,
+        .col-rank {
+            width: 4rem;
+        }
+
+        .th-budget,
+        .col-cost {
+            width: 7rem;
+        }
+
+        .th-points,
+        .col-points {
+            width: 5.3rem;
+        }
+
+        .th-points-per-person,
+        .col-points-per-person {
+            width: 6.5rem;
+        }
+
+        .th-efficiency,
+        .col-efficiency {
+            width: 6.2rem;
+        }
+
+        .th-status,
+        .col-status {
+            width: 3.6rem;
+        }
+
+        .th-coverage,
+        .col-coverage {
+            width: 7rem;
+        }
+
+        .th-budget-flow,
+        .col-budget-flow {
+            width: 9rem;
+        }
+
+        .col-id {
+            color: var(--text-dim);
+            font-size: var(--fs-xs);
+            margin-right: 0.3rem;
+        }
+
+        .col-title {
+            font-weight: 700;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: inline-block;
+            max-width: 100%;
+            color: var(--text-primary);
+            line-height: 1.2;
+            vertical-align: middle;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.1rem 0.4rem;
+            border-radius: 3px;
+            font-size: var(--fs-xs);
+            font-weight: 850;
+            text-transform: uppercase;
+        }
+
+        .status-yes {
+            background: rgba(42, 157, 143, 0.1);
+            color: #2a9d8f;
+            border: 1px solid rgba(42, 157, 143, 0.3);
+        }
+
+        .status-none {
+            color: var(--text-dim);
+            font-weight: 400;
+            font-size: var(--fs-sm);
+        }
+
+        .info-box {
+            background: rgba(69, 123, 157, 0.1);
+            border-left: 4px solid var(--accent-blue);
+            padding: var(--spacing-sm) 1.25rem;
+            margin-bottom: var(--spacing-lg);
+            border-radius: 0 8px 8px 0;
+            font-size: var(--fs-sm);
+            line-height: 1.5;
+            color: var(--text-primary);
+        }
+
+        .rank-change {
+            font-size: var(--fs-xs);
+            font-weight: 600;
+            margin-left: 0.4rem;
+        }
+
+        .rank-up {
+            color: #2a9d8f;
+        }
+
+        .rank-down {
+            color: #e76f51;
+        }
+
+        .rank-change.positive {
+            color: #2a9d8f;
+        }
+
+        .rank-same {
+            color: #bbb;
+        }
+
+        .explanation-text {
+            font-family: var(--font-main);
+            font-size: var(--fs-sm);
+            color: var(--text-muted);
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .explanation-text:hover {
+            -webkit-line-clamp: unset;
+            line-clamp: unset;
+            background: rgba(0, 0, 0, 0.05);
+            padding: var(--spacing-xs);
+            border-radius: 4px;
+        }
+
+        .row-funded td {
+            background: rgba(0, 196, 115, 0.08) !important;
+            border-bottom: 1px solid var(--filter-border);
+        }
+
+        .tech-item.highlight-step {
+            border-left: 3px solid #2a9d8f;
+            background: rgba(42, 157, 143, 0.05); /* Matching tint */
+        }
+        .tech-item.highlight-step h4 {
+            color: #2a9d8f;
+        }
+        .row-funded .col-rank {
+            border-left: 0;
+            color: var(--text-primary);
+            font-weight: 800;
+        }
+
+        .table-container .status-pill {
+            display: inline-grid !important;
+            place-items: center !important;
+            width: 1.3rem;
+            height: 1.3rem;
+            background: var(--accent-green);
+            color: #000000;
+            font-size: 0.95rem !important;
+            line-height: 1 !important;
+        }
+
+        .table-container .coverage-bar {
+            height: 3px !important;
+            margin-top: 0.22rem !important;
+            background: #ffffff !important;
+        }
+
+        .table-container .budget-flow-stack {
+            gap: 0.18rem !important;
+        }
+
+        .table-container .budget-flow-bar {
+            height: 0.42rem !important;
+            border-radius: 0 !important;
+        }
+
+        .table-container .budget-flow-labels {
+            justify-content: flex-end !important;
+            font-size: 0.66rem !important;
+            line-height: 1.1 !important;
+        }
+
+        .table-container .budget-flow-prefix {
+            display: none !important;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: var(--spacing-xxl);
+            padding-bottom: var(--spacing-lg);
+            border-top: 1px solid var(--filter-border);
+            padding-top: var(--spacing-lg);
+        }
+
+        .footer p {
+            color: var(--text-dim);
+            font-size: var(--fs-xs);
+            font-family: var(--font-mono);
+        }
+
+        .print-title {
+            display: none;
+        }
+
+        @media screen and (max-width: 850px) {
+            .table-container {
+                overflow-x: visible;
+                background: transparent;
+                border: none;
+                box-shadow: none;
+            }
+
+            .table-container table,
+            .table-container tbody {
+                display: block;
+                width: 100%;
+                min-width: 0 !important;
+            }
+
+            .table-container thead {
+                display: none;
+            }
+
+            /* Card layout */
+            .table-container tr {
+                display: block;
+                position: relative;
+                padding: 0.55rem 0.65rem 3.5rem 0.65rem;
+                border: 1px solid rgba(29, 53, 87, 0.12);
+                background: rgba(255, 255, 255, 0.96);
+                border-radius: 8px;
+                margin-bottom: 0.5rem;
+                box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+            }
+
+            .table-container .row-funded {
+                border-left: 3px solid #2a9d8f !important;
+                background: linear-gradient(135deg, rgba(42, 157, 143, 0.06), rgba(42, 157, 143, 0.02)) !important;
+                box-shadow: 0 2px 6px rgba(42, 157, 143, 0.1);
+            }
+
+            /* Hide all table cells by default */
+            .table-container td {
+                display: none;
+                border: none !important;
+                padding: 0 !important;
+            }
+
+            /* Show and position specific cells */
+            .table-container .col-rank {
+                display: block;
+                position: absolute;
+                top: 0.55rem;
+                left: 0.65rem;
+                font-size: 0.95rem !important;
+                font-weight: 900 !important;
+                color: #457b9d !important;
+                line-height: 1;
+            }
+
+            .table-container .row-funded .col-rank {
+                color: #2a9d8f !important;
+            }
+
+            .table-container .col-project {
+                display: block;
+                margin-left: 2.2rem;
+                margin-bottom: 0.45rem;
+            }
+
+            .table-container .project-main {
+                display: flex !important;
+                align-items: baseline !important;
+                gap: 0.3rem;
+            }
+
+            .table-container .col-id {
+                font-size: 0.72rem !important;
+                color: #a8b0ba !important;
+            }
+
+            .table-container .col-title {
+                font-size: 0.88rem !important;
+                font-weight: 800 !important;
+                line-height: 1.2 !important;
+                color: var(--text-primary) !important;
+            }
+
+            /* Metrics row - create a flex container for layout */
+            .table-container .col-cost,
+            .table-container .col-points-per-person,
+            .table-container .col-efficiency,
+            .table-container .col-status,
+            .table-container .col-coverage {
+                display: inline-block;
+                vertical-align: top;
+                text-align: center;
+                padding: 0.22rem 0.35rem 0.18rem !important;
+                margin: 0 0.25rem 0.25rem 0;
+                background: rgba(69, 123, 157, 0.05);
+                border-radius: 5px;
+                border-bottom: 1.5px solid rgba(69, 123, 157, 0.18);
+                min-width: 3.5rem;
+            }
+
+            html[data-theme="dark"] .table-container .col-cost,
+            html[data-theme="dark"] .table-container .col-points-per-person,
+            html[data-theme="dark"] .table-container .col-efficiency,
+            html[data-theme="dark"] .table-container .col-status,
+            html[data-theme="dark"] .table-container .col-coverage {
+                background: rgba(255,255,255,0.03);
+                border-bottom-color: rgba(255,255,255,0.1);
+            }
+
+            /* Make PUNKTE the primary metric - position in bottom right */
+            .table-container .col-points {
+                display: block !important;
+                position: absolute;
+                bottom: 0.55rem;
+                right: 0.65rem;
+                background: linear-gradient(135deg, rgba(29, 53, 87, 0.12), rgba(29, 53, 87, 0.08));
+                border: 2px solid rgba(29, 53, 87, 0.25);
+                border-radius: 8px;
+                padding: 0.3rem 0.5rem 0.28rem !important;
+                min-width: 4.5rem;
+                box-shadow: 0 2px 6px rgba(29, 53, 87, 0.2);
+                text-align: center;
+                margin: 0 !important;
+                line-height: 1;
+            }
+
+            html[data-theme="dark"] .table-container .col-points {
+                background: linear-gradient(135deg, rgba(69, 123, 157, 0.18), rgba(69, 123, 157, 0.12));
+                border-color: rgba(69, 123, 157, 0.35);
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+            }
+
+            /* Metric labels */
+            .table-container .col-cost::before,
+            .table-container .col-points-per-person::before,
+            .table-container .col-efficiency::before,
+            .table-container .col-status::before,
+            .table-container .col-coverage::before {
+                display: block;
+                font-size: 0.5rem;
+                color: #8a92a0;
+                font-weight: 800;
+                margin-bottom: 0.08rem;
+                text-transform: uppercase;
+                letter-spacing: 0.04em;
+                line-height: 1;
+            }
+
+            .table-container .col-cost::before { content: "BUDGET"; }
+            .table-container .col-points-per-person::before { content: "PNT/PERS"; }
+            .table-container .col-efficiency::before { content: "CHF/PNT"; }
+            .table-container .col-status::before { content: "MES"; }
+            .table-container .col-coverage::before { content: "ABDECKUNG"; }
+
+            /* PUNKTE label - larger and more prominent */
+            .table-container .col-points::before {
+                display: block;
+                content: "PUNKTE";
+                font-size: 0.54rem;
+                color: #6b7a8f;
+                font-weight: 900;
+                margin-bottom: 0.12rem;
+                text-transform: uppercase;
+                letter-spacing: 0.06em;
+                line-height: 1;
+            }
+
+            html[data-theme="dark"] .table-container .col-points::before {
+                color: #8fa9c4;
+            }
+
+            /* Metric values */
+            .table-container .col-cost,
+            .table-container .col-points-per-person,
+            .table-container .col-efficiency {
+                font-size: 0.82rem !important;
+                font-weight: 800 !important;
+                color: var(--text-primary);
+            }
+
+            .table-container .metric-value {
+                font-size: 0.82rem !important;
+                font-weight: 800 !important;
+                line-height: 1 !important;
+                color: var(--text-primary);
+            }
+
+            .table-container .col-points .metric-value {
+                font-size: 1.35rem !important;
+                font-weight: 900 !important;
+                color: #1d3557 !important;
+                line-height: 1 !important;
+                display: inline !important;
+            }
+
+            html[data-theme="dark"] .table-container .col-points .metric-value {
+                color: #7ec8ff !important;
+            }
+
+            .table-container .metric-detail {
+                font-size: 0.6rem !important;
+                color: var(--text-dim) !important;
+                margin-top: 0.05rem !important;
+                line-height: 1.1;
+            }
+
+            .table-container .col-points .metric-detail {
+                font-size: 0.58rem !important;
+                font-weight: 600;
+                margin-left: 0.3rem !important;
+                display: inline !important;
+                vertical-align: baseline;
+                line-height: 1 !important;
+                margin-top: 0 !important;
+            }
+
+            .table-container .col-status .status-pill {
+                font-size: 0.9rem !important;
+            }
+
+            .table-container .col-coverage > div {
+                text-align: center !important;
+            }
+
+            .table-container .coverage-bar {
+                display: none !important;
+            }
+
+            /* Budget flow - shorter bar at bottom */
+            .table-container .col-budget-flow {
+                display: block;
+                position: absolute;
+                bottom: 0.55rem;
+                left: 0.65rem;
+                width: 60%;
+                max-width: 14rem;
+                margin: 0;
+                padding: 0 !important;
+            }
+
+            .table-container .budget-flow-stack {
+                gap: 0.2rem !important;
+            }
+
+            .table-container .budget-flow-bar {
+                height: 6px !important;
+                border-radius: 999px !important;
+            }
+
+            .table-container .budget-flow-labels {
+                display: flex !important;
+                justify-content: space-between !important;
+                font-size: 0.72rem !important;
+                line-height: 1.2;
+                color: #8a92a0;
+            }
+
+            .table-container .budget-flow-labels .budget-flow-remaining {
+                font-weight: 800;
+                color: var(--text-primary) !important;
+                font-size: 0.78rem !important;
+            }
+
+            .table-container .budget-flow-labels .budget-flow-spent-before {
+                font-weight: 600;
+            }
+
+            html[data-theme="dark"] .table-container tr {
+                background: rgba(26, 32, 44, 0.96);
+                border-color: rgba(255, 255, 255, 0.08);
+            }
+
+            html[data-theme="dark"] .table-container .row-funded {
+                background: linear-gradient(135deg, rgba(42, 157, 143, 0.12), rgba(42, 157, 143, 0.04)) !important;
+            }
+
+            html[data-theme="dark"] .table-container .col-rank {
+                color: #7ec8ff !important;
+            }
+
+            html[data-theme="dark"] .table-container .row-funded .col-rank {
+                color: #2a9d8f !important;
+            }
+        }
+
+        @media print {
+            html,
+            body,
+            .table-container,
+            .table-container * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .nav-toggle,
+            .page-header,
+            .filter-bar,
+            .group-switcher,
+            .theme-toggle,
+            .intro-section,
+            .intro-dropdown,
+            footer {
+                display: none !important;
+            }
+
+            body {
+                margin: 0;
+                padding: 0;
+                background: white;
+            }
+
+            .container {
+                max-width: 100%;
+                padding: 0.2cm 0.35cm 0.35cm;
+            }
+
+            .print-title {
+                display: block !important;
+                margin: 0 0 0.18cm 0;
+                font-family: var(--font-mono);
+                font-size: 1.1rem;
+                font-weight: 800;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                color: #1d3557;
+            }
+
+            .table-container {
+                overflow-x: visible !important;
+                background: var(--filter-bg) !important;
+                border: 1px solid var(--filter-border) !important;
+                border-radius: 8px !important;
+                box-shadow: none !important;
+                page-break-inside: auto;
+            }
+
+            .table-container table {
+                display: table !important;
+                width: 100% !important;
+                border-collapse: collapse !important;
+                font-size: 0.76rem !important;
+                table-layout: fixed !important;
+            }
+
+            .table-container thead {
+                display: table-header-group !important;
+            }
+
+            .table-container tbody {
+                display: table-row-group !important;
+                width: 100% !important;
+            }
+
+            .table-container th {
+                display: table-cell !important;
+                font-size: 0.68rem !important;
+                padding: 0.2rem 0.28rem !important;
+                border-bottom: 2px solid var(--filter-border) !important;
+                border-left: none !important;
+                border-right: none !important;
+                border-top: none !important;
+                background: var(--filter-bg) !important;
+                color: var(--text-dim) !important;
+            }
+
+            .table-container tr {
+                display: table-row !important;
+                padding: 0 !important;
+                border: none !important;
+                background: transparent !important;
+                border-radius: 0 !important;
+                margin: 0 !important;
+                box-shadow: none !important;
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+
+            .table-container td {
+                display: table-cell !important;
+                border-top: none !important;
+                border-left: none !important;
+                border-right: none !important;
+                border-bottom: 1px solid var(--filter-border) !important;
+                padding: 0.16rem 0.28rem !important;
+                position: static !important;
+                font-size: 0.74rem !important;
+                margin: 0 !important;
+                min-width: auto !important;
+                background: transparent !important;
+                box-shadow: none !important;
+                border-radius: 0 !important;
+                vertical-align: top !important;
+            }
+
+            .table-container .col-rank,
+            .table-container .col-project,
+            .table-container .col-cost,
+            .table-container .col-points,
+            .table-container .col-points-per-person,
+            .table-container .col-efficiency,
+            .table-container .col-status,
+            .table-container .col-coverage,
+            .table-container .col-budget-flow {
+                display: table-cell !important;
+                position: static !important;
+                margin: 0 !important;
+                padding: 0.16rem 0.28rem !important;
+                min-width: auto !important;
+                max-width: none !important;
+                width: auto !important;
+                background: transparent !important;
+                border-top: none !important;
+                border-left: none !important;
+                border-right: none !important;
+                border-bottom: 1px solid var(--filter-border) !important;
+                box-shadow: none !important;
+                border-radius: 0 !important;
+                text-align: inherit !important;
+            }
+
+            .table-container .th-status,
+            .table-container .col-status {
+                display: none !important;
+            }
+
+            .table-container .col-rank {
+                width: 3% !important;
+            }
+
+            .table-container .col-project {
+                width: 47% !important;
+            }
+
+            .table-container .col-cost {
+                width: 8% !important;
+            }
+
+            .table-container .col-points {
+                width: 6% !important;
+            }
+
+            .table-container .col-points-per-person {
+                width: 9% !important;
+            }
+
+            .table-container .col-efficiency {
+                width: 8% !important;
+            }
+
+            .table-container .col-coverage {
+                width: 8% !important;
+            }
+
+            .table-container .col-budget-flow {
+                width: 11% !important;
+            }
+
+            .table-container .th-rank {
+                width: 3% !important;
+            }
+
+            .table-container .th-project {
+                width: 47% !important;
+            }
+
+            .table-container .th-budget {
+                width: 8% !important;
+            }
+
+            .table-container .th-points {
+                width: 6% !important;
+            }
+
+            .table-container .th-points-per-person {
+                width: 9% !important;
+            }
+
+            .table-container .th-efficiency {
+                width: 8% !important;
+            }
+
+            .table-container .th-coverage {
+                width: 8% !important;
+            }
+
+            .table-container .th-budget-flow {
+                width: 11% !important;
+            }
+
+            .table-container td::before,
+            .table-container .col-cost::before,
+            .table-container .col-points::before,
+            .table-container .col-points-per-person::before,
+            .table-container .col-efficiency::before,
+            .table-container .col-status::before,
+            .table-container .col-coverage::before {
+                display: none !important;
+                content: none !important;
+            }
+
+            .table-container .row-funded td {
+                background: rgba(42, 157, 143, 0.04) !important;
+                border-bottom: 1px solid rgba(42, 157, 143, 0.2) !important;
+            }
+
+            .table-container .row-funded .col-rank {
+                border-left: 3px solid #2a9d8f !important;
+                color: #2a9d8f !important;
+                font-weight: 800 !important;
+            }
+
+            .table-container .coverage-bar {
+                display: block !important;
+                margin-top: 0.18rem !important;
+                height: 4px !important;
+                border-radius: 999px !important;
+            }
+
+            .table-container .budget-flow-stack {
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: flex-start !important;
+                gap: 0.18rem !important;
+            }
+
+            .table-container .col-budget-flow {
+                vertical-align: top !important;
+                padding-top: 0.24rem !important;
+                padding-bottom: 0.24rem !important;
+                overflow: hidden !important;
+            }
+
+            .table-container .budget-flow-bar {
+                display: block !important;
+                height: 10px !important;
+                border-radius: 999px !important;
+                border: 1px solid rgba(0, 0, 0, 0.12) !important;
+                background-clip: padding-box !important;
+                white-space: nowrap !important;
+                font-size: 0 !important;
+            }
+
+            .table-container .budget-flow-segment {
+                height: 100% !important;
+                flex: 0 0 auto !important;
+            }
+
+            .table-container .budget-flow-labels {
+                display: flex !important;
+                justify-content: space-between !important;
+                align-items: center !important;
+                font-size: 0.62rem !important;
+                line-height: 1.15 !important;
+                overflow: hidden !important;
+            }
+
+            .table-container .budget-flow-remaining,
+            .table-container .budget-flow-spent-before {
+                color: #7f8791 !important;
+            }
+
+            .table-container .budget-flow-remaining {
+                display: flex !important;
+                align-items: center !important;
+                justify-content: flex-start !important;
+                gap: 0.18rem !important;
+                min-width: 0 !important;
+                max-width: 100% !important;
+                overflow: hidden !important;
+                white-space: nowrap !important;
+            }
+
+            .table-container .budget-flow-prefix {
+                flex: 0 0 auto !important;
+                margin-right: 0 !important;
+                letter-spacing: 0 !important;
+            }
+
+            .table-container .budget-flow-value {
+                flex: 1 1 auto !important;
+                min-width: 0 !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+                white-space: nowrap !important;
+                text-align: right !important;
+                display: block !important;
+            }
+
+            .table-container .budget-flow-prefix {
+                font-size: 0 !important;
+            }
+
+            .table-container .budget-flow-prefix::before {
+                content: "Verf.";
+                font-size: 0.58rem;
+                color: #a8adb5;
+            }
+
+            .table-container .project-main {
+                display: flex !important;
+                align-items: baseline !important;
+                gap: 0.3rem !important;
+                min-width: 0 !important;
+            }
+
+            .table-container .col-id {
+                font-size: 0.64rem !important;
+                color: #8f96a0 !important;
+                flex: 0 0 auto !important;
+                margin-right: 0 !important;
+            }
+
+            .table-container .col-title {
+                font-size: 0.76rem !important;
+                line-height: 1.2 !important;
+                white-space: nowrap !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+                display: block !important;
+                flex: 1 1 auto !important;
+                min-width: 0 !important;
+                max-width: 100% !important;
+            }
+
+            .table-container .metric-value,
+            .table-container .metric-detail {
+                display: inline !important;
+            }
+
+            .table-container .metric-value {
+                font-size: 0.78rem !important;
+            }
+
+            .table-container .metric-detail {
+                font-size: 0.68rem !important;
+                color: #7f8791 !important;
+            }
+
+            .table-container .col-status .status-pill {
+                font-size: 0.92rem !important;
+            }
+
+            .footer {
+                page-break-before: avoid;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <button class="theme-toggle" onclick="toggleTheme()" title="Design umschalten">
+        <span class="icon-moon">🌙</span>
+        <span class="icon-sun" style="display: none;">☀️</span>
+    </button>
+
+    <nav class="nav-toggle">
+        <a href="index.html" class="nav-link">Persönlich</a>
+        <a href="projects.html" class="nav-link">Projekte</a>
+        <a href="outcomes.html" class="nav-link active">Outcome-Tabelle</a>
+        <a href="info.html" class="nav-link">Info</a>
+    </nav>
+
+    <div class="container" style="max-width: 1300px;">
+        <div class="print-title">Outcome-Tabelle</div>
+        <header class="page-header">
+            <div class="brand-logo">
+                <span class="brand-logo-title">KULTUR KOMITEE</span>
+                <span class="brand-logo-subtitle">Equal Shares &amp; Voting Receipts</span>
+            </div>
+            <h1>Outcome-Tabelle</h1>
+        </header>
+
+        <div class="intro-section">
+            <p>Vollständige Übersicht aller Projekte, sortiert nach Beliebtheit.
+                Das MES-Verfahren identifiziert "einfache" Entscheidungen automatisch, um am Diskussionstag Zeit für
+                komplexe Fragen zu schaffen.</p>
+        </div>
+
+        <div class="filter-bar">
+            <button class="filter-btn active" onclick="loadGroupData('ROT')" data-group="ROT">ROT</button>
+            <button class="filter-btn" onclick="loadGroupData('BLAU')" data-group="BLAU">BLAU</button>
+            <button class="filter-btn" onclick="loadGroupData('SCHWARZ')" data-group="SCHWARZ">SCHWARZ</button>
+        </div>
+
+        <details class="intro-dropdown" id="tech-info">
+            <summary>Lesehilfe: So verstehen Sie die Tabelle</summary>
+            <div class="dropdown-content">
+                <div class="tech-grid single-column">
+                    <div class="tech-item highlight-step">
+                        <h4>Punkte (je höher, desto besser)</h4>
+                        <p>Die <strong>Punkte</strong> sind die Summe aller Stimmen (Ja = 2 Punkte, Eher Ja = 1 Punkt). Je mehr Punkte ein Projekt hat, desto beliebter war es in der Gruppe. Die Projekte sind nach dieser Beliebtheit sortiert.</p>
+                    </div>
+                    <div class="tech-item highlight-step">
+                        <h4>CHF/PUNKT (je tiefer, desto besser)</h4>
+                        <p>Die <strong>Effizienz</strong> zeigt die Kosten pro Punkt. Ein tieferer Wert bedeutet, dass das Projekt günstiger ist – ein besseres Kosten-Punkte-Verhältnis für die Community.</p>
+                    </div>
+                    <div class="tech-item highlight-step">
+                        <h4>Abdeckung (Finanzierbarkeit)</h4>
+                        <p>Die <strong>Abdeckung</strong> zeigt, wie viel Prozent der Projektkosten durch das verfügbare Budget der Unterstützenden zum Zeitpunkt der Prüfung gedeckt werden konnten. 100% = vollständig finanzierbar. Bei nicht finanzierten Projekten war diese Abdeckung zu gering.</p>
+                    </div>
+                    <div class="tech-item highlight-step">
+                        <h4>Budget-Abfluss (Visualisierung)</h4>
+                        <p>Die rechte Spalte zeigt, wie das Gesamtbudget der Gruppe schrittweise aufgebraucht wurde. Der farbige Balken wächst mit jedem finanzierten Projekt, und die Zahl "Übrig" zeigt das verbleibende Budget an.</p>
+                    </div>
+                    <div class="tech-item highlight-step">
+                        <h4>So funktioniert der MES-Algorithmus</h4>
+                        <p>Der <strong>Method of Equal Shares (MES)</strong> Algorithmus prüft Projekte in Runden. In jeder Runde berechnet er einen "Preis pro Punkt" (Rho). Das Projekt mit dem tiefsten Rho wird finanziert, wenn seine Unterstützenden gemeinsam genug Budget haben. Dann zahlt jede Person anteilig aus ihrem restlichen Budget. Dieser Prozess wiederholt sich, bis keine Projekte mehr finanzierbar sind.</p>
+                    </div>
+                    <div class="tech-item highlight-step">
+                        <h4>Mehr erfahren</h4>
+                        <p>Ausführliche Informationen zum Method of Equal Shares Verfahren finden Sie auf <a href="https://equalshares.net/de/explanation/" target="_blank" rel="noopener noreferrer" style="color: var(--accent-blue); text-decoration: underline; font-weight: 700;">equalshares.net/de/explanation</a></p>
+                    </div>
+                </div>
+            </div>
+        </details>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="th-rank">RANG</th>
+                        <th class="th-project">PROJEKT</th>
+                        <th class="th-budget text-right">BUDGET</th>
+                        <th class="th-points text-center">PUNKTE</th>
+                        <th class="th-points-per-person text-center">PNT/PERSON</th>
+                        <th class="th-efficiency text-center">CHF/PUNKT</th>
+                        <th class="th-status text-center">MES</th>
+                        <th class="th-coverage text-center">ABDECKUNG</th>
+                        <th class="th-budget-flow">BUDGET-ABFLUSS</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <!-- Rows will be injected here -->
+                </tbody>
+            </table>
+        </div>
+
+        <footer class="footer">
+            <p>© 2026 Kultur Komitee Winterthur | Forschungsprojekt Joshua C. Yang</p>
+        </footer>
+    </div>
+
+    <script src="assets/js/outcomes.js"></script>
+</body>
+
+</html>

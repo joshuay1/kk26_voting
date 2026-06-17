@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KK26 | Info</title>
+    <link rel="stylesheet" href="assets/css/common.css">
+    <script src="assets/js/theme.js"></script>
+    <script>initTheme();</script>
+    <style>
+        .info-page {
+            width: 100%;
+            max-width: calc(100vw - 2rem);
+            margin: 0 auto;
+        }
+
+        .info-section {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            gap: 0.85rem;
+            padding: 2rem 0 1.35rem;
+            border-bottom: 2px solid #000000;
+        }
+
+        .info-section h2 {
+            font-family: var(--font-main);
+            font-size: 1.08rem;
+            font-weight: 500;
+            line-height: 1;
+            text-transform: uppercase;
+        }
+
+        .info-section p,
+        .info-section li {
+            max-width: min(48rem, 100%);
+            font-family: var(--font-serif);
+            font-size: var(--page-copy-size);
+            line-height: var(--page-copy-line);
+            color: #000000;
+            overflow-wrap: anywhere;
+        }
+
+        .info-section > div {
+            min-width: 0;
+        }
+
+        .info-section p + p {
+            margin-top: 1rem;
+        }
+
+        .info-list {
+            display: grid;
+            gap: 0.62rem;
+            list-style: none;
+        }
+
+        .info-section p + .info-list {
+            margin-top: 1.35rem;
+        }
+
+        .info-list li {
+            padding-left: 0.85rem;
+            border-left: 0.32rem solid var(--accent-red);
+        }
+
+        .research-list {
+            display: grid;
+            gap: 0.75rem;
+            margin-top: 1rem;
+            list-style: none;
+        }
+
+        .research-list a {
+            color: #000000;
+            font-family: var(--font-serif);
+            font-size: var(--page-copy-size);
+            line-height: var(--page-copy-line);
+            text-decoration: underline;
+            text-underline-offset: 0.18em;
+            font-weight: 700;
+        }
+
+        .info-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0;
+            margin-top: 1.25rem;
+        }
+
+        .info-link {
+            display: inline-block;
+            margin: 0 -2px -2px 0;
+            padding: 0.72rem 0.95rem;
+            border: 2px solid #000000;
+            color: #000000;
+            font-family: var(--font-main);
+            font-size: 1rem;
+            font-weight: 500;
+            text-decoration: none;
+            text-transform: uppercase;
+        }
+
+        .info-link:hover {
+            background: var(--accent-red);
+        }
+
+        .info-contact {
+            display: grid;
+            gap: 0.5rem;
+            font-family: var(--font-main);
+            font-size: 1rem;
+        }
+
+        .info-contact a {
+            color: #000000;
+            text-decoration: underline;
+            text-underline-offset: 0.18em;
+        }
+
+        @media (min-width: 761px) {
+            .info-page {
+                max-width: 1200px;
+            }
+
+            .info-section {
+                grid-template-columns: minmax(0, 0.36fr) minmax(0, 0.64fr);
+                gap: 2rem;
+            }
+        }
+
+        @media (max-width: 760px) {
+            .info-section {
+                gap: 1rem;
+            }
+
+            .info-section > div,
+            .info-section p,
+            .info-section li {
+                width: 20rem;
+                max-width: calc(100vw - 2rem);
+            }
+
+            .info-links {
+                display: grid;
+                width: 20rem;
+                max-width: calc(100vw - 2rem);
+            }
+
+            .info-link {
+                width: 100%;
+                margin: 0 0 -2px;
+            }
+
+            .info-section p,
+            .info-section li {
+                font-size: 0.98rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="brand-logo">
+        <span class="brand-logo-title">KULTUR KOMITEE</span>
+        <span class="brand-logo-subtitle">Equal Shares &amp; Voting Receipts</span>
+    </div>
+
+    <nav class="nav-toggle">
+        <a href="index.html" class="nav-link">Persönlich</a>
+        <a href="projects.html" class="nav-link">Projekte</a>
+        <a href="outcomes.html" class="nav-link">Outcome-Tabelle</a>
+        <a href="info.html" class="nav-link active">Info</a>
+    </nav>
+
+    <main class="info-page">
+        <header class="page-header">
+            <h1>Info</h1>
+        </header>
+
+        <section class="intro-section">
+            <p class="philosophy">Diese Seite dokumentiert die Abstimmung des Kultur Komitees Winterthur 2026 und macht nachvollziehbar, wie die Method of Equal Shares aus Stimmen, Projektkosten und verfügbaren Budgets ein Ergebnis berechnet.</p>
+        </section>
+
+        <section class="info-section">
+            <h2>Was Sie sehen</h2>
+            <div>
+                <p>Die persönlichen Quittungen zeigen, welche Projekte durch eine Person mitfinanziert wurden. Die Projekt-Quittungen zeigen die Perspektive jedes Projekts: Unterstützung, Beiträge, Kosten und MES-Status. Die Outcome-Tabelle fasst alle Projekte pro Gruppe in einer kompakten Rangliste zusammen.</p>
+            </div>
+        </section>
+
+        <section class="info-section">
+            <h2>Methode</h2>
+            <div>
+                <p>Die Wähler:innen-Quittung ist eine gestalterische Innovation: Sie nutzt die Bepreisbarkeit der Method of Equal Shares, um sichtbar zu machen, wie einzelne Stimmen in Beiträge übersetzt werden und dadurch ein kollektives Ergebnis erklärbar wird.</p>
+                <p>Die Method of Equal Shares verteilt ein gemeinsames Budget so, dass jede teilnehmende Person rechnerisch den gleichen Anteil am Budget erhält. Projekte werden nur dann finanziert, wenn ihre Unterstützer:innen zum Prüfzeitpunkt gemeinsam genug verbleibendes Budget haben.</p>
+                <ul class="info-list">
+                    <li>Ja-Stimmen erzeugen mehr Unterstützung als Eher-Ja-Stimmen.</li>
+                    <li>Teurere Projekte benötigen entsprechend breitere Unterstützung.</li>
+                    <li>Das Verfahren stoppt, wenn kein weiteres Projekt finanzierbar ist.</li>
+                </ul>
+                <div class="info-links">
+                    <a class="info-link" href="https://equalshares.net/de/explanation/" target="_blank" rel="noopener noreferrer">MES erklären</a>
+                    <a class="info-link" href="outcomes.html">Outcome ansehen</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="info-section">
+            <h2>Hintergrund</h2>
+            <div>
+                <p>Die Method of Equal Shares (MES) wurde im Kontext von partizipativen Budgets entwickelt. Sie sorgt dafür, dass nicht einfach die Mehrheit gewinnt, sondern alle Beteiligten möglichst gleich viel Einfluss auf das Ergebnis haben. Zudem werden in der Entscheidung auch die Kosten berücksichtigt: Je höher ein angefragter Betrag, desto mehr Zustimmung benötigt ein Projekt.</p>
+                <p>Die Implementierung beim Kultur Komitee Winterthur wurde von Joshua C. Yang und Fynn Bachmann begleitet.</p>
+                <ul class="research-list">
+                    <li><a href="https://arxiv.org/abs/2502.05017" target="_blank" rel="noopener noreferrer">Bridging Voting and Deliberation with Algorithms: Field Insights from vTaiwan and Kultur Komitee</a></li>
+                    <li><a href="https://dl.acm.org/doi/10.1145/3772363.3798958" target="_blank" rel="noopener noreferrer">Komitee Equal Shares: A Hybrid Algorithm for Priceable Participatory Funding</a></li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="info-section">
+            <h2>Datenschutz</h2>
+            <div>
+                <p>Die Namen der Komiteemitglieder wurden pseudonymisiert. Projektnamen wurden durch fiktive Bezeichnungen ersetzt. Die Darstellung soll Transparenz über das Verfahren schaffen, ohne personenbezogene Abstimmungsdaten offenzulegen.</p>
+            </div>
+        </section>
+
+        <section class="info-section">
+            <h2>Kontakt</h2>
+            <div class="info-contact">
+                <span>Fragen zur Methode: Joshua C. Yang</span>
+                <span>Fragen zum Kultur Komitee: <a href="mailto:info@kulturkomitee.win">info@kulturkomitee.win</a></span>
+            </div>
+        </section>
+    </main>
+</body>
+
+</html>
