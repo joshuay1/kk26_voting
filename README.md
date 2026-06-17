@@ -46,10 +46,13 @@ Then open `http://localhost:8000`.
 
 ## Deploy
 
-Deploy the standalone static site to the `gh-pages` branch:
+Pushes to `main` automatically publish the standalone `site/` directory to the
+`gh-pages` branch with GitHub Actions.
+
+You can also deploy manually:
 
 ```sh
 make deploy-site
 ```
 
-The deploy script publishes only the `site/` subtree.
+Both deployment paths publish only the `site/` subtree.

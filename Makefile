@@ -30,6 +30,9 @@ check-public:
 		echo "Unexpected private or obsolete reference under site/"; \
 		exit 1; \
 	fi
+	@if test -f "internal/KK Quittung anonymisiert.xlsx"; then \
+		$(PYTHON) src/anonymize_receipts.py --check; \
+	fi
 
 serve-site:
 	$(PYTHON) -m http.server $(PORT) --directory site

@@ -118,7 +118,7 @@ function renderReceipt(r) {
                     </tr>
                     <tr>
                         <th class="col-title">Artikel</th>
-                        <th class="col-vote">Stim</th>
+                        <th class="col-vote">Stimme</th>
                         <th class="col-amount">Betrag</th>
                     </tr>
                 </thead>
@@ -156,7 +156,7 @@ function renderReceipt(r) {
                         </tr>
                         <tr>
                             <th class="col-title">Artikel</th>
-                            <th class="col-vote">Stim</th>
+                            <th class="col-vote">Stimme</th>
                             <th class="col-amount">Betrag</th>
                         </tr>
                     </thead>

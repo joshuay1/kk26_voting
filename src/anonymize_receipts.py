@@ -9,6 +9,7 @@ It contains two mappings:
 
 from __future__ import annotations
 
+import argparse
 import csv
 import json
 import re
@@ -27,12 +28,43 @@ PUBLIC_CSVS = [
 ]
 DATA_JSON = ROOT / "site" / "assets" / "data" / "kk26.json"
 ASSEMBLE_SCRIPT = ROOT / "src" / "assemble_site_data.py"
+ACRONYM_ALIASES = {
+    # Generated receipt explanations sometimes used this old acronym as a
+    # title-cased direct address.
+    "ANA": ["Ana"],
+}
+PROJECT_ALIASES = {
+    # This descriptive title fragment appeared in generated English/German
+    # rationales, while the public pseudonym is only "Sense Lab".
+    "84": [
+        "Sense Lab & VERHANDELBAR (working title)",
+        "Sense Lab & VERHANDELBAR (Arbeitstitel)",
+        "Sense Lab & VERHANDELBAR (Arbeitst…)",
+        "Sense Lab & VERHANDELBAR",
+    ],
+    "110": [
+        "Von Winti-Nova bis zur Lokstadt (working title) – The transformation of the Sulzer site city center from 1986 to 2026",
+        "Von Winti-Nova bis zur Lokstadt (working title) - The transformation of the Sulzer site city center from 1986 to 2026",
+        "Von Winti-Nova bis zur Lokstadt",
+        "Kurzfilm Winti-Arbeiterinnen (working title) – Die Verwandlung des Sulzer-Areals Stadt-Mitte von 1986 bis 2026",
+        "Kurzfilm Winti-Arbeiterinnen (working title) - Die Verwandlung des Sulzer-Areals Stadt-Mitte von 1986 bis 2026",
+    ],
+    "129": [
+        '"Szenischer Vortrag" - Staged Presentation (working title)',
+        "Szenischer Vortrag - Staged Presentation (working title)",
+    ],
+}
 TEXT_FILES = [
     *sorted((ROOT / "site").glob("*.html")),
     *sorted((ROOT / "site" / "assets" / "js").glob("*.js")),
     *sorted((ROOT / "kk26_voting" / "reports").glob("*.md")),
     *sorted((ROOT / "kk26_voting" / "reports").glob("*.html")),
 ]
+AUDIT_ROOTS = [
+    ROOT / "site",
+    ROOT / "kk26_voting" / "csv",
+]
+AUDIT_SUFFIXES = {".html", ".js", ".json", ".css", ".md", ".txt", ".csv"}
 
 NS = {
     "a": "http://schemas.openxmlformats.org/spreadsheetml/2006/main",
@@ -183,18 +215,29 @@ def replacement_rules(
     project_map: dict[str, str],
     project_variants: dict[str, list[str]],
 ) -> tuple[list[tuple[re.Pattern[str], str]], list[tuple[str, str]]]:
+    acronym_sources: list[tuple[str, str]] = []
+    for source, replacement in acronym_map.items():
+        acronym_sources.append((f"{source}s", f"{replacement}s"))
+        acronym_sources.append((source, replacement))
+        acronym_sources.extend(
+            (alias, replacement)
+            for alias in ACRONYM_ALIASES.get(source, [])
+        )
     acronym_rules = [
         (
             re.compile(rf"(?<![A-Za-z0-9_]){re.escape(source)}(?![A-Za-z0-9_])"),
             replacement,
         )
-        for source, replacement in sorted(acronym_map.items(), key=lambda item: len(item[0]), reverse=True)
+        for source, replacement in sorted(acronym_sources, key=lambda item: len(item[0]), reverse=True)
     ]
 
     project_rules: list[tuple[str, str]] = []
     seen: set[tuple[str, str]] = set()
     for project_key, replacement in project_map.items():
-        variants = list(project_variants.get(project_key, []))
+        variants = [
+            *project_variants.get(project_key, []),
+            *PROJECT_ALIASES.get(project_key, []),
+        ]
         expanded: list[str] = []
         for variant in variants:
             expanded.append(variant)
@@ -218,6 +261,58 @@ def replace_text(text: str, acronym_rules: list[tuple[re.Pattern[str], str]], pr
     for pattern, replacement in acronym_rules:
         text = pattern.sub(replacement, text)
     return text
+
+
+def public_text_files() -> list[Path]:
+    files: list[Path] = []
+    for root in AUDIT_ROOTS:
+        if not root.exists():
+            continue
+        files.extend(
+            path
+            for path in root.rglob("*")
+            if path.is_file() and path.suffix.lower() in AUDIT_SUFFIXES
+        )
+    return sorted(files)
+
+
+def audit_public_outputs(
+    acronym_map: dict[str, str],
+    project_variants: dict[str, list[str]],
+) -> list[str]:
+    issues: list[str] = []
+    texts = [
+        (path, path.read_text(encoding="utf-8", errors="replace"))
+        for path in public_text_files()
+    ]
+
+    for source, aliases in project_variants.items():
+        variants = [
+            *aliases,
+            *PROJECT_ALIASES.get(source, []),
+        ]
+        expanded: list[str] = []
+        for variant in variants:
+            expanded.append(variant)
+            expanded.extend(asciiish_variants(variant))
+        for variant in sorted(set(expanded), key=len, reverse=True):
+            if not variant:
+                continue
+            for path, text in texts:
+                if variant in text:
+                    issues.append(f"old project label {variant!r} in {path.relative_to(ROOT)}")
+
+    acronym_variants: list[str] = []
+    for source in acronym_map:
+        acronym_variants.extend([source, f"{source}s"])
+        acronym_variants.extend(ACRONYM_ALIASES.get(source, []))
+    for variant in sorted(set(acronym_variants), key=len, reverse=True):
+        pattern = re.compile(rf"(?<![A-Za-z0-9_]){re.escape(variant)}(?![A-Za-z0-9_])")
+        for path, text in texts:
+            if pattern.search(text):
+                issues.append(f"old voter label {variant!r} in {path.relative_to(ROOT)}")
+
+    return issues
 
 
 def anonymize_csvs(
@@ -316,14 +411,33 @@ def rebuild_site_data() -> None:
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="only scan public outputs for old anonymization labels",
+    )
+    args = parser.parse_args()
+
     if not WORKBOOK.exists():
         raise SystemExit(f"Missing anonymization workbook: {WORKBOOK}")
 
     rows = load_workbook_rows(WORKBOOK)
     acronym_map, project_map, project_variants = build_maps(rows)
+    audit_project_variants = {
+        project_key: list(variants)
+        for project_key, variants in project_variants.items()
+    }
     collect_csv_title_variants(project_variants)
     collect_json_title_variants(project_variants)
     acronym_rules, project_rules = replacement_rules(acronym_map, project_map, project_variants)
+
+    if args.check:
+        issues = audit_public_outputs(acronym_map, audit_project_variants)
+        if issues:
+            raise SystemExit("Public anonymization audit failed:\n" + "\n".join(issues))
+        print("Public anonymization audit passed.")
+        return
 
     anonymize_csvs(acronym_map, project_map, acronym_rules, project_rules)
     anonymize_data_json(acronym_map, project_map, acronym_rules, project_rules)

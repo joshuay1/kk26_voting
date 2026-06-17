@@ -446,7 +446,7 @@
           "vote": "Ja",
           "funded": false,
           "amount": 0,
-          "reason": "Ana, das Projekt 'Ausstellung Zwischenräume' (004) kostet 23100 CHF und wurde nur von 6 Personen unterstuetzt. Dein persoenliches Budget ist bereits bei 0.0 CHF, also kannst du selber nichts mehr dazu beitragen. In diesem Verfahren werden zuerst Projekte mit vielen Unterstuetzerinnen und Unterstuetzern und einer passenden Kosten-Nutzen-Relation finanziert. Weil dieses Projekt vergleichsweise teuer ist (23100 CHF) und nur 6 Unterstuetzer hat, reicht es im Gesamtvergleich nicht, um in die gefoerderte Auswahl zu kommen. Darum wurde es vom MES am Schluss nicht finanziert."
+          "reason": "FJR, das Projekt 'Ausstellung Zwischenräume' (004) kostet 23100 CHF und wurde nur von 6 Personen unterstuetzt. Dein persoenliches Budget ist bereits bei 0.0 CHF, also kannst du selber nichts mehr dazu beitragen. In diesem Verfahren werden zuerst Projekte mit vielen Unterstuetzerinnen und Unterstuetzern und einer passenden Kosten-Nutzen-Relation finanziert. Weil dieses Projekt vergleichsweise teuer ist (23100 CHF) und nur 6 Unterstuetzer hat, reicht es im Gesamtvergleich nicht, um in die gefoerderte Auswahl zu kommen. Darum wurde es vom MES am Schluss nicht finanziert."
         },
         {
           "title": "Migrationsstimmen Archiv",
@@ -462,7 +462,7 @@
           "vote": "Ja",
           "funded": false,
           "amount": 0,
-          "reason": "Ana, das Projekt 'Tischtennis meets Kunst' (135) kostet 8000 CHF, hatte aber nur 5 Unterstuetzerinnen und Unterstuetzer. Dein eigenes Budget ist bereits bei 0.0 CHF, du kannst also gar nichts mehr dazu beitragen. Weil das Projekt gleichzeitig recht teuer ist und nur sehr wenige Leute es mittragen, hat es im Vergleich zu anderen Projekten zu wenig Rueckenwind bekommen und wurde darum von der MES nicht finanziert."
+          "reason": "FJR, das Projekt 'Tischtennis meets Kunst' (135) kostet 8000 CHF, hatte aber nur 5 Unterstuetzerinnen und Unterstuetzer. Dein eigenes Budget ist bereits bei 0.0 CHF, du kannst also gar nichts mehr dazu beitragen. Weil das Projekt gleichzeitig recht teuer ist und nur sehr wenige Leute es mittragen, hat es im Vergleich zu anderen Projekten zu wenig Rueckenwind bekommen und wurde darum von der MES nicht finanziert."
         },
         {
           "title": "Projektfläche 27",
@@ -534,7 +534,7 @@
           "vote": "EherJa",
           "funded": false,
           "amount": 0,
-          "reason": "Ana, s Projekt 'Auf der Station' (097) het 13000 CHF koschtet, aber nume 7 Unterstützer gha. Will dis persöndlichs Budget scho vollständig ufbroot isch (0.0 CHF) und au generell wenig Lüüt mitgmacht hend, isch s im Verglich zue andere Projekt weniger priorisiert worde. Drum het s MES das Projekt nöd finanziert."
+          "reason": "FJR, s Projekt 'Auf der Station' (097) het 13000 CHF koschtet, aber nume 7 Unterstützer gha. Will dis persöndlichs Budget scho vollständig ufbroot isch (0.0 CHF) und au generell wenig Lüüt mitgmacht hend, isch s im Verglich zue andere Projekt weniger priorisiert worde. Drum het s MES das Projekt nöd finanziert."
         },
         {
           "title": "Play Grid",
@@ -550,7 +550,7 @@
           "vote": "EherJa",
           "funded": false,
           "amount": 0,
-          "reason": "Ana, das Projekt 'Installation Himmel und Erde' (106) kostet 14000 CHF und hat nur 2 Unterstuetzerinnen und Unterstuetzer. Du hast selber kein Budget mehr uebrig (0.0 CHF), darum kannst du nichts mehr dazu beitragen. Weil das Projekt zudem sehr teuer ist im Vergleich zu der kleinen Anzahl von 2 Leuten, die es unterstuetzen, reicht die Kombination aus Kosten und geringer Unterstuetzung nicht aus, damit es vom MES finanziert wird."
+          "reason": "FJR, das Projekt 'Installation Himmel und Erde' (106) kostet 14000 CHF und hat nur 2 Unterstuetzerinnen und Unterstuetzer. Du hast selber kein Budget mehr uebrig (0.0 CHF), darum kannst du nichts mehr dazu beitragen. Weil das Projekt zudem sehr teuer ist im Vergleich zu der kleinen Anzahl von 2 Leuten, die es unterstuetzen, reicht die Kombination aus Kosten und geringer Unterstuetzung nicht aus, damit es vom MES finanziert wird."
         }
       ],
       "total_spent": 7497.999999999999,
@@ -2429,7 +2429,7 @@
           "vote": "EherJa",
           "funded": false,
           "amount": 0,
-          "reason": "Das Projekt 'Wandmalereien am Stadion' (045) kostet 20000 CHF und hatte nur 4 Unterstuetzerinnen und Unterstuetzer. Im MES-Verfahren werden zuerst Projekte mit mehr Unterstuetzung und passender Finanzierung gewaehlt. Als ueber PEOs Budget verteilt wurde, war sein persoenliches Budget bereits auf 0.0 CHF, bevor dieses Projekt an der Reihe war. Darum konnte RBV dieses Projekt nicht mehr mitfinanzieren und es wurde am Schluss nicht vom MES beruecksichtigt."
+          "reason": "Das Projekt 'Wandmalereien am Stadion' (045) kostet 20000 CHF und hatte nur 4 Unterstuetzerinnen und Unterstuetzer. Im MES-Verfahren werden zuerst Projekte mit mehr Unterstuetzung und passender Finanzierung gewaehlt. Als ueber RBVs Budget verteilt wurde, war sein persoenliches Budget bereits auf 0.0 CHF, bevor dieses Projekt an der Reihe war. Darum konnte RBV dieses Projekt nicht mehr mitfinanzieren und es wurde am Schluss nicht vom MES beruecksichtigt."
         },
         {
           "title": "Offene Werkstatt",
@@ -7717,7 +7717,7 @@
         "Qualitative_Rationale_DE": "Von 7 Abstimmenden sprechen sich 2 fuer das Projekt aus, was auf eine eher verhaltene Unterstuetzung hinweist. Die durchschnittliche Bewertung von -0.43 bestaetigt diesen tendenziell kritischen Gesamteindruck. In den Kommentaren wird vor allem bemerkt, dass der Projektinhalt trotz mehrmaligen Lesens unklar bleibt. Gleichzeitig wird anerkannt, dass das Projekt bereits seit mehreren Jahren besteht und offenbar eine bestimmte Zielgruppe erreicht, auch wenn diese nicht breit ist. Skepsis besteht insbesondere gegenueber dem Verlagsaspekt und der Frage, ob sich die Projektziele nicht besser digital umsetzen liessen. Insgesamt ist die Stimmung mehrheitlich kritisch bis reserviert, mit punktueller Anerkennung fuer bestehende Praxis und Zielgruppenfokus.",
         "Qualitative_Rationale_EN": "Out of 7 voters, 2 support the project, indicating rather modest backing. The mean score of -0.43 reinforces this overall somewhat critical assessment. In the comments, people mainly note that the project’s content remains unclear even after reading the description several times. At the same time, it is acknowledged that the project has been running for several years and apparently reaches a specific target audience, even if this audience is not broad. There is particular skepticism about the publishing-house aspect and whether the project’s aims might be better achieved online. Overall, sentiment is mostly critical to reserved, with some recognition of the existing practice and its focus on a defined audience.",
         "Algorithmic_Rationale_DE": "Das Projekt \"Sense Lab\" (084) wurde von MES nicht finanziert. Die 2 Supporter hatten zusammen ein Budget von 1533.56 CHF, was nicht ausgereicht hat, um die benoetigten 4000 CHF zu decken.",
-        "Algorithmic_Rationale_EN": "The project \"Sense Lab & VERHANDELBAR (working title)\" (084) was not funded by MES. Its 2 supporters had a combined budget of 1533.56 CHF, which was not enough to cover the required 4000 CHF.",
+        "Algorithmic_Rationale_EN": "The project \"Sense Lab\" (084) was not funded by MES. Its 2 supporters had a combined budget of 1533.56 CHF, which was not enough to cover the required 4000 CHF.",
         "Vote_Ja": 1,
         "Vote_EherJa": 1,
         "Vote_EherNein": 4,
@@ -7744,7 +7744,7 @@
         "Qualitative_Rationale_DE": "Das Projekt stoesst auf eher geringe Zustimmung: 2 von 7 Abstimmenden unterstuetzen es, und die durchschnittliche Bewertung ist negativ. In den Kommentaren wird die inhaltliche Idee zwar ausdruecklich als passend und interessant beurteilt, gleichzeitig werden aber die beantragten Mittel als unverhaeltnismaessig hoch sowie der enge Zeitplan bis August als problematisch und unrealistisch kritisiert.",
         "Qualitative_Rationale_EN": "The project receives relatively low support: 2 out of 7 voters are in favor, and the average score is negative. In the comments, the concept itself is explicitly described as fitting and interesting, but the requested budget is viewed as disproportionately high and the tight timeline until August is seen as problematic and potentially unrealistic.",
         "Algorithmic_Rationale_DE": "Das Projekt 'Kurzfilm Winti-Arbeiterinnen' (110) wurde nicht durch MES gefoerdert. Seine 2 Unterstuetzer verfuegten zusammen ueber ein Budget von 117.26 CHF, was nicht ausreichte, um die beantragten 40000 CHF zu decken.",
-        "Algorithmic_Rationale_EN": "The project 'Von Winti-Nova bis zur Lokstadt (working title) – The transformation of the Sulzer site city center from 1986 to 2026' (110) was not funded by MES. Its 2 supporters had a combined budget of 117.26 CHF, which was insufficient to cover the requested 40,000 CHF.",
+        "Algorithmic_Rationale_EN": "The project 'Kurzfilm Winti-Arbeiterinnen' (110) was not funded by MES. Its 2 supporters had a combined budget of 117.26 CHF, which was insufficient to cover the requested 40,000 CHF.",
         "Vote_Ja": 0,
         "Vote_EherJa": 2,
         "Vote_EherNein": 4,
@@ -7989,7 +7989,7 @@
         "Qualitative_Rationale_DE": "Das Projekt stösst auf sehr grosse Zustimmung: 6 von 7 Stimmen sprechen sich dafür aus. Die Kommentierenden betonen eine gute Übereinstimmung mit den Förderkriterien (mit leichten Einschränkungen im Bereich «Kultur in der Öffentlichkeit», die jedoch anderweitig bereits abgedeckt wird). Positiv hervorgehoben werden der erweiterte Zugang zu Informationen, der Beitrag zu einer starken Gemeinschaft durch Austausch sowie die Förderung von kultureller Vielfalt und erfahrbarem Erleben. Das Budget wird grundsätzlich als in Ordnung beurteilt, wobei eine Kürzung von rund 20 % bei guter Geschäftslage vorgesehen ist.",
         "Qualitative_Rationale_EN": "The project enjoys very strong support: 6 out of 7 votes are in favor. Commenters emphasize a good alignment with the funding criteria (with minor reservations regarding “culture in public space,” which is considered to be covered elsewhere). Positively noted are the expanded access to information, the contribution to a strong community through exchange, and the promotion of cultural diversity and experiential learning. The budget is broadly seen as acceptable, with a potential reduction of around 20% envisaged in case of a good financial result.",
         "Algorithmic_Rationale_DE": "Das Projekt Szenischer Vortrag (ID 129) wurde von MES unterstuetzt. Es war kostenguenstig und effizient mit einem Wert von 1999.75.",
-        "Algorithmic_Rationale_EN": "The project \"Szenischer Vortrag\" - Staged Presentation (working title) (ID 129) was funded by MES. It was cost-effective and efficient with a value of 1999.75.",
+        "Algorithmic_Rationale_EN": "The project Szenischer Vortrag (ID 129) was funded by MES. It was cost-effective and efficient with a value of 1999.75.",
         "Vote_Ja": 1,
         "Vote_EherJa": 5,
         "Vote_EherNein": 1,
